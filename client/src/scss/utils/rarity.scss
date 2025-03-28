@@ -1,0 +1,7 @@
+$none_bg: #fff;
+$none_bd: #ccc;
+
+@mixin get_background($rarity){
+    border-color: $none_bd;
+    background-color: $none_bg;
+}
