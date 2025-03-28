@@ -1,7 +1,6 @@
-export enum EntityType {
+export enum ObjectType {
     Player,
-    Projectile,
-    Asteroid
+    Petal
 }
 
 export const GameConstants = {

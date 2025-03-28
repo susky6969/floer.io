@@ -1,6 +1,6 @@
 export const Config: ServerConfig = {
-    host: "127.0.0.1",
-    port: 8000,
+    host: "0.0.0.0",
+    port: 12563,
     tps: 30
 };
 

@@ -1,46 +1,32 @@
 import { ObjectType } from "../constants";
 
-export interface GameObject {
+export interface IGameObject {
     readonly type: ObjectType
     readonly id: number
 }
 
-export class ObjectPool {
-    private readonly objects = new Map<number, GameObject>();
-    private readonly byCategory: { [ C in ObjectType ]: Set<GameObject> };
-
-    constructor() {
-        this.byCategory = Object.keys(ObjectType)
-            .filter(e => isNaN(+e))
-            .reduce((acc, cur) => {
-                    acc[cur as `${ObjectType}`] = new Set<GameObject>();
-                    return acc;
-                },
-                {} as ObjectPool["byCategory"]
-            );
-    }
-
+export class ObjectPool<T extends { [Cat in ObjectType]: IGameObject }> {
+    private readonly objects = new Map<number, IGameObject>();
     clear(): void {
         this.objects.clear();
-        Object.values(this.byCategory).forEach(e => e.clear());
     }
 
-    add(object: GameObject): boolean {
+    add(object: T[ObjectType]): boolean {
         if (this.objects.has(object.id)) return false;
         this.objects.set(object.id, object);
-        this.byCategory[object.type].add(object);
         return true;
     }
 
-    delete(object: GameObject): boolean {
+    delete(object: T[ObjectType]): boolean {
+        // this.byCategory[object.type].delete(object);
         return this.objects.delete(object.id);
     }
 
-    has(object: GameObject): boolean {
+    has(object: T[ObjectType]): boolean {
         return this.objects.has(object.id);
     }
 
-    get(id: number): GameObject | undefined {
+    get(id: number): T[ObjectType] | undefined {
         return this.objects.get(id);
     }
 
@@ -56,7 +42,7 @@ export class ObjectPool {
         return this.objects.size;
     }
 
-    [Symbol.iterator](): Iterator<GameObject> {
+    [Symbol.iterator](): Iterator<T[ObjectType]> {
         return this.objects.values();
     }
 }

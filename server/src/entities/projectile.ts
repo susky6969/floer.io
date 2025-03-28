@@ -1,5 +1,5 @@
 import { EntityType, GameConstants } from "../../../common/src/constants";
-import { ClassDefs } from "../../../common/src/defs/classDefs";
+import { ClassDefs } from "../../../common/src/definitions/classDefs";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { MathUtils } from "../../../common/src/utils/math";

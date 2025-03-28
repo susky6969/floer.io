@@ -3,7 +3,7 @@ import { Player } from "./entities/player";
 import { type PlayerData } from "./server";
 import { type ServerEntity } from "./entities/entity";
 import { Grid } from "./grid";
-import { EntityPool } from "../../common/src/utils/entityPool";
+import { EntityPool } from "../../common/src/utils/objectPool";
 import { EntityType, GameConstants } from "../../common/src/constants";
 import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";

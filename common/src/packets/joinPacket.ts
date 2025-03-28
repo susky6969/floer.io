@@ -1,5 +1,5 @@
 import { GameConstants } from "../constants";
-import { type ClassDefKey, ClassDefs } from "../defs/classDefs";
+import { type ClassDefKey, ClassDefs } from "../definitions/classDefs";
 import { type GameBitStream, type Packet } from "../net";
 
 export class JoinPacket implements Packet {

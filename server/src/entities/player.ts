@@ -14,7 +14,7 @@ import { EntityType, GameConstants } from "../../../common/src/constants";
 import { Projectile } from "./projectile";
 import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Asteroid } from "./asteroid";
-import { type ClassDefKey, ClassDefs } from "../../../common/src/defs/classDefs";
+import { type ClassDefKey, ClassDefs } from "../../../common/src/definitions/classDefs";
 
 export class Player extends ServerEntity {
     readonly type = EntityType.Player;
