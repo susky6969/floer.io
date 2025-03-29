@@ -1,4 +1,4 @@
-export enum ObjectType {
+export enum EntityType {
     Player,
     Petal
 }

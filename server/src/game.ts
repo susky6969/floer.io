@@ -3,8 +3,7 @@ import { Player } from "./entities/player";
 import { type PlayerData } from "./server";
 import { type ServerEntity } from "./entities/entity";
 import { Grid } from "./grid";
-import { EntityPool } from "../../common/src/utils/objectPool";
-import { EntityType, GameConstants } from "../../common/src/constants";
+import { ObjectType, GameConstants } from "../../common/src/constants";
 import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";
 import { Asteroid } from "./entities/asteroid";
@@ -14,7 +13,7 @@ import { IDAllocator } from "./idAllocator";
 import { type Vector } from "../../common/src/utils/vector";
 
 export class Game {
-    players = new EntityPool<Player>();
+    players = new Set<Player>();
 
     newPlayers: Player[] = [];
     deletedPlayers: number[] = [];

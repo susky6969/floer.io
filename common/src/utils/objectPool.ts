@@ -1,48 +1,48 @@
-import { ObjectType } from "../constants";
+import { EntityType } from "../constants";
 
 export interface IGameObject {
-    readonly type: ObjectType
+    readonly type: EntityType
     readonly id: number
 }
 
-export class ObjectPool<T extends { [Cat in ObjectType]: IGameObject }> {
-    private readonly objects = new Map<number, IGameObject>();
+export class EntityPool<T extends { [Cat in EntityType]: IGameObject }> {
+    private readonly entities = new Map<number, IGameObject>();
     clear(): void {
-        this.objects.clear();
+        this.entities.clear();
     }
 
-    add(object: T[ObjectType]): boolean {
-        if (this.objects.has(object.id)) return false;
-        this.objects.set(object.id, object);
+    add(entity: T[EntityType]): boolean {
+        if (this.entities.has(entity.id)) return false;
+        this.entities.set(entity.id, entity);
         return true;
     }
 
-    delete(object: T[ObjectType]): boolean {
-        // this.byCategory[object.type].delete(object);
-        return this.objects.delete(object.id);
+    delete(entity: T[EntityType]): boolean {
+        // this.byCategory[entity.type].delete(entity);
+        return this.entities.delete(entity.id);
     }
 
-    has(object: T[ObjectType]): boolean {
-        return this.objects.has(object.id);
+    has(entity: T[EntityType]): boolean {
+        return this.entities.has(entity.id);
     }
 
-    get(id: number): T[ObjectType] | undefined {
-        return this.objects.get(id);
+    get(id: number): T[EntityType] | undefined {
+        return this.entities.get(id);
     }
 
     hasID(id: number): boolean {
-        return this.objects.has(id);
+        return this.entities.has(id);
     }
 
     deleteByID(id: number): void {
-        this.objects.delete(id);
+        this.entities.delete(id);
     }
 
     get size(): number {
-        return this.objects.size;
+        return this.entities.size;
     }
 
-    [Symbol.iterator](): Iterator<T[ObjectType]> {
-        return this.objects.values();
+    [Symbol.iterator](): Iterator<T[EntityType]> {
+        return this.entities.values();
     }
 }

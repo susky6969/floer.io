@@ -1,31 +1,30 @@
 import { Application } from "pixi.js";
 import { UIManager } from "@/scripts/uiManager";
 import { setupUI } from "@/scripts/ui";
-import { ObjectPool } from "@common/utils/objectPool.ts";
+import { EntityPool } from "@common/utils/objectPool.ts";
 import { Player } from "@/scripts/objects/player.ts";
 import { loadTextures } from "@/scripts/utils/pixi.ts";
 import { Camera } from "@/scripts/render/camera.ts";
-import { Vec2 } from "@common/utils/vector.ts";
-import { ObjectType } from "@common/constants.ts";
+import { EntityType } from "@common/constants.ts";
 import { updateEquipPetalColumn } from "@/scripts/render/petal.ts";
 import { Petal } from "@/scripts/objects/petal.ts";
 
-type ObjectClassMapping = {
-    readonly [ObjectType.Player]: typeof Player
-    readonly [ObjectType.Petal]: typeof Petal
+type EntityClassMapping = {
+    readonly [EntityType.Player]: typeof Player
+    readonly [EntityType.Petal]: typeof Petal
 };
 
 // For creating new objects.
-// const ObjectClassMapping: ObjectClassMapping = Object.freeze<{
-//     readonly [K in ObjectType]: new (game: Game, id: number) => InstanceType<ObjectClassMapping[K]>
+// const EntityClassMapping: EntityClassMapping = Object.freeze<{
+//     readonly [K in EntityType]: new (game: Game, id: number) => InstanceType<ObjectClassMapping[K]>
 // }>({
-//             [ObjectType.Player]: Player,
-//             [ObjectType.Petal]: Petal
+//             [EntityType.Player]: Player,
+//             [EntityType.Petal]: Petal
 //         });
 
 // For giving ObjectPool the correct type
 type ObjectMapping = {
-    readonly [Cat in keyof ObjectClassMapping]: InstanceType<ObjectClassMapping[Cat]>
+    readonly [Cat in keyof EntityClassMapping]: InstanceType<EntityClassMapping[Cat]>
 };
 
 export class Game {
@@ -40,11 +39,11 @@ export class Game {
     activePlayerID = -1;
 
     get activePlayer(): Player | undefined {
-        if (this.activePlayerID) return this.objectPool.get(this.activePlayerID) as Player;
+        if (this.activePlayerID) return this.entityPool.get(this.activePlayerID) as Player;
         return undefined;
     }
 
-    readonly objectPool = new ObjectPool<ObjectMapping>();
+    readonly entityPool = new EntityPool<ObjectMapping>();
 
     readonly pixi = new Application();
     readonly uiManager = new UIManager(this);
@@ -57,17 +56,17 @@ export class Game {
         this.pixi.start();
         this.activePlayerID = 0;
 
-        this.objectPool.add(new Player(this, this.nextObjectID));
-        const player2 = new Player(this, this.nextObjectID);
-        player2.position = Vec2.new(50, 50);
-        this.objectPool.add(player2);
-        const petal = new Petal(this, this.nextObjectID);
-        petal.position = Vec2.new(100, 100);
-        this.objectPool.add(petal);
+        // this.objectPool.add(new Player(this, this.nextObjectID));
+        // const player2 = new Player(this, this.nextObjectID);
+        // player2.position = Vec2.new(50, 50);
+        // this.objectPool.add(player2);
+        // const petal = new Petal(this, this.nextObjectID);
+        // petal.position = Vec2.new(100, 100);
+        // this.objectPool.add(petal);
     }
 
     render() {
-        for (const gameObject of this.objectPool) {
+        for (const gameObject of this.entityPool) {
             gameObject.update();
         }
 
