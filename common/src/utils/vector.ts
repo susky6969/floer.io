@@ -7,7 +7,7 @@ export interface Vector {
 }
 
 /**
- * Vector util functions
+ * Vector util functions for 2D ( that's what "2" means lol )
  */
 export const Vec2 = {
     /**

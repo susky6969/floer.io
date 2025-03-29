@@ -1,4 +1,4 @@
-import { MathUtils } from "./math";
+import { Numeric } from "./math";
 import { Vec2, type Vector } from "./vector";
 
 export const Random = {
@@ -86,6 +86,6 @@ export class SeededRandom {
     get(min = 0, max = 1): number {
         this.rng = this.rng * 16807 % 2147483647;
         const t = this.rng / 2147483647;
-        return MathUtils.lerp(min, max, t);
+        return Numeric.lerp(min, max, t);
     }
 }

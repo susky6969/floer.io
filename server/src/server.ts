@@ -3,7 +3,6 @@ import { type Player } from "./entities/player";
 import { Game } from "./game";
 import { Config } from "./config";
 
-// Initialize the server
 const app = Config.ssl
     ? SSLApp({
         key_file_name: Config.ssl.keyFile,
@@ -13,10 +12,7 @@ const app = Config.ssl
 
 export interface PlayerData {
     joined: boolean
-    /**
-     * The player socket game entity
-     */
-    entity?: Player
+    object?: Player
 }
 
 app.listen(Config.host, Config.port, () => {
@@ -25,10 +21,6 @@ app.listen(Config.host, Config.port, () => {
 
 const game = new Game(Config);
 
-/**
- * Apply CORS headers to a response.
- * @param res The response sent by the server.
- */
 function cors(res: HttpResponse): void {
     res.writeHeader("Access-Control-Allow-Origin", "*")
         .writeHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -56,7 +48,7 @@ app.ws<PlayerData>("/floer/play", {
                 socket.close();
             }
         }, 1000);
-        socket.getUserData().entity = game.addPlayer(socket);
+        socket.getUserData().object = game.addPlayer(socket);
     },
 
     /**
@@ -64,7 +56,7 @@ app.ws<PlayerData>("/floer/play", {
      */
     message(socket, message) {
         try {
-            const player = socket.getUserData().entity;
+            const player = socket.getUserData().object;
             if (player === undefined) return;
             player.processMessage(message);
         } catch (e) {
@@ -74,6 +66,6 @@ app.ws<PlayerData>("/floer/play", {
 
     close(socket) {
         const player = socket.getUserData();
-        if (player.entity) game.removePlayer(player.entity);
+        if (player.object) game.removePlayer(player.object);
     }
 });

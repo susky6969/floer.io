@@ -1,14 +1,14 @@
 import { BitStream } from "bit-buffer";
 import { type Vector } from "./utils/vector";
 import { GameConstants } from "./constants";
-import { MathUtils } from "./utils/math";
+import { Numeric } from "./utils/math";
 import { JoinPacket } from "./packets/joinPacket";
 import { InputPacket } from "./packets/inputPacket";
 import { UpdatePacket } from "./packets/updatePacket";
 import { GameOverPacket } from "./packets/gameOverPacket";
 
 export class GameBitStream extends BitStream {
-    static alloc(size: number): GameBitStream {
+    static create(size: number): GameBitStream {
         return new GameBitStream(new ArrayBuffer(size));
     }
 
@@ -27,7 +27,7 @@ export class GameBitStream extends BitStream {
             throw new Error(`Value out of range: ${value}, range: [${min}, ${max}]`);
         }
         const range = (1 << bitCount) - 1;
-        const clamped = MathUtils.clamp(value, min, max);
+        const clamped = Numeric.clamp(value, min, max);
         this.writeBits(((clamped - min) / (max - min)) * range + 0.5, bitCount);
     }
 
@@ -56,7 +56,7 @@ export class GameBitStream extends BitStream {
      * @param bitCount The number of bits to write.
      */
     writeVector(vector: Vector, minX: number, minY: number, maxX: number, maxY: number, bitCount: number): void {
-        this.writeVector2(vector.x, vector.y, minX, minY, maxX, maxY, bitCount);
+        this.writeVectorByXY(vector.x, vector.y, minX, minY, maxX, maxY, bitCount);
     }
 
     /**
@@ -70,7 +70,7 @@ export class GameBitStream extends BitStream {
      * @param bitCount The number of bits to write.
      * @return The position Vector.
      */
-    writeVector2(x: number, y: number, minX: number, minY: number, maxX: number, maxY: number, bitCount: number): void {
+    writeVectorByXY(x: number, y: number, minX: number, minY: number, maxX: number, maxY: number, bitCount: number): void {
         this.writeFloat(x, minX, maxX, bitCount);
         this.writeFloat(y, minY, maxY, bitCount);
     }
@@ -95,7 +95,7 @@ export class GameBitStream extends BitStream {
      * @param vector The Vector to write.
      */
     writePosition(vector: Vector): void {
-        this.writePosition2(vector.x, vector.y);
+        this.writePositionByXY(vector.x, vector.y);
     }
 
     /**
@@ -103,8 +103,8 @@ export class GameBitStream extends BitStream {
      * @param x The x-coordinate of the vector to write
      * @param y The y-coordinate of the vector to write
      */
-    writePosition2(x: number, y: number): void {
-        this.writeVector2(x, y, 0, 0, GameConstants.maxPosition, GameConstants.maxPosition, 16);
+    writePositionByXY(x: number, y: number): void {
+        this.writeVectorByXY(x, y, 0, 0, GameConstants.maxPosition, GameConstants.maxPosition, 16);
     }
 
     /**
@@ -117,7 +117,7 @@ export class GameBitStream extends BitStream {
 
     static unitEps = 1.0001;
     /**
-    * Write an unit vector to the stream
+    * Write a unit vector to the stream
     * @param vector The Vector to write.
     * @param bitCount The number of bits to write.
     */
@@ -133,7 +133,7 @@ export class GameBitStream extends BitStream {
     }
 
     /**
-     * Read an unit vector from the stream
+     * Read a unit vector from the stream
      * @param bitCount The number of bits to read.
      * @return the unit Vector.
      */
@@ -174,7 +174,7 @@ export class GameBitStream extends BitStream {
      * Read an array from the stream
      * @param arr The array to add the deserialized elements;
      * @param bits The amount of bits to read for the array size
-     * @param serializeFn The function to de-serialize each array item
+     * @param deserializeFn The function to de-serialize each array item
      */
     readArray<T>(arr: T[], bits: number, deserializeFn: () => T): void {
         const size = this.readBits(bits);
@@ -277,7 +277,7 @@ export class PacketStream {
     }
 
     deserializeServerPacket(): Packet | undefined {
-        return this._deserliazePacket(ServerToClientPackets);
+        return this._deserializePacket(ServerToClientPackets);
     }
 
     serializeClientPacket(packet: Packet) {
@@ -285,10 +285,10 @@ export class PacketStream {
     }
 
     deserializeClientPacket(): Packet | undefined {
-        return this._deserliazePacket(ClientToServerPackets);
+        return this._deserializePacket(ClientToServerPackets);
     }
 
-    private _deserliazePacket(register: PacketRegister): Packet | undefined {
+    private _deserializePacket(register: PacketRegister): Packet | undefined {
         if (this.stream.length - this.stream.byteIndex * 8 >= 1) {
             try {
                 const id = this.stream.readUint8();

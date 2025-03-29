@@ -22,7 +22,8 @@ export class Definitions<Def extends ObjectDefinition = ObjectDefinition> {
         for (const def of definitions) {
             const idString = def.idString;
             if (this.idStringToDefMap.has(idString)) {
-                throw new Error(`Duplicate idString '${idString}' in schema`);
+                console.warn(`Trying to register ${idString} multiple times`);
+                continue;
             }
 
             // casting here is necessary to modify the readonly defs
