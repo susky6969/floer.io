@@ -1,26 +1,21 @@
-import { type WebSocket } from "uWebSockets.js";
-import { ServerEntity } from "./entity";
-import { type PlayerData } from "../server";
+import { type WebSocket } from "ws";
+import { ServerEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
 import { UpdatePacket, type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, RectHitbox } from "../../../common/src/utils/hitbox";
 import { Random } from "../../../common/src/utils/random";
-import { MathUtils } from "../../../common/src/utils/math";
+import { Numeric } from "../../../common/src/utils/math";
 import { InputPacket } from "../../../common/src/packets/inputPacket";
 import { JoinPacket } from "../../../common/src/packets/joinPacket";
 import { EntityType, GameConstants } from "../../../common/src/constants";
-import { Projectile } from "./projectile";
 import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
-import { Asteroid } from "./asteroid";
-import { type ClassDefKey, ClassDefs } from "../../../common/src/definitions/classDefs";
 
 export class Player extends ServerEntity {
     readonly type = EntityType.Player;
-    socket: WebSocket<PlayerData>;
+    socket: WebSocket;
     name = "";
-    class: ClassDefKey = "main";
     direction = Vec2.new(0, 0);
     mouseDown = false;
     shoot = false;
@@ -36,7 +31,7 @@ export class Player extends ServerEntity {
 
     set health(health: number) {
         if (health === this._health) return;
-        this._health = MathUtils.clamp(health, 0, GameConstants.player.maxHealth);
+        this._health = Numeric.clamp(health, 0, GameConstants.player.maxHealth);
         this.setFullDirty();
     }
 
@@ -78,7 +73,7 @@ export class Player extends ServerEntity {
         this._position = pos;
     }
 
-    constructor(game: Game, socket: WebSocket<PlayerData>) {
+    constructor(game: Game, socket: WebSocket) {
         const pos = Random.vector(0, game.width, 0, game.height);
         super(game, pos);
         this.position = pos;
@@ -92,18 +87,10 @@ export class Player extends ServerEntity {
             this.position = Vec2.add(this.position, Vec2.mul(speed, this.game.dt));
         }
 
-        const classDef = ClassDefs.typeToDef(this.class);
-        if (this.shoot && this.shotCooldown < this.game.now) {
-            this.shotCooldown = this.game.now + classDef.fireDelay;
-            const projectile = new Projectile(this.game, this.position, this.direction, this);
-            this.game.grid.addEntity(projectile);
-            this.game.shots.push(this.position);
-        }
-
         const entities = this.game.grid.intersectsHitbox(this.hitbox);
 
         for (const entity of entities) {
-            if (!(entity instanceof Player || entity instanceof Asteroid)) continue;
+            if (!(entity instanceof Player)) continue;
             if (entity === this) continue;
 
             const collision = this.hitbox.getIntersection(entity.hitbox);
@@ -113,8 +100,8 @@ export class Player extends ServerEntity {
         }
 
         const rad = this.hitbox.radius;
-        this.position.x = MathUtils.clamp(this.position.x, rad, this.game.width - rad);
-        this.position.y = MathUtils.clamp(this.position.y, rad, this.game.height - rad);
+        this.position.x = Numeric.clamp(this.position.x, rad, this.game.width - rad);
+        this.position.y = Numeric.clamp(this.position.y, rad, this.game.height - rad);
 
         if (!Vec2.equals(this.position, oldPos)) {
             this.setDirty();
@@ -215,7 +202,7 @@ export class Player extends ServerEntity {
         this.sendData(buffer);
     }
 
-    packetStream = new PacketStream(GameBitStream.alloc(1 << 16));
+    packetStream = new PacketStream(GameBitStream.create(1 << 16));
 
     readonly packetsToSend: Packet[] = [];
 
@@ -225,7 +212,7 @@ export class Player extends ServerEntity {
 
     sendData(data: ArrayBuffer): void {
         try {
-            this.socket.send(data, true, false);
+            this.socket.send(data);
         } catch (error) {
             console.error("Error sending data:", error);
         }
@@ -254,14 +241,6 @@ export class Player extends ServerEntity {
         this.name = packet.name.trim();
         if (!this.name) this.name = GameConstants.player.defaultName;
 
-        const selectedClass = packet.class;
-        if (selectedClass && ClassDefs.typeToId(selectedClass)) {
-            this.class = selectedClass;
-            const def = ClassDefs.typeToDef(selectedClass);
-            this.zoom = def.cameraZoom;
-        }
-
-        this.socket.getUserData().joined = true;
         this.game.players.add(this);
         this.game.grid.addEntity(this);
 

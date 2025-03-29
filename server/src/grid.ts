@@ -1,11 +1,10 @@
 import { EntityType } from "../../common/src/constants";
 import { type Hitbox, RectHitbox } from "../../common/src/utils/hitbox";
-import { MathUtils } from "../../common/src/utils/math";
+import { Numeric } from "../../common/src/utils/math";
 import { Vec2, type Vector } from "../../common/src/utils/vector";
-import { type Asteroid } from "./entities/asteroid";
-import { type ServerEntity } from "./entities/entity";
+import { type ServerEntity } from "./entities/serverEntity";
 import { type Player } from "./entities/player";
-import { type Projectile } from "./entities/projectile";
+import { Petal } from "./entities/petal";
 
 /**
  * A Grid to filter collision detection of game entities
@@ -27,8 +26,7 @@ export class Grid {
 
     readonly byCategory = {
         [EntityType.Player]: new Set<Player>(),
-        [EntityType.Projectile]: new Set<Projectile>(),
-        [EntityType.Asteroid]: new Set<Asteroid>()
+        [EntityType.Petal]: new Set<Petal>()
     };
 
     constructor(width: number, height: number) {
@@ -53,7 +51,7 @@ export class Grid {
     }
 
     /**
-     * Add a entity to the grid system
+     * Add an entity to the grid system
      */
     updateEntity(entity: ServerEntity): void {
         this.removeFromGrid(entity);
@@ -141,8 +139,8 @@ export class Grid {
      */
     private _roundToCells(vector: Vector): Vector {
         return {
-            x: MathUtils.clamp(Math.floor(vector.x / this.cellSize), 0, this.width),
-            y: MathUtils.clamp(Math.floor(vector.y / this.cellSize), 0, this.height)
+            x: Numeric.clamp(Math.floor(vector.x / this.cellSize), 0, this.width),
+            y: Numeric.clamp(Math.floor(vector.y / this.cellSize), 0, this.height)
         };
     }
 }

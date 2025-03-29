@@ -2,19 +2,19 @@ import { Application } from "pixi.js";
 import { UIManager } from "@/scripts/uiManager";
 import { setupUI } from "@/scripts/ui";
 import { EntityPool } from "@common/utils/entityPool.ts";
-import { Player } from "@/scripts/objects/player.ts";
+import { Player } from "@/scripts/entities/player.ts";
 import { loadTextures } from "@/scripts/utils/pixi.ts";
 import { Camera } from "@/scripts/render/camera.ts";
 import { EntityType } from "@common/constants.ts";
 import { updateEquipPetalColumn } from "@/scripts/render/petal.ts";
-import { Petal } from "@/scripts/objects/petal.ts";
+import { Petal } from "@/scripts/entities/petal.ts";
 
 type EntityClassMapping = {
     readonly [EntityType.Player]: typeof Player
     readonly [EntityType.Petal]: typeof Petal
 };
 
-// For creating new objects.
+// For creating new entities.
 // const EntityClassMapping: EntityClassMapping = Object.freeze<{
 //     readonly [K in EntityType]: new (game: Game, id: number) => InstanceType<ObjectClassMapping[K]>
 // }>({
@@ -22,8 +22,8 @@ type EntityClassMapping = {
 //             [EntityType.Petal]: Petal
 //         });
 
-// For giving ObjectPool the correct type
-type ObjectMapping = {
+// For giving EntityPool the correct type
+type EntityMapping = {
     readonly [Cat in keyof EntityClassMapping]: InstanceType<EntityClassMapping[Cat]>
 };
 
@@ -43,7 +43,7 @@ export class Game {
         return undefined;
     }
 
-    readonly entityPool = new EntityPool<ObjectMapping>();
+    readonly entityPool = new EntityPool<EntityMapping[EntityType]>();
 
     readonly pixi = new Application();
     readonly uiManager = new UIManager(this);
@@ -55,19 +55,11 @@ export class Game {
     startGame() {
         this.pixi.start();
         this.activePlayerID = 0;
-
-        // this.objectPool.add(new Player(this, this.nextObjectID));
-        // const player2 = new Player(this, this.nextObjectID);
-        // player2.position = Vec2.new(50, 50);
-        // this.objectPool.add(player2);
-        // const petal = new Petal(this, this.nextObjectID);
-        // petal.position = Vec2.new(100, 100);
-        // this.objectPool.add(petal);
     }
 
     render() {
-        for (const gameObject of this.entityPool) {
-            gameObject.update();
+        for (const entity of this.entityPool) {
+            entity.update();
         }
 
         if (this.activePlayer) {

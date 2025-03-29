@@ -4,13 +4,19 @@ import { type Vector } from "../utils/vector";
 
 export interface EntitiesNetData {
     [EntityType.Player]: {
-        // Partial data should be used for data that changes often
         position: Vector
         direction: Vector
 
-        // while full data for data that rarely changes
         full?: {
             health: number
+        }
+    }
+    [EntityType.Petal]: {
+        position: Vector
+        direction: Vector
+
+        full?: {
+
         }
     }
 }
@@ -48,48 +54,22 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             };
         }
     },
-    [EntityType.Projectile]: {
-        partialSize: 6,
-        fullSize: 6,
-        serializePartial(stream, data) {
+    [EntityType.Petal]: {
+        partialSize: 8,
+        fullSize: 0,
+        serializePartial(stream, data): void {
             stream.writePosition(data.position);
-        },
-        serializeFull(stream, data) {
             stream.writeUnit(data.direction, 16);
-            stream.writeUint16(data.shooterId);
         },
+        serializeFull(stream, data): void {},
         deserializePartial(stream) {
             return {
-                position: stream.readPosition()
+                position: stream.readPosition(),
+                direction: stream.readUnit(16)
             };
         },
         deserializeFull(stream) {
-            return {
-                direction: stream.readUnit(16),
-                shooterId: stream.readUint16()
-            };
-        }
-    },
-    [EntityType.Asteroid]: {
-        partialSize: 6,
-        fullSize: 3,
-        serializePartial(stream, data) {
-            stream.writePosition(data.position);
-        },
-        serializeFull(stream, data) {
-            stream.writeUint8(data.variation);
-            stream.writeFloat(data.radius, GameConstants.asteroid.minRadius, GameConstants.asteroid.maxRadius, 8);
-        },
-        deserializePartial(stream) {
-            return {
-                position: stream.readPosition()
-            };
-        },
-        deserializeFull(stream) {
-            return {
-                variation: stream.readUint8(),
-                radius: stream.readFloat(GameConstants.asteroid.minRadius, GameConstants.asteroid.maxRadius, 8)
-            };
+            return {};
         }
     }
 };
@@ -193,7 +173,7 @@ export class UpdatePacket implements Packet {
         if (this.newPlayers.length) {
             stream.writeArray(this.newPlayers, 8, player => {
                 stream.writeUint16(player.id);
-                stream.writeASCIIString(player.name, GameConstants.player.nameMaxLength);
+                stream.writeASCIIString(player.name, GameConstants.player.maxNameLength);
             });
 
             flags |= UpdateFlags.NewPlayers;
@@ -220,20 +200,6 @@ export class UpdatePacket implements Packet {
             stream.writeAlignToNextByte();
 
             flags |= UpdateFlags.PlayerData;
-        }
-
-        if (this.explosions.length) {
-            stream.writeArray(this.explosions, 8, explosion => {
-                stream.writePosition(explosion.position);
-                stream.writeFloat(
-                    explosion.radius,
-                    GameConstants.explosion.minRadius,
-                    GameConstants.explosion.maxRadius,
-                    8
-                );
-            });
-
-            flags |= UpdateFlags.Explosions;
         }
 
         if (this.shots.length) {
@@ -301,7 +267,7 @@ export class UpdatePacket implements Packet {
             stream.readArray(this.newPlayers, 8, () => {
                 return {
                     id: stream.readUint16(),
-                    name: stream.readASCIIString(GameConstants.player.nameMaxLength)
+                    name: stream.readASCIIString(GameConstants.player.maxNameLength)
                 };
             });
         }
@@ -324,15 +290,6 @@ export class UpdatePacket implements Packet {
             }
 
             stream.readAlignToNextByte();
-        }
-
-        if (flags & UpdateFlags.Explosions) {
-            stream.readArray(this.explosions, 8, () => {
-                return {
-                    position: stream.readPosition(),
-                    radius: stream.readFloat(GameConstants.explosion.minRadius, GameConstants.explosion.maxRadius, 8)
-                };
-            });
         }
 
         if (flags & UpdateFlags.Shots) {

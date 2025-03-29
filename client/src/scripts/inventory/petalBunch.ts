@@ -1,5 +1,5 @@
 import { PetalDefinition, getDisplayedPieces } from "@common/definitions/petal.ts";
-import { Petal } from "@/scripts/objects/petal.ts";
+import { Petal } from "@/scripts/entities/petal.ts";
 import { Game } from "@/scripts/game.ts";
 import { P2, Graphics } from "@common/utils/math.ts";
 import { Vec2 } from "@common/utils/vector";

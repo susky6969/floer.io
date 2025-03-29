@@ -29,8 +29,8 @@ export abstract class ServerEntity<T extends EntityType = EntityType> {
 
     init(): void {
         // + 3 for entity id (2 bytes) and entity type (1 byte)
-        this.partialStream = GameBitStream.alloc(EntitySerializations[this.type].partialSize + 3);
-        this.fullStream = GameBitStream.alloc(EntitySerializations[this.type].fullSize);
+        this.partialStream = GameBitStream.create(EntitySerializations[this.type].partialSize + 3);
+        this.fullStream = GameBitStream.create(EntitySerializations[this.type].fullSize);
         this.serializeFull();
     }
 

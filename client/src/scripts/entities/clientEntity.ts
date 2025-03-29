@@ -1,13 +1,13 @@
-import { type IGameObject } from "@common/utils/entityPool.ts";
-import { ObjectType } from "@common/constants";
+import { type GameEntity } from "@common/utils/entityPool.ts";
+import { EntityType } from "@common/constants";
 import { Vec2, Vector } from "@common/utils/vector.ts";
 import { Game } from "../game.ts";
 
-export abstract class GameObject implements IGameObject {
+export abstract class ClientEntity implements GameEntity {
     readonly game: Game;
 
     readonly id: number;
-    abstract readonly type: ObjectType;
+    abstract readonly type: EntityType;
 
     damageable = false;
     destroyed = false;

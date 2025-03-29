@@ -1,19 +1,17 @@
-import { type WebSocket } from "uWebSockets.js";
+import { type WebSocket } from "ws";
 import { Player } from "./entities/player";
-import { type PlayerData } from "./server";
-import { type ServerEntity } from "./entities/entity";
+import { type ServerEntity } from "./entities/serverEntity";
 import { Grid } from "./grid";
-import { ObjectType, GameConstants } from "../../common/src/constants";
+import { EntityPool } from "../../common/src/utils/entityPool";
+import { GameConstants } from "../../common/src/constants";
 import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";
-import { Asteroid } from "./entities/asteroid";
-import { Random } from "../../common/src/utils/random";
 import { type Explosion } from "../../common/src/packets/updatePacket";
 import { IDAllocator } from "./idAllocator";
 import { type Vector } from "../../common/src/utils/vector";
 
 export class Game {
-    players = new Set<Player>();
+    players = new EntityPool<Player>();
 
     newPlayers: Player[] = [];
     deletedPlayers: number[] = [];
@@ -32,16 +30,23 @@ export class Game {
 
     idAllocator = new IDAllocator(16);
 
+    get nextEntityID(): number {
+        return this.idAllocator.getNextId();
+    }
+
     dt = 0;
     now = Date.now();
 
-    timer = new NanoTimer();
+    private readonly timer = new NanoTimer();
+
+    private readonly deltaMs: number;
 
     constructor(config: ServerConfig) {
-        this.timer.setInterval(this.tick.bind(this), "", `${1000 / config.tps}m`);
+        this.deltaMs = 1000 / config.tps;
+        this.timer.setInterval(this.tick.bind(this), "", `${this.deltaMs}m`);
     }
 
-    addPlayer(socket: WebSocket<PlayerData>): Player {
+    addPlayer(socket: WebSocket): Player {
         const player = new Player(this, socket);
         this.newPlayers.push(player);
         return player;
@@ -51,7 +56,11 @@ export class Game {
         this.players.delete(player);
         this.grid.remove(player);
         this.deletedPlayers.push(player.id);
-        console.log(`"${player.name}" left game`);
+        console.log(`"${player.name}" left the game.`);
+    }
+
+    handleMessage(data: ArrayBuffer, player: Player) {
+        player.processMessage(data);
     }
 
     tick(): void {
@@ -61,18 +70,6 @@ export class Game {
         // update entities
         for (const entity of this.grid.entities.values()) {
             entity.tick();
-        }
-
-        // spawn asteroids
-
-        if (this.grid.byCategory[EntityType.Asteroid].size < 20) {
-            const asteroid = new Asteroid(this, Random.vector(
-                0, this.width,
-                0, this.height
-            ),
-            Random.float(GameConstants.asteroid.minRadius, GameConstants.asteroid.maxRadius)
-            );
-            this.grid.addEntity(asteroid);
         }
 
         // Cache entity serializations

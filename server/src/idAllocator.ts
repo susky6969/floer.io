@@ -16,7 +16,7 @@ export class IDAllocator {
     /**
      * Gets the next available ID
      * If the current ID is higher than the max ID it will start using the free list ID's
-     * @throws {Error} If the there's no ID's left
+     * @throws Error If the there's no ID's left
      */
     getNextId(): number {
         let id: number | undefined = this._currentId;

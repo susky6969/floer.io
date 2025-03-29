@@ -1,32 +1,32 @@
 import { EntityType } from "../constants";
 
-export interface IGameObject {
+export interface GameEntity {
     readonly type: EntityType
     readonly id: number
 }
 
-export class EntityPool<T extends { [Cat in EntityType]: IGameObject }> {
-    private readonly entities = new Map<number, IGameObject>();
+export class EntityPool<T extends GameEntity> {
+    private readonly entities = new Map<number, T>();
     clear(): void {
         this.entities.clear();
     }
 
-    add(entity: T[EntityType]): boolean {
+    add(entity: T): boolean {
         if (this.entities.has(entity.id)) return false;
         this.entities.set(entity.id, entity);
         return true;
     }
 
-    delete(entity: T[EntityType]): boolean {
+    delete(entity: T): boolean {
         // this.byCategory[entity.type].delete(entity);
         return this.entities.delete(entity.id);
     }
 
-    has(entity: T[EntityType]): boolean {
+    has(entity: T): boolean {
         return this.entities.has(entity.id);
     }
 
-    get(id: number): T[EntityType] | undefined {
+    get(id: number): T | undefined {
         return this.entities.get(id);
     }
 
@@ -42,7 +42,7 @@ export class EntityPool<T extends { [Cat in EntityType]: IGameObject }> {
         return this.entities.size;
     }
 
-    [Symbol.iterator](): Iterator<T[EntityType]> {
+    [Symbol.iterator](): Iterator<T> {
         return this.entities.values();
     }
 }

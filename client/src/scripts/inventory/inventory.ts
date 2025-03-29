@@ -1,4 +1,4 @@
-import { Player } from "@/scripts/objects/player.ts";
+import { Player } from "@/scripts/entities/player.ts";
 import { PetalBunch } from "./petalBunch.ts";
 import { Game } from "@/scripts/game.ts";
 import { Petals } from "@common/definitions/petal.ts";
