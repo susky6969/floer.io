@@ -1,43 +1,44 @@
 import { ObjectDefinition, Definitions } from "../utils/definitions";
 
-export enum PetalCopyType {
-    One,
-    Multiple
-}
+export type PetalDefinition = ObjectDefinition & {
+    damage?: number
+    health?: number
+} & PetalPieceType;
 
-export enum PetalMultipleType {
-    ShowInOne,
-    All
-}
-
-export type PetalDefinition = ObjectDefinition & MultiplePetals;
-
-export type MultiplePetals = {
-    readonly multiple: PetalCopyType.One
+type PetalPieceType = {
+    isDuplicate: false
+    pieceAmount: 1
 } | {
-    readonly multiple: PetalCopyType.Multiple
-    readonly pieceNumber: number
-    readonly multipleDisplay: PetalMultipleType
+    isDuplicate: true
+    // Only allowed to use duplicateDisplay when have more than one
+    pieceAmount: number
+    isShowedInOne: boolean
 };
 
-export const Petals = new Definitions<PetalDefinition>(([
+export function getDisplayedPieces(petal: PetalDefinition): number {
+    if (petal.isDuplicate && petal.isShowedInOne) return 1;
+    return petal.pieceAmount;
+}
+
+export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "light",
         displayName: "Light",
-        multiple: PetalCopyType.Multiple,
-        pieceNumber: 5,
-        multipleDisplay: PetalMultipleType.All
+        isDuplicate: true,
+        pieceAmount: 5,
+        isShowedInOne: false
     },
     {
         idString: "lighter",
         displayName: "Lighter",
-        multiple: PetalCopyType.Multiple,
-        pieceNumber: 4,
-        multipleDisplay: PetalMultipleType.ShowInOne
+        isDuplicate: true,
+        pieceAmount: 4,
+        isShowedInOne: true
     },
     {
         idString: "basic",
         displayName: "Basic",
-        multiple: PetalCopyType.One
+        isDuplicate: false,
+        pieceAmount: 1
     }
-] satisfies PetalDefinition[]));
+] satisfies PetalDefinition[]);

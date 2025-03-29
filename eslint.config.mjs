@@ -80,7 +80,13 @@ export default tseslint.config(
             ["@typescript-eslint/no-unused-vars"]: "off",
             ["@typescript-eslint/require-await"]: "off",
             ["@typescript-eslint/prefer-for-of"]: "off",
-            ["no-empty"]: "off"
+            ["no-empty"]: "off",
+            ["@stylistic/no-trailing-spaces"]: ['off',
+                {
+                    skipBlankLines: true,
+                    ignoreComments: true
+                }
+            ]
         }
     },
     {

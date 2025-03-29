@@ -1,8 +1,8 @@
 import { Player } from "@/scripts/objects/player.ts";
 import { PetalBunch } from "./petalBunch.ts";
 import { Game } from "@/scripts/game.ts";
-import { PetalCopyType, PetalMultipleType, Petals } from "@common/definitions/petal.ts";
-import * as math from "@/scripts/utils/math.ts";
+import { Petals } from "@common/definitions/petal.ts";
+import { P2 } from "@common/utils/math.ts";
 
 export class Inventory {
     readonly game: Game;
@@ -10,10 +10,10 @@ export class Inventory {
 
     petalBunches: PetalBunch[];
 
-    private displayPetalsCount = 0;
+    private totalDisplayedPetals = 0;
 
-    private radian = 0;
-    radius = 80;
+    private revolutionRadians = 0;
+    range = 80;
 
     constructor(game: Game, player: Player) {
         this.game = game;
@@ -30,19 +30,21 @@ export class Inventory {
     }
 
     update(): void {
-        this.displayPetalsCount = 0;
+        this.totalDisplayedPetals = 0;
 
-        this.petalBunches.forEach((petalBunch) => {
-            this.displayPetalsCount += petalBunch.displayPetalsCount;
+        this.petalBunches.forEach(petalBunch => {
+            this.totalDisplayedPetals += petalBunch.totalDisplayedPieces;
         });
-        const everyRadian = math.P2 / this.displayPetalsCount;
 
-        this.radian += 0.02;
+        const singleOccupiedRadians = P2 / this.totalDisplayedPetals;
+        const radius = this.range;
 
-        let radianNow = this.radian;
-        this.petalBunches.forEach((petalBunch) => {
-            petalBunch.update(this, radianNow, everyRadian);
-            radianNow += everyRadian * petalBunch.displayPetalsCount;
+        this.revolutionRadians += 0.02;
+
+        let revolutionRadians = this.revolutionRadians;
+        this.petalBunches.forEach(petalBunch => {
+            petalBunch.update(radius, revolutionRadians, singleOccupiedRadians);
+            revolutionRadians += singleOccupiedRadians * petalBunch.totalDisplayedPieces;
         });
     }
 }

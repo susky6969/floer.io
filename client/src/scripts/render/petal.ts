@@ -1,7 +1,7 @@
 import { Game } from "@/scripts/game.ts";
 import $ from "jquery";
-import { Vec2, Vector } from "@common/utils/vector.ts";
-import * as math from "@/scripts/utils/math.ts";
+import { Vec2 } from "@common/utils/vector.ts";
+import { P2, Graphics } from "@common/utils/math.ts";
 
 const light_pieces = [0, 1, 2, 3, 4];
 
@@ -27,13 +27,12 @@ export function updateEquipPetalColumn(game: Game) {
             const petal = $("<img class=\"piece-petal\" src=\"res/game/petals/light.svg\"></img>");
             petal.css("width", "20%");
             petal.css("height", "20%");
-            const x = center.x as number + Math.cos(rad) * radius;
-            const y = center.y as number + Math.sin(rad) * radius;
+            const { x, y } = Vec2.add(center, Graphics.getPositionOnCircleByRadians(rad, radius));
 
             petal.css("top", `${y / height * 100}%`);
             petal.css("left", `${x / width * 100}%`);
 
-            rad += math.P2 / count;
+            rad += P2 / count;
 
             petal_box.append(petal);
         });

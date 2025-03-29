@@ -15,14 +15,15 @@ type ObjectClassMapping = {
     readonly [ObjectType.Petal]: typeof Petal
 };
 
-// For constructor objects
+// For creating new objects.
 const ObjectClassMapping: ObjectClassMapping = Object.freeze<{
     readonly [K in ObjectType]: new (game: Game, id: number) => InstanceType<ObjectClassMapping[K]>
 }>({
-    [ObjectType.Player]: Player,
-    [ObjectType.Petal]: Petal
-});
+            [ObjectType.Player]: Player,
+            [ObjectType.Petal]: Petal
+        });
 
+// For giving ObjectPool the correct type
 type ObjectMapping = {
     readonly [Cat in keyof ObjectClassMapping]: InstanceType<ObjectClassMapping[Cat]>
 };
@@ -30,10 +31,12 @@ type ObjectMapping = {
 export class Game {
     private activeId = 0;
 
+    // Giving ID by using this.
     get nextObjectID(): number {
         return this.activeId++;
     }
 
+    // This means which player are controlled by the user
     activePlayerID = -1;
 
     get activePlayer(): Player | undefined {
