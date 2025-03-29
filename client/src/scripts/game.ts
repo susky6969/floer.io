@@ -16,12 +16,12 @@ type ObjectClassMapping = {
 };
 
 // For creating new objects.
-const ObjectClassMapping: ObjectClassMapping = Object.freeze<{
-    readonly [K in ObjectType]: new (game: Game, id: number) => InstanceType<ObjectClassMapping[K]>
-}>({
-            [ObjectType.Player]: Player,
-            [ObjectType.Petal]: Petal
-        });
+// const ObjectClassMapping: ObjectClassMapping = Object.freeze<{
+//     readonly [K in ObjectType]: new (game: Game, id: number) => InstanceType<ObjectClassMapping[K]>
+// }>({
+//             [ObjectType.Player]: Player,
+//             [ObjectType.Petal]: Petal
+//         });
 
 // For giving ObjectPool the correct type
 type ObjectMapping = {

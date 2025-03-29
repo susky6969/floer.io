@@ -9,7 +9,7 @@ export function updateEquipPetalColumn(game: Game) {
     const column = game.uiManager.ui.equip_petal_column;
     column.children().remove();
     let index = 0;
-    [0, 1, 2, 3, 4].forEach(e => {
+    [0, 1, 2, 3, 4].forEach(() => {
         const petal_box = $(`<div class="equip-petals equip-${index}" rarity="none" petalName="Light"></div>`);
         const center = Vec2.new(20, 15);
         const radius = 8;
@@ -23,8 +23,8 @@ export function updateEquipPetalColumn(game: Game) {
 
         column.append(petal_box);
 
-        light_pieces.forEach(piece => {
-            const petal = $("<img class=\"piece-petal\" src=\"res/game/petals/light.svg\"></img>");
+        light_pieces.forEach(() => {
+            const petal = $("<img alt='' class='piece-petal' src='../../../public/res/game/petals/light.svg'>");
             petal.css("width", "20%");
             petal.css("height", "20%");
             const { x, y } = Vec2.add(center, Graphics.getPositionOnCircleByRadians(rad, radius));
