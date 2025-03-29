@@ -1,20 +1,17 @@
 import { createServer, ServerResponse, IncomingMessage } from "node:http";
-import { WebSocketServer } from "ws";
 import { type Player } from "./entities/player";
-import { Game } from "./game";
 import Cluster from "node:cluster";
 import { Config } from "./config";
-import { Duplex } from "stream";
+import { WebSocketServer } from "ws";
+import { Socket } from "node:net";
 
 export interface PlayerData {
     joined: boolean
     entity?: Player
 }
 
-interface ProcessMessage {
+export interface ProcessMessage {
     req: IncomingMessage
-    socket: Duplex
-    head: Buffer
 }
 
 function cors(res: ServerResponse) {
@@ -29,7 +26,7 @@ function showNotFound(res: ServerResponse) {
     res.setHeader("Content-Type", "text/plain").end("ERR! 404 Not Found");
 }
 
-if (require.main === module) {
+if (Cluster.isPrimary) {
     const app = createServer();
 
     app.on("request", (req, res) => {
@@ -48,24 +45,16 @@ if (require.main === module) {
         showNotFound(res);
     })
 
-    app.listen(Config.port, Config.host);
-
-    app.on("upgrade", (req, socket, head) => {
+    app.on("upgrade", async(req, socket, head) => {
         const ip = req.socket.remoteAddress;
 
         if (req.url?.startsWith("/play")) {
-            const ws = new WebSocketServer({noServer: true});
-            ws.handleUpgrade(req, socket, head, wssocket => {
-                wssocket.binaryType = "arraybuffer";
-
-                wssocket.on("message", () => {
-
-                })
-            });
+            Cluster.fork().send({
+                req: { headers: req.headers, method: req.method } as IncomingMessage
+            } as ProcessMessage, req.socket);
         } else {
             socket.emit("close");
         }
-
 
         // idleTimeout: 30,
         //
@@ -96,5 +85,24 @@ if (require.main === module) {
         //     const player = socket.getUserData();
         //     // if (player.entity) game.removePlayer(player.entity);
         // }
+    });
+
+    app.listen(Config.port, Config.host);
+}else {
+    const ws = new WebSocketServer({ noServer: true });
+
+    process.on("message", (data: ProcessMessage, socket?: Socket) => {
+        console.log(
+            `Received message from worker ${process.pid}`
+        )
+        const { req } = data;
+        // @ts-ignore
+        ws.handleUpgrade(req, socket, req.headers, wssocket => {
+            wssocket.binaryType = "arraybuffer";
+
+            wssocket.on("message", () => {
+
+            })
+        });
     });
 }
