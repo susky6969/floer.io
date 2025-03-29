@@ -13,20 +13,6 @@ export interface EntitiesNetData {
             health: number
         }
     }
-    [EntityType.Projectile]: {
-        position: Vector
-        full?: {
-            direction: Vector
-            shooterId: number
-        }
-    }
-    [EntityType.Asteroid]: {
-        position: Vector
-        full?: {
-            radius: number
-            variation: number
-        }
-    }
 }
 
 interface EntitySerialization<T extends EntityType> {

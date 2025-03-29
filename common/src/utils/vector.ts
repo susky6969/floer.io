@@ -114,7 +114,7 @@ export const Vec2 = {
 
     /**
      * Calculates the squared length of a Vector
-     * @param a: The Vector
+     * @param a - The Vector
      * @returns The squared length of Vector a
      */
     lengthSqr(a: Vector): number {
@@ -123,7 +123,7 @@ export const Vec2 = {
 
     /**
      * Calculates the length of a Vector
-     * @param a: The Vector
+     * @param a - The Vector
      * @returns The length of Vector a
      */
     length(a: Vector): number {
@@ -143,7 +143,7 @@ export const Vec2 = {
 
     /**
      * Normalizes a Vector
-     * @param a: The Vector to be normalized
+     * @param a - The Vector to be normalized
      * @returns A new Vector resulting from normalizing the input Vector
      */
     normalize(a: Vector): Vector {

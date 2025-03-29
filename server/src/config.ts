@@ -13,11 +13,4 @@ export interface ServerConfig {
      * In ticks/second
      */
     readonly tps: number
-    /**
-     * HTTPS/SSL options. Not used if running locally or with nginx.
-     */
-    readonly ssl?: {
-        readonly keyFile: string
-        readonly certFile: string
-    }
 }

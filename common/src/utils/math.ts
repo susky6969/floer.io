@@ -23,6 +23,10 @@ export const Graphics = {
         const dy = a.y - b.y;
         const dx = a.x - b.x;
         return Math.atan2(dy, dx);
+    },
+
+    signedAreaTri(a: Vector, b: Vector, c: Vector): number {
+        return (a.x - c.x) * (b.y - c.y) - (a.y - c.y) * (b.x - c.x);
     }
 };
 

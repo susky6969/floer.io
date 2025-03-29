@@ -1,9 +1,9 @@
+import { GameBitStream } from "../net";
+
 export type ObjectDefinition = {
     readonly idString: string
     readonly displayName: string
 };
-
-type IdStringOf<T extends ObjectDefinition> = T["idString"];
 
 export class Definitions<Def extends ObjectDefinition = ObjectDefinition> {
     readonly definitions: readonly Def[];
@@ -40,21 +40,29 @@ export class Definitions<Def extends ObjectDefinition = ObjectDefinition> {
         return this.idStringToNumberMap.get(idString)!;
     }
 
-    reify<U extends Def = Def>(type: IdStringOf<Def> | Def): U {
-        return typeof type === "string"
-            ? this.fromString<U>(type)
-            : type as U;
+    // reify<U extends Def = Def>(type: string | Def): U {
+    //     return typeof type === "string"
+    //         ? this.fromString<U>(type)
+    //         : type as U;
+    // }
+
+    getIdString(def: string | Def) {
+        const idString = typeof def === "string" ? def : def.idString;
+        if (!this.hasString(idString)) {
+            throw new Error(`Unknown idString '${idString}' for this schema`);
+        }
+        return idString;
     }
 
-    fromString<Spec extends Def = Def>(idString: IdStringOf<Spec>): Spec {
+    fromString<Spec extends Def = Def>(idString: string): Spec {
         const def = this.fromStringSafe(idString);
         if (def === undefined) {
             throw new ReferenceError(`Unknown idString '${idString}' for this schema`);
         }
-        return def;
+        return def as Spec;
     }
 
-    fromStringSafe<Spec extends Def = Def>(idString: IdStringOf<Spec>): Spec | undefined {
+    fromStringSafe<Spec extends Def = Def>(idString: string): Spec | undefined {
         return this.idStringToDefMap.get(idString) as Spec | undefined;
     }
 
@@ -62,30 +70,27 @@ export class Definitions<Def extends ObjectDefinition = ObjectDefinition> {
         return this.idStringToDefMap.has(idString);
     }
 
-    // writeToStream(stream: ByteStream, def: ReifiableDef<Def>): void {
-    //     const idString = typeof def === "string" ? def : def.idString;
-    //     if (!this.hasString(idString)) {
-    //         throw new Error(`Unknown idString '${idString}' for this schema`);
-    //     }
-    //     const idx = this.idStringToNumber[idString];
-    //     if (this.overLength) {
-    //         stream.writeUint16(idx);
-    //     } else {
-    //         stream.writeUint8(idx);
-    //     }
-    // }
-    //
-    // readFromStream<Spec extends Def>(stream: ByteStream): Spec {
-    //     const idx = this.overLength ? stream.readUint16() : stream.readUint8();
-    //     const def = this.definitions[idx];
-    //     if (def === undefined) {
-    //         throw new RangeError(`Bad index ${idx} in schema`);
-    //     }
-    //     if (!this.hasString(def.idString)) {
-    //         throw new Error(`Unknown idString '${def.idString}' for this schema`);
-    //     }
-    //     return def as Spec;
-    // }
+    writeToStream(stream: GameBitStream, def: string | Def): void {
+        const idString = this.getIdString(def);
+        const idx = this.idStringToNumber(idString);
+        if (this.overLength) {
+            stream.writeUint16(idx);
+        } else {
+            stream.writeUint8(idx);
+        }
+    }
+
+    readFromStream<Spec extends Def = Def>(stream: GameBitStream): Spec {
+        const idx = this.overLength ? stream.readUint16() : stream.readUint8();
+        const def = this.definitions[idx];
+        if (def === undefined) {
+            throw new RangeError(`Bad index ${idx} in schema`);
+        }
+        if (!this.hasString(def.idString)) {
+            throw new Error(`Unknown idString '${def.idString}' for this schema`);
+        }
+        return def as Spec;
+    }
 
     [Symbol.iterator](): Iterator<Def> {
         return this.definitions[Symbol.iterator]();

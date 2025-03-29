@@ -1,4 +1,4 @@
-import { type IGameObject } from "@common/utils/objectPool.ts";
+import { type IGameObject } from "@common/utils/entityPool.ts";
 import { ObjectType } from "@common/constants";
 import { Vec2, Vector } from "@common/utils/vector.ts";
 import { Game } from "../game.ts";

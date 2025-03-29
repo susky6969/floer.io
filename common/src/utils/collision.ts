@@ -1,4 +1,4 @@
-import { MathUtils } from "./math";
+import { Graphics, Numeric } from "./math";
 import { Vec2, type Vector } from "./vector";
 
 export type CollisionResponse = { dir: Vector, pen: number } | null;
@@ -29,8 +29,8 @@ export const Collision = {
     */
     checkRectCircle(min: Vector, max: Vector, pos: Vector, rad: number): boolean {
         const cpt = {
-            x: MathUtils.clamp(pos.x, min.x, max.x),
-            y: MathUtils.clamp(pos.y, min.y, max.y)
+            x: Numeric.clamp(pos.x, min.x, max.x),
+            y: Numeric.clamp(pos.y, min.y, max.y)
         };
 
         const distX = pos.x - cpt.x;
@@ -42,10 +42,10 @@ export const Collision = {
 
     /**
     * Check whether two rectangles collide
-    * @param min The min Vector of the first rectangle
-    * @param max The max vector of the first rectangle
-    * @param min2 The min Vector of the second rectangle
-    * @param max2 The max vector of the second rectangle
+    * @param min1 - The min Vector of the first rectangle
+    * @param max1 - The max vector of the first rectangle
+    * @param min2 - The min Vector of the second rectangle
+    * @param max2 - The max vector of the second rectangle
     */
     checkRectRect(min1: Vector, max1: Vector, min2: Vector, max2: Vector): boolean {
         return min2.x < max1.x && min2.y < max1.y && min1.x < max2.x && min1.y < max2.y;
@@ -60,10 +60,10 @@ export const Collision = {
      * @return The intersection position if it happened, if not returns null
     */
     lineIntersectsLine(a0: Vector, a1: Vector, b0: Vector, b1: Vector): Vector | null {
-        const x1 = MathUtils.signedAreaTri(a0, a1, b1);
-        const x2 = MathUtils.signedAreaTri(a0, a1, b0);
+        const x1 = Graphics.signedAreaTri(a0, a1, b1);
+        const x2 = Graphics.signedAreaTri(a0, a1, b0);
         if (x1 !== 0 && x2 !== 0 && x1 * x2 < 0) {
-            const x3 = MathUtils.signedAreaTri(b0, b1, a0);
+            const x3 = Graphics.signedAreaTri(b0, b1, a0);
             const x4 = x3 + x2 - x1;
             if (x3 * x4 < 0) {
                 const t = x3 / (x3 - x4);
@@ -228,8 +228,8 @@ export const Collision = {
             };
         }
         const cpt = Vec2.new(
-            MathUtils.clamp(pos.x, min.x, max.x),
-            MathUtils.clamp(pos.y, min.y, max.y)
+            Numeric.clamp(pos.x, min.x, max.x),
+            Numeric.clamp(pos.y, min.y, max.y)
         );
         let dir = Vec2.sub(pos, cpt);
 
@@ -249,10 +249,10 @@ export const Collision = {
 
     /**
     * Checks if a rectangle intersects a rectangle
-    * @param min The min Vector of the first rectangle
-    * @param max The max vector of the first rectangle
-    * @param min2 The min Vector of the second rectangle
-    * @param max2 The max vector of the second rectangle
+    * @param min0 - The min Vector of the first rectangle
+    * @param max0 - The max vector of the first rectangle
+    * @param min1 - The min Vector of the second rectangle
+    * @param max1 - The max vector of the second rectangle
     * @return An intersection response with the intersection direction and pen, returns null if they don't intersect
     */
     rectRectIntersection(min0: Vector, max0: Vector, min1: Vector, max1: Vector): CollisionResponse {

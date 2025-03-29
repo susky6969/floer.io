@@ -1,7 +1,7 @@
 import { Application } from "pixi.js";
 import { UIManager } from "@/scripts/uiManager";
 import { setupUI } from "@/scripts/ui";
-import { EntityPool } from "@common/utils/objectPool.ts";
+import { EntityPool } from "@common/utils/entityPool.ts";
 import { Player } from "@/scripts/objects/player.ts";
 import { loadTextures } from "@/scripts/utils/pixi.ts";
 import { Camera } from "@/scripts/render/camera.ts";
