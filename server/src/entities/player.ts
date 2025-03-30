@@ -11,6 +11,7 @@ import { InputPacket } from "@common/packets/inputPacket";
 import { JoinPacket } from "@common/packets/joinPacket";
 import { EntityType, GameConstants } from "@common/constants";
 import { GameOverPacket } from "@common/packets/gameOverPacket";
+import { Inventory } from "@/inventory/inventory";
 
 export class Player extends ServerEntity {
     readonly type = EntityType.Player;
@@ -20,6 +21,7 @@ export class Player extends ServerEntity {
     mouseDown = false;
     shoot = false;
     shotCooldown = 0;
+    inventory = new Inventory(this);
 
     hitbox = new CircleHitbox(GameConstants.player.radius);
 

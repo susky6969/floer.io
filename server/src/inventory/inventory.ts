@@ -15,8 +15,8 @@ export class Inventory {
     private revolutionRadians = 0;
     range = 80;
 
-    constructor(game: Game, player: Player) {
-        this.game = game;
+    constructor(player: Player) {
+        this.game = player.game;
         this.player = player;
 
         this.petalBunches = [];
