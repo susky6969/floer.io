@@ -13,9 +13,7 @@ export class Petal extends ServerEntity {
 
     hitbox = new CircleHitbox(10);
 
-    tick(): void{
-
-    }
+    tick(): void{}
 
     get data(): Required<EntitiesNetData[EntityType]>{
         return {
