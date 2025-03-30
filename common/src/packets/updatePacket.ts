@@ -13,7 +13,6 @@ export interface EntitiesNetData {
     }
     [EntityType.Petal]: {
         position: Vector
-        direction: Vector
 
         full?: {
 
@@ -59,13 +58,11 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         fullSize: 0,
         serializePartial(stream, data): void {
             stream.writePosition(data.position);
-            stream.writeUnit(data.direction, 16);
         },
         serializeFull(stream, data): void {},
         deserializePartial(stream) {
             return {
-                position: stream.readPosition(),
-                direction: stream.readUnit(16)
+                position: stream.readPosition()
             };
         },
         deserializeFull(stream) {

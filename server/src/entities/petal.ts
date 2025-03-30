@@ -9,8 +9,6 @@ export class Petal extends ServerEntity {
     get position(): Vector { return this._position; }
     set position(pos: Vector) { this._position = pos; }
 
-    direction: Vector = Vec2.new(0, 0);
-
     hitbox = new CircleHitbox(10);
 
     tick(): void{}
@@ -18,7 +16,6 @@ export class Petal extends ServerEntity {
     get data(): Required<EntitiesNetData[EntityType]>{
         return {
             position: this.position,
-            direction: this.direction,
             full: {
 
             }
