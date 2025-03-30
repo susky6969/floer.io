@@ -1,5 +1,5 @@
 import { Sprite, Assets, Texture, type ColorSource } from "pixi.js";
-import { Vec2, Vector } from "@common/utils/vector.ts";
+import { Vec2, Vector } from "@common/utils/vector";
 
 const rootDir = "res/game";
 

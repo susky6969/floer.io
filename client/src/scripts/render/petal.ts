@@ -1,7 +1,7 @@
-import { Game } from "@/scripts/game.ts";
+import { Game } from "@/scripts/game";
 import $ from "jquery";
-import { Vec2 } from "@common/utils/vector.ts";
-import { P2, Graphics } from "@common/utils/math.ts";
+import { Vec2 } from "@common/utils/vector";
+import { P2, Graphics } from "@common/utils/math";
 
 const light_pieces = [0, 1, 2, 3, 4];
 

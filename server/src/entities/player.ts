@@ -1,16 +1,16 @@
 import { type WebSocket } from "ws";
 import { ServerEntity } from "./serverEntity";
-import { Vec2, type Vector } from "../../../common/src/utils/vector";
-import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
-import { type Game } from "../game";
-import { UpdatePacket, type EntitiesNetData } from "../../../common/src/packets/updatePacket";
-import { CircleHitbox, RectHitbox } from "../../../common/src/utils/hitbox";
-import { Random } from "../../../common/src/utils/random";
-import { Numeric } from "../../../common/src/utils/math";
-import { InputPacket } from "../../../common/src/packets/inputPacket";
-import { JoinPacket } from "../../../common/src/packets/joinPacket";
-import { EntityType, GameConstants } from "../../../common/src/constants";
-import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
+import { Vec2, type Vector } from "@common/utils/vector";
+import { GameBitStream, type Packet, PacketStream } from "@common/net";
+import { type Game } from "@/game";
+import { UpdatePacket, type EntitiesNetData } from "@common/packets/updatePacket";
+import { CircleHitbox, RectHitbox } from "@common/utils/hitbox";
+import { Random } from "@common/utils/random";
+import { Numeric } from "@common/utils/math";
+import { InputPacket } from "@common/packets/inputPacket";
+import { JoinPacket } from "@common/packets/joinPacket";
+import { EntityType, GameConstants } from "@common/constants";
+import { GameOverPacket } from "@common/packets/gameOverPacket";
 
 export class Player extends ServerEntity {
     readonly type = EntityType.Player;

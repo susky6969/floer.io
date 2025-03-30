@@ -1,7 +1,7 @@
-import { ClientEntity } from "@/scripts/entities/clientEntity.ts";
-import { EntityType } from "@common/constants.ts";
-import { FloerSprite } from "../utils/pixi.ts";
-import { Game } from "../game.ts";
+import { ClientEntity } from "./clientEntity";
+import { EntityType } from "@common/constants";
+import { FloerSprite } from "@/scripts/utils/pixi";
+import { Game } from "@/scripts/game";
 
 export class Petal extends ClientEntity {
     type = EntityType.Petal;

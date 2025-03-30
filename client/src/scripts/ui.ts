@@ -1,4 +1,4 @@
-import { Game } from "@/scripts/game.ts";
+import { Game } from "@/scripts/game";
 
 export async function setupUI(game: Game): Promise<void> {
     const { uiManager: { ui } } = game;

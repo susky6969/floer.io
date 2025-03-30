@@ -1,8 +1,8 @@
 import { ServerEntity } from "./serverEntity";
-import { type Vector, Vec2 } from "../../../common/src/utils/vector";
-import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
-import { CircleHitbox } from "../../../common/src/utils/hitbox";
-import { EntityType } from "../../../common/src/constants";
+import { type Vector, Vec2 } from "@common/utils/vector";
+import { type EntitiesNetData } from "@common/packets/updatePacket";
+import { CircleHitbox } from "@common/utils/hitbox";
+import { EntityType } from "@common/constants";
 
 export class Petal extends ServerEntity {
     type = EntityType.Petal;

@@ -1,13 +1,13 @@
 import { Application } from "pixi.js";
 import { UIManager } from "@/scripts/uiManager";
 import { setupUI } from "@/scripts/ui";
-import { EntityPool } from "@common/utils/entityPool.ts";
-import { Player } from "@/scripts/entities/player.ts";
-import { loadTextures } from "@/scripts/utils/pixi.ts";
-import { Camera } from "@/scripts/render/camera.ts";
-import { EntityType } from "@common/constants.ts";
-import { updateEquipPetalColumn } from "@/scripts/render/petal.ts";
-import { Petal } from "@/scripts/entities/petal.ts";
+import { EntityPool } from "@common/utils/entityPool";
+import { Player } from "@/scripts/entities/player";
+import { loadTextures } from "@/scripts/utils/pixi";
+import { Camera } from "@/scripts/render/camera";
+import { EntityType } from "@common/constants";
+import { updateEquipPetalColumn } from "@/scripts/render/petal";
+import { Petal } from "@/scripts/entities/petal";
 
 type EntityClassMapping = {
     readonly [EntityType.Player]: typeof Player

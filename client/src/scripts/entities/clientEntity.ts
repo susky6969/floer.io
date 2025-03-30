@@ -1,7 +1,7 @@
-import { type GameEntity } from "@common/utils/entityPool.ts";
+import { type GameEntity } from "@common/utils/entityPool";
 import { EntityType } from "@common/constants";
-import { Vec2, Vector } from "@common/utils/vector.ts";
-import { Game } from "../game.ts";
+import { Vec2, Vector } from "@common/utils/vector";
+import { Game } from "@/scripts/game";
 import { Container } from "pixi.js";
 
 export abstract class ClientEntity implements GameEntity {

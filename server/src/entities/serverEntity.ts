@@ -1,11 +1,12 @@
-import { EntityType } from "../../../common/src/constants";
-import { GameBitStream } from "../../../common/src/net";
-import { EntitySerializations, type EntitiesNetData } from "../../../common/src/packets/updatePacket";
-import { type Hitbox } from "../../../common/src/utils/hitbox";
-import { type Vector } from "../../../common/src/utils/vector";
-import { type Game } from "../game";
+import { type GameEntity } from "@common/utils/entityPool";
+import { EntityType } from "@common/constants";
+import { GameBitStream } from "@common/net";
+import { EntitySerializations, type EntitiesNetData } from "@common/packets/updatePacket";
+import { type Hitbox } from "@common/utils/hitbox";
+import { type Vector } from "@common/utils/vector";
+import { type Game } from "@/game";
 
-export abstract class ServerEntity<T extends EntityType = EntityType> {
+export abstract class ServerEntity<T extends EntityType = EntityType> implements GameEntity{
     abstract type: T;
     game: Game;
     id: number;

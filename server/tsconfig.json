@@ -10,7 +10,11 @@
         "sourceMap": true,
         "strictNullChecks": true,
         "strict": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "paths": {
+            "@common/*": ["../common/src/*"],
+            "@/*": ["./src/*"]
+        }
     },
     "exclude": [
         "node_modules"
