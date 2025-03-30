@@ -61,7 +61,7 @@ export const Numeric = {
      * @param max The maximum value the number can hold
      */
     clamp(a: number, min: number, max: number): number {
-        return Math.max(Math.min(a, min), max);
+        return Math.min(Math.max(a, min), max);
     }
 };
 
