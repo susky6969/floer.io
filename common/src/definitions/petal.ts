@@ -1,18 +1,18 @@
 import { ObjectDefinition, Definitions } from "../utils/definitions";
 
 export type PetalDefinition = ObjectDefinition & {
-    damage?: number
-    health?: number
+    readonly damage?: number
+    readonly health?: number
 } & PetalPieceType;
 
 type PetalPieceType = {
-    isDuplicate: false
-    pieceAmount: 1
+    readonly isDuplicate: false
+    readonly pieceAmount: 1
 } | {
-    isDuplicate: true
+    readonly isDuplicate: true
     // Only allowed to use duplicateDisplay when have more than one
-    pieceAmount: number
-    isShowedInOne: boolean
+    readonly pieceAmount: number
+    readonly isShowedInOne: boolean
 };
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
