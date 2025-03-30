@@ -1,8 +1,8 @@
-import { Player } from "@/scripts/entities/player.ts";
+import { Player } from "client/src/scripts/entities/player.ts";
 import { PetalBunch } from "./petalBunch.ts";
-import { Game } from "@/scripts/game.ts";
-import { Petals } from "@common/definitions/petal.ts";
-import { P2 } from "@common/utils/math.ts";
+import { Game } from "client/src/scripts/game.ts";
+import { Petals } from "common/src/definitions/petal.ts";
+import { P2 } from "common/src/utils/math.ts";
 
 export class Inventory {
     readonly game: Game;

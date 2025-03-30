@@ -2,6 +2,7 @@ import { type GameEntity } from "@common/utils/entityPool.ts";
 import { EntityType } from "@common/constants";
 import { Vec2, Vector } from "@common/utils/vector.ts";
 import { Game } from "../game.ts";
+import { Container } from "pixi.js";
 
 export abstract class ClientEntity implements GameEntity {
     readonly game: Game;
@@ -11,6 +12,8 @@ export abstract class ClientEntity implements GameEntity {
 
     damageable = false;
     destroyed = false;
+
+    container = new Container();
 
     private __position: Vector = Vec2.new(0, 0);
     get position(): Vector {
