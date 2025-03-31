@@ -14,7 +14,8 @@
         "paths": {
             "@/*": ["./src/*"],
             "@common/*": ["../common/src/*"]
-        }
+        },
+        "baseUrl": "./"
     },
     "exclude": ["node_modules"],
     "include": [

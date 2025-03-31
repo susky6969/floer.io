@@ -4,7 +4,7 @@
     "scripts": {
         "build": "tsc",
         "start": "node dist/server/src/server.js",
-        "dev": "node -r ts-node/register --watch --watch-path=./src --watch-path=../common src/server.ts"
+        "dev": "nodemon -r ts-node/register -r tsconfig-paths/register --watch ./src --watch ../common src/server.ts"
     },
     "devDependencies": {
         "@types/nanotimer": "^0.3.2",
@@ -13,10 +13,13 @@
         "typescript": "^5.4.5"
     },
     "dependencies": {
+        "@swc/core": "^1.11.13",
         "bit-buffer": "^0.2.5",
         "nanotimer": "^0.3.15",
+        "nodemon": "^3.1.9",
         "sqlite3": "^5.1.7",
         "ts-node": "^10.9.2",
+        "tsconfig-paths": "^4.2.0",
         "ws": "^8.18.1"
     }
 }
