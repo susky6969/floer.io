@@ -7,6 +7,7 @@
         "dev": "node -r ts-node/register --watch --watch-path=./src --watch-path=../common src/server.ts"
     },
     "devDependencies": {
+        "@types/jsonwebtoken": "^9.0.9",
         "@types/nanotimer": "^0.3.2",
         "@types/node": "^20.12.7",
         "@types/ws": "^8.5.10",

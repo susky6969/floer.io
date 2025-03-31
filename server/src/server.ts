@@ -4,6 +4,7 @@ import { Config } from "./config";
 import { WebSocketServer } from "ws";
 import { Socket } from "node:net";
 import { Game } from "./game";
+import * as jwt from "jsonwebtoken";
 
 // LOAD ENV //
 import { config } from "dotenv";
@@ -13,7 +14,7 @@ export interface ProcessMessage {
     req: IncomingMessage
 }
 
-export const SECRET_KEY = process.env.TOKEN_SECRET_KEY;
+export const SECRET_KEY = process.env.TOKEN_SECRET_KEY as string;
 
 function cors(res: ServerResponse) {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -26,7 +27,6 @@ function showNotFound(res: ServerResponse) {
     res.statusCode = 404;
     res.setHeader("Content-Type", "text/plain").end("ERR! 404 Not Found");
 }
-
 
 if (Cluster.isPrimary) {
     const app = createServer();
