@@ -12,15 +12,16 @@
         "strict": true,
         "skipLibCheck": true,
         "paths": {
-            "@common/*": ["../common/src/*"],
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            "@common/*": ["../common/src/*"]
         }
     },
-    "exclude": [
-        "node_modules"
-    ],
+    "exclude": ["node_modules"],
     "include": [
         "src",
         "../common/src"
-    ]
+    ],
+    "ts-node": {
+        "swc": true
+    }
 }

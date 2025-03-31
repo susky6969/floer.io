@@ -4,6 +4,7 @@ import { Config } from "./config";
 import { WebSocketServer } from "ws";
 import { Socket } from "node:net";
 import { Game } from "./game";
+import sqlite3 from "sqlite3";
 
 export interface ProcessMessage {
     req: IncomingMessage
@@ -20,6 +21,8 @@ function showNotFound(res: ServerResponse) {
     res.statusCode = 404;
     res.setHeader("Content-Type", "text/plain").end("ERR! 404 Not Found");
 }
+
+
 
 if (Cluster.isPrimary) {
     const app = createServer();
