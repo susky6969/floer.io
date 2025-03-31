@@ -1,8 +1,8 @@
-import { Player } from "@/entities/player";
+import { Player } from "../entities/player";
 import { PetalBunch } from "./petalBunch";
-import { Game } from "@/game";
-import { Petals } from "@common/definitions/petal";
-import { P2 } from "@common/utils/math";
+import { Game } from "../game";
+import { Petals } from "../../../common/src/definitions/petal";
+import { P2 } from "../../../common/src/utils/math";
 
 export class Inventory {
     readonly game: Game;

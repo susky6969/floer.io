@@ -1,7 +1,7 @@
-import { EntityType } from "@common/constants";
-import { type Hitbox, RectHitbox } from "@common/utils/hitbox";
-import { Numeric } from "@common/utils/math";
-import { Vec2, type Vector } from "@common/utils/vector";
+import { EntityType } from "../../common/src/constants";
+import { type Hitbox, RectHitbox } from "../../common/src/utils/hitbox";
+import { Numeric } from "../../common/src/utils/math";
+import { Vec2, type Vector } from "../../common/src/utils/vector";
 import { type ServerEntity } from "./entities/serverEntity";
 import { type Player } from "./entities/player";
 import { Petal } from "./entities/petal";

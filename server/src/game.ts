@@ -2,13 +2,13 @@ import { type WebSocket } from "ws";
 import { Player } from "./entities/player";
 import { type ServerEntity } from "./entities/serverEntity";
 import { Grid } from "./grid";
-import { EntityPool } from "@common/utils/entityPool";
-import { GameConstants } from "@common/constants";
+import { EntityPool } from "../../common/src/utils/entityPool";
+import { GameConstants } from "../../common/src/constants";
 import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";
-import { type Explosion } from "@common/packets/updatePacket";
+import { type Explosion } from "../../common/src/packets/updatePacket";
 import { IDAllocator } from "./idAllocator";
-import { type Vector } from "@common/utils/vector";
+import { type Vector } from "../../common/src/utils/vector";
 
 export class Game {
     players = new EntityPool<Player>();

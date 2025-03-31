@@ -1,8 +1,8 @@
-import { PetalDefinition, getDisplayedPieces } from "@common/definitions/petal";
-import { Petal } from "@/entities/petal";
-import { Game } from "@/game";
-import { P2, Graphics } from "@common/utils/math";
-import { Vec2 } from "@common/utils/vector";
+import { PetalDefinition, getDisplayedPieces } from "../../../common/src/definitions/petal";
+import { Petal } from "../entities/petal";
+import { Game } from "../game";
+import { P2, Graphics } from "../../../common/src/utils/math";
+import { Vec2 } from "../../../common/src/utils/vector";
 
 export class PetalBunch {
     readonly position = Vec2.new(0, 0);
