@@ -12,5 +12,6 @@ export const GameConstants = {
         speed: 0.5,
         defaultName: "Player",
         maxNameLength: 20
-    }
+    },
+    maxTokenLength: 20
 };
