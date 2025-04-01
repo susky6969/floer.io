@@ -199,14 +199,6 @@ export class UpdatePacket implements Packet {
             flags |= UpdateFlags.PlayerData;
         }
 
-        if (this.shots.length) {
-            stream.writeArray(this.shots, 8, pos => {
-                stream.writePosition(pos);
-            });
-
-            flags |= UpdateFlags.Shots;
-        }
-
         if (this.mapDirty) {
             stream.writeUint16(this.map.width);
             stream.writeUint16(this.map.height);
@@ -287,12 +279,6 @@ export class UpdatePacket implements Packet {
             }
 
             stream.readAlignToNextByte();
-        }
-
-        if (flags & UpdateFlags.Shots) {
-            stream.readArray(this.shots, 8, () => {
-                return stream.readPosition();
-            });
         }
 
         if (flags & UpdateFlags.Map) {
