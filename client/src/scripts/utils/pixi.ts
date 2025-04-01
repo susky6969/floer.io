@@ -1,12 +1,10 @@
 import { Sprite, Assets, Texture, type ColorSource } from "pixi.js";
 import { Vec2, Vector } from "@common/utils/vector";
 
-const rootDir = "res/game";
-
 let fullLoaded = false;
-export let unloadedSprites: Map<FloerSprite, string> | undefined;
+export let unloadedSprites: Map<GameSprite, string> | undefined;
 
-export class FloerSprite extends Sprite {
+export class GameSprite extends Sprite {
     static getTexture(frame: string): Texture {
         if (!Assets.cache.has(frame)) {
             console.warn(`Texture not found: "${frame}"`);
@@ -16,9 +14,9 @@ export class FloerSprite extends Sprite {
     }
 
     constructor(frame?: string) {
-        super(frame ? FloerSprite.getTexture(frame) : undefined);
+        super(frame ? GameSprite.getTexture(frame) : undefined);
         if (!fullLoaded && frame) {
-            (unloadedSprites ??= new Map<FloerSprite, string>()).set(this, frame);
+            (unloadedSprites ??= new Map<GameSprite, string>()).set(this, frame);
         }
 
         this.anchor.set(0.5);
@@ -29,11 +27,11 @@ export class FloerSprite extends Sprite {
         if (!fullLoaded && !force) {
             // @ts-expect-error technically this shouldn't be undefined, but there isn't a way around it so
             this.texture = undefined;
-            (unloadedSprites ??= new Map<FloerSprite, string>()).set(this, frame);
+            (unloadedSprites ??= new Map<GameSprite, string>()).set(this, frame);
             return this;
         }
 
-        this.texture = FloerSprite.getTexture(frame);
+        this.texture = GameSprite.getTexture(frame);
         return this;
     }
 
@@ -93,25 +91,26 @@ export class FloerSprite extends Sprite {
     }
 }
 
-function getURL(type: string, path: string): string {
-    return [rootDir, type, path].join("/");
-}
+export async function loadAssets(): Promise<void> {
+    // imports all svg assets from public dir
+    // and sets an alias with the file name
+    // so for example you can just do:
+    // new Sprite("player.svg")
+    // instead of:
+    // new Sprite("/img/player.svg")
 
-async function loadTexture(idString: string, type: string, path: string): Promise<void> {
-    Assets.add({ alias: idString, src: getURL(type, path) });
-    await Assets.load(idString);
-}
+    const promises: Array<ReturnType<typeof Assets["load"]>> = [];
+    const imgs = import.meta.glob("/public/img/game/**/*.svg");
 
-const AllTextures: Record<string, [string, string]> = {
-    flower: ["flower", "flower.svg"],
-    petal_light: ["petals", "light.svg"]
-};
+    for (const file in imgs) {
+        const path = file.split("/");
+        const name = path[path.length - 1];
 
-export async function loadTextures(): Promise<void> {
-    for (const idString in AllTextures) {
-        await loadTexture(idString, AllTextures[idString][0], AllTextures[idString][1]);
+        promises.push(Assets.load({
+            alias: name,
+            src: file.replace("/public", "")
+        }));
     }
-    fullLoaded = true;
 
-    if (unloadedSprites) unloadedSprites.forEach((v, k) => { k.setFrame(v); });
+    await Promise.all(promises);
 }
