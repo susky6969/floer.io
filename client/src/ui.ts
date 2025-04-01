@@ -16,9 +16,6 @@ export class UI {
         this.app = app;
 
         this.ready_button.on("click", (e: Event) => {
-            this.canvas.css("display", "block");
-            this.out_game_screen.css("display", "none");
-
             app.game.connect(Config.address);
         });
     }

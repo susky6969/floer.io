@@ -66,6 +66,9 @@ export class Game {
         if (this.running) return;
         this.running = true;
 
+        this.ui.canvas.css("display", "block");
+        this.ui.out_game_screen.css("display", "none");
+
         this.pixi.start();
     }
 
