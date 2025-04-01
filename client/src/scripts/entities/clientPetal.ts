@@ -1,13 +1,13 @@
 import { ClientEntity } from "./clientEntity";
 import { EntityType } from "@common/constants";
-import { FloerSprite } from "@/scripts/utils/pixi";
+import { GameSprite } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
 
 export class ClientPetal extends ClientEntity {
     type = EntityType.Petal;
 
     images = {
-        body: new FloerSprite("petal_light").setScale(0.2)
+        body: new GameSprite("light.svg").setScale(0.2)
     };
 
     constructor(game: Game, id: number) {
@@ -20,7 +20,11 @@ export class ClientPetal extends ClientEntity {
         );
     }
 
-    update(): void {
+    render(): void {
         this.container.position = this.position;
+    }
+
+    destroy() {
+
     }
 }
