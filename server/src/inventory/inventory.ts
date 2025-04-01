@@ -1,4 +1,4 @@
-import { Player } from "../entities/player";
+import { ServerPlayer } from "../entities/serverPlayer";
 import { PetalBunch } from "./petalBunch";
 import { Game } from "../game";
 import { Petals } from "../../../common/src/definitions/petal";
@@ -6,7 +6,7 @@ import { P2 } from "../../../common/src/utils/math";
 
 export class Inventory {
     readonly game: Game;
-    readonly player: Player;
+    readonly player: ServerPlayer;
 
     petalBunches: PetalBunch[];
 
@@ -15,7 +15,7 @@ export class Inventory {
     private revolutionRadians = 0;
     range = 80;
 
-    constructor(player: Player) {
+    constructor(player: ServerPlayer) {
         this.game = player.game;
         this.player = player;
 

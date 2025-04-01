@@ -2,30 +2,13 @@ import { Application } from "pixi.js";
 import { UIManager } from "@/scripts/uiManager";
 import { setupUI } from "@/scripts/ui";
 import { EntityPool } from "@common/utils/entityPool";
-import { Player } from "@/scripts/entities/player";
+import { ClientPlayer } from "@/scripts/entities/clientPlayer.ts";
 import { loadTextures } from "@/scripts/utils/pixi";
 import { Camera } from "@/scripts/render/camera";
 import { EntityType } from "@common/constants";
 import { updateEquipPetalColumn } from "@/scripts/render/petal";
-import { Petal } from "@/scripts/entities/petal";
+import { ClientPetal } from "@/scripts/entities/clientPetal.ts";
 
-type EntityClassMapping = {
-    readonly [EntityType.Player]: typeof Player
-    readonly [EntityType.Petal]: typeof Petal
-};
-
-// For creating new entities.
-// const EntityClassMapping: EntityClassMapping = Object.freeze<{
-//     readonly [K in EntityType]: new (game: Game, id: number) => InstanceType<ObjectClassMapping[K]>
-// }>({
-//             [EntityType.Player]: Player,
-//             [EntityType.Petal]: Petal
-//         });
-
-// For giving EntityPool the correct type
-type EntityMapping = {
-    readonly [Cat in keyof EntityClassMapping]: InstanceType<EntityClassMapping[Cat]>
-};
 
 export class Game {
     private activeId = 0;
@@ -38,12 +21,12 @@ export class Game {
     // This means which player are controlled by the user
     activePlayerID = -1;
 
-    get activePlayer(): Player | undefined {
-        if (this.activePlayerID) return this.entityPool.get(this.activePlayerID) as Player;
+    get activePlayer(): ClientPlayer | undefined {
+        if (this.activePlayerID) return this.entityPool.get(this.activePlayerID) as ClientPlayer;
         return undefined;
     }
 
-    readonly entityPool = new EntityPool<EntityMapping[EntityType]>();
+    readonly entityPool = new EntityPool<ClientEntity>();
 
     readonly pixi = new Application();
     readonly uiManager = new UIManager(this);

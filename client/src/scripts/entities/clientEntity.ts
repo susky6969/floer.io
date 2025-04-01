@@ -15,14 +15,7 @@ export abstract class ClientEntity implements GameEntity {
 
     container = new Container();
 
-    private __position: Vector = Vec2.new(0, 0);
-    get position(): Vector {
-        return this.__position;
-    }
-
-    set position(Vector: Vector) {
-        this.__position = Vector;
-    }
+    position: Vector = Vec2.new(0, 0);
 
     constructor(game: Game, id: number) {
         this.game = game;

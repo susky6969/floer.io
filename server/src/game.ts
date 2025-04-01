@@ -1,5 +1,5 @@
 import { type WebSocket } from "ws";
-import { Player } from "./entities/player";
+import { ServerPlayer } from "./entities/serverPlayer";
 import { type ServerEntity } from "./entities/serverEntity";
 import { Grid } from "./grid";
 import { EntityPool } from "../../common/src/utils/entityPool";
@@ -11,9 +11,9 @@ import { IDAllocator } from "./idAllocator";
 import { type Vector } from "../../common/src/utils/vector";
 
 export class Game {
-    players = new EntityPool<Player>();
+    players = new EntityPool<ServerPlayer>();
 
-    newPlayers: Player[] = [];
+    newPlayers: ServerPlayer[] = [];
     deletedPlayers: number[] = [];
 
     partialDirtyEntities = new Set<ServerEntity>();
@@ -46,20 +46,20 @@ export class Game {
         this.timer.setInterval(this.tick.bind(this), "", `${this.deltaMs}m`);
     }
 
-    addPlayer(socket: WebSocket): Player {
-        const player = new Player(this, socket);
+    addPlayer(socket: WebSocket): ServerPlayer {
+        const player = new ServerPlayer(this, socket);
         this.newPlayers.push(player);
         return player;
     }
 
-    removePlayer(player: Player): void {
+    removePlayer(player: ServerPlayer): void {
         this.players.delete(player);
         this.grid.remove(player);
         this.deletedPlayers.push(player.id);
         console.log(`"${player.name}" left the game.`);
     }
 
-    handleMessage(data: ArrayBuffer, player: Player) {
+    handleMessage(data: ArrayBuffer, player: ServerPlayer) {
         player.processMessage(data);
     }
 
@@ -93,7 +93,7 @@ export class Game {
         // reset stuff
         for (const player of this.players) {
             for (const key in player.dirty) {
-                player.dirty[key as keyof Player["dirty"]] = false;
+                player.dirty[key as keyof ServerPlayer["dirty"]] = false;
             }
         }
 

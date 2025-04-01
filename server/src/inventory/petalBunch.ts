@@ -1,5 +1,5 @@
 import { PetalDefinition, getDisplayedPieces } from "../../../common/src/definitions/petal";
-import { Petal } from "../entities/petal";
+import { ServerPetal } from "../entities/serverPetal";
 import { Game } from "../game";
 import { P2, Graphics } from "../../../common/src/utils/math";
 import { Vec2 } from "../../../common/src/utils/vector";
@@ -10,7 +10,7 @@ export class PetalBunch {
     readonly totalPieces: number;
     readonly totalDisplayedPieces: number;
     readonly definition: PetalDefinition;
-    private petals: Petal[] = [];
+    private petals: ServerPetal[] = [];
 
     rotationRadians = 0;
 
@@ -21,7 +21,7 @@ export class PetalBunch {
         this.totalDisplayedPieces = getDisplayedPieces(definition);
 
         for (let i = 0; i < this.totalPieces; i++) {
-            this.petals.push(new Petal(game, Vec2.new(0, 0)));
+            this.petals.push(new ServerPetal(game, Vec2.new(0, 0)));
             game.grid.addEntity(this.petals[i]);
         }
     }

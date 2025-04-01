@@ -13,7 +13,7 @@ import { EntityType, GameConstants } from "../../../common/src/constants";
 import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
 
-export class Player extends ServerEntity {
+export class ServerPlayer extends ServerEntity {
     readonly type = EntityType.Player;
     socket: WebSocket;
     name = "";
@@ -92,7 +92,7 @@ export class Player extends ServerEntity {
         const entities = this.game.grid.intersectsHitbox(this.hitbox);
 
         for (const entity of entities) {
-            if (!(entity instanceof Player)) continue;
+            if (!(entity instanceof ServerPlayer)) continue;
             if (entity === this) continue;
 
             const collision = this.hitbox.getIntersection(entity.hitbox);
@@ -111,7 +111,7 @@ export class Player extends ServerEntity {
         }
     }
 
-    damage(amount: number, source: Player) {
+    damage(amount: number, source: ServerPlayer) {
         this.health -= amount;
 
         if (this.health <= 0) {

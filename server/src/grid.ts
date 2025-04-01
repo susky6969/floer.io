@@ -3,8 +3,8 @@ import { type Hitbox, RectHitbox } from "../../common/src/utils/hitbox";
 import { Numeric } from "../../common/src/utils/math";
 import { Vec2, type Vector } from "../../common/src/utils/vector";
 import { type ServerEntity } from "./entities/serverEntity";
-import { type Player } from "./entities/player";
-import { Petal } from "./entities/petal";
+import { type ServerPlayer } from "./entities/serverPlayer";
+import { ServerPetal } from "./entities/serverPetal";
 
 /**
  * A Grid to filter collision detection of game entities
@@ -25,8 +25,8 @@ export class Grid {
     readonly entities = new Map<number, ServerEntity>();
 
     readonly byCategory = {
-        [EntityType.Player]: new Set<Player>(),
-        [EntityType.Petal]: new Set<Petal>()
+        [EntityType.Player]: new Set<ServerPlayer>(),
+        [EntityType.Petal]: new Set<ServerPetal>()
     };
 
     constructor(width: number, height: number) {

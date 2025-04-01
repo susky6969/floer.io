@@ -4,14 +4,12 @@ import { FloerSprite } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
 // import { Inventory } from "@/scripts/inventory/inventory.ts";
 
-export class Player extends ClientEntity {
+export class ClientPlayer extends ClientEntity {
     type = EntityType.Player;
 
     images = {
         body: new FloerSprite("flower")
     };
-
-    // inventory: Inventory;
 
     constructor(game: Game, id: number) {
         super(game, id);
@@ -21,10 +19,6 @@ export class Player extends ClientEntity {
         );
 
         this.game.camera.addObject(this.container);
-
-
-
-        // this.inventory = new Inventory(game, this);
     }
 
     update(): void {

@@ -3,7 +3,7 @@ import { EntityType } from "@common/constants";
 import { FloerSprite } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
 
-export class Petal extends ClientEntity {
+export class ClientPetal extends ClientEntity {
     type = EntityType.Petal;
 
     images = {
