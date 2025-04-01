@@ -30,6 +30,7 @@ function showNotFound(res: ServerResponse) {
 
 if (Cluster.isPrimary) {
     const app = createServer();
+    const worker = Cluster.fork();
 
     app.on("request", (req, res) => {
         cors(res);
@@ -64,7 +65,8 @@ if (Cluster.isPrimary) {
         * */
 
         if (req.url?.startsWith("/floer/play")) {
-            Cluster.fork().send({
+            console.log("hi");
+            worker.send({
                 req: { headers: req.headers, method: req.method } as IncomingMessage
             } as ProcessMessage, req.socket);
         } else {
