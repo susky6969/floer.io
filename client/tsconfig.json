@@ -16,14 +16,11 @@
         "noEmit": true,
         "strictNullChecks": true,
         "strict": true,
-        "types": ["vite/client", "node"],
+        "types": ["vite/client"],
         "paths": {
             "@common/*": ["../common/src/*"],
             "@/*": ["./src/*"]
-        },
-        "typeRoots": [
-            "node_modules/@types"
-        ]
+        }
     },
     "include": [
         "src",
