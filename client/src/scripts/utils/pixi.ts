@@ -113,4 +113,6 @@ export async function loadAssets(): Promise<void> {
     }
 
     await Promise.all(promises);
+
+    if (unloadedSprites) unloadedSprites.forEach((v, k) => { k.setFrame(v); });
 }
