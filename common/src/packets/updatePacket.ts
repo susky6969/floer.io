@@ -1,6 +1,7 @@
 import { EntityType, GameConstants } from "../constants";
 import { type GameBitStream, type Packet } from "../net";
 import { type Vector } from "../utils/vector";
+import { PetalDefinition, Petals } from "../definitions/petal";
 
 export interface EntitiesNetData {
     [EntityType.Player]: {
@@ -13,6 +14,7 @@ export interface EntitiesNetData {
     }
     [EntityType.Petal]: {
         position: Vector
+        definition: PetalDefinition
 
         full?: {
 
@@ -57,11 +59,15 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         partialSize: 8,
         fullSize: 0,
         serializePartial(stream, data): void {
+            Petals.writeToStream(stream, data.definition);
             stream.writePosition(data.position);
         },
-        serializeFull(stream, data): void {},
+        serializeFull(stream, data): void {
+
+        },
         deserializePartial(stream) {
             return {
+                definition: Petals.readFromStream(stream),
                 position: stream.readPosition()
             };
         },
