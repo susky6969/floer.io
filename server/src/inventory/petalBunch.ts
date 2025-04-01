@@ -38,16 +38,16 @@ export class PetalBunch {
             const totalPieces = this.totalPieces;
 
             if (this.definition.isShowedInOne) {
-                let radiansNow = this.rotationRadians;
-                const singleRotatedRandians = P2 / totalPieces;
+                let rotationRadians = this.rotationRadians;
+                const singleRotatedRadians = P2 / totalPieces;
 
                 this.petals.forEach(petal => {
                     petal.position = Vec2.add(
                         center,
-                        Graphics.getPositionOnCircleByRadians(radiansNow, 20)
+                        Graphics.getPositionOnCircleByRadians(rotationRadians, 20)
                     );
 
-                    radiansNow += singleRotatedRandians;
+                    rotationRadians += singleRotatedRadians;
                 });
             } else {
                 let radiansNow = revolutionRadians;

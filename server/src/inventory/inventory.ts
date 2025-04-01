@@ -36,12 +36,13 @@ export class Inventory {
             this.totalDisplayedPetals += petalBunch.totalDisplayedPieces;
         });
 
-        const singleOccupiedRadians = P2 / this.totalDisplayedPetals;
         const radius = this.range;
 
         this.revolutionRadians += 0.02;
 
         let revolutionRadians = this.revolutionRadians;
+        const singleOccupiedRadians = P2 / this.totalDisplayedPetals;
+
         this.petalBunches.forEach(petalBunch => {
             petalBunch.update(radius, revolutionRadians, singleOccupiedRadians);
             revolutionRadians += singleOccupiedRadians * petalBunch.totalDisplayedPieces;
