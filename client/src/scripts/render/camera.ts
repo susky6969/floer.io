@@ -47,6 +47,12 @@ export class Camera {
         this.game = game;
     }
 
+    init(): void{
+        this.resize();
+
+        this.game.pixi.stage.addChild(this.container);
+    }
+
     resize(): void {
         this.width = this.game.pixi.screen.width;
         this.height = this.game.pixi.screen.height;
