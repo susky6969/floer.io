@@ -29,8 +29,8 @@ export const Petals = new Definitions<PetalDefinition>([
         isShowedInOne: false
     },
     {
-        idString: "lighter",
-        displayName: "Lighter",
+        idString: "sand",
+        displayName: "Sand",
         isDuplicate: true,
         pieceAmount: 4,
         isShowedInOne: true
