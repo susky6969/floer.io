@@ -27,7 +27,7 @@ export function updateEquipPetalColumn(game: Game) {
             const petal = $("<img alt='' class='piece-petal' src='../../../public/img/game/petal/light.svg'>");
             petal.css("width", "20%");
             petal.css("height", "20%");
-            const { x, y } = Vec2.add(center, Graphics.getPositionOnCircleByRadians(rad, radius));
+            const { x, y } = Vec2.add(center, Graphics.getPositionOnCircle(rad, radius));
 
             petal.css("top", `${y / height * 100}%`);
             petal.css("left", `${x / width * 100}%`);
