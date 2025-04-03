@@ -5,7 +5,7 @@ export const P2 = PI * 2;
 export const halfPI = PI / 2;
 
 export const Graphics = {
-    getPositionOnCircleByRadians(radians: number, radius: number): Vector {
+    getPositionOnCircle(radians: number, radius: number): Vector {
         return Vec2.new(
             Math.cos(radians) * radius,
             Math.sin(radians) * radius
