@@ -18,9 +18,9 @@ export class ServerPlayer extends ServerEntity {
     socket: WebSocket;
     name = "";
     direction = Vec2.new(0, 0);
-    mouseDown = false;
-    shoot = false;
-    shotCooldown = 0;
+    isAttacking = false;
+    isDefending = false;
+
     inventory = new Inventory(this);
 
     hitbox = new CircleHitbox(GameConstants.player.radius);
@@ -35,6 +35,22 @@ export class ServerPlayer extends ServerEntity {
         if (health === this._health) return;
         this._health = Numeric.clamp(health, 0, GameConstants.player.maxHealth);
         this.setFullDirty();
+    }
+
+    get position(): Vector {
+        return this.hitbox.position;
+    }
+
+    set position(position: Vector) {
+        if (this._oldPosition && this._oldPosition == position) return;
+
+        this.hitbox.position = this.game.clampPosition(position, this.hitbox.radius);
+        this._position = this.hitbox.position;
+
+        if (!this.hasInited) return;
+        // send data
+        this.setDirty();
+        this.game.grid.updateEntity(this);
     }
 
     dead = false;
@@ -54,7 +70,7 @@ export class ServerPlayer extends ServerEntity {
         zoom: true
     };
 
-    private _zoom = 64;
+    private _zoom = 45;
 
     get zoom(): number {
         return this._zoom;
@@ -66,28 +82,18 @@ export class ServerPlayer extends ServerEntity {
         this.dirty.zoom = true;
     }
 
-    get position(): Vector {
-        return this.hitbox.position;
-    }
-
-    set position(pos: Vector) {
-        this.hitbox.position = pos;
-        this._position = pos;
-    }
-
     constructor(game: Game, socket: WebSocket) {
-        const pos = Random.vector(0, game.width, 0, game.height);
-        super(game, pos);
-        this.position = pos;
+        const position = Random.vector(0, game.width, 0, game.height);
+        super(game, position);
+        this.position = position;
         this.socket = socket;
     }
 
     tick(): void {
-        const oldPos = Vec2.clone(this.position);
-        if (this.mouseDown) {
-            const speed = Vec2.mul(this.direction, GameConstants.player.speed);
-            this.position = Vec2.add(this.position, Vec2.mul(speed, this.game.dt));
-        }
+        let position = Vec2.clone(this.position);
+
+        const speed = Vec2.mul(this.direction, GameConstants.player.speed);
+        position = Vec2.add(position, Vec2.mul(speed, this.game.dt));
 
         const entities = this.game.grid.intersectsHitbox(this.hitbox);
 
@@ -97,18 +103,21 @@ export class ServerPlayer extends ServerEntity {
 
             const collision = this.hitbox.getIntersection(entity.hitbox);
             if (collision) {
-                this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen));
+                position = Vec2.sub(position, Vec2.mul(collision.dir, collision.pen));
             }
         }
 
-        const rad = this.hitbox.radius;
-        this.position.x = Numeric.clamp(this.position.x, rad, this.game.width - rad);
-        this.position.y = Numeric.clamp(this.position.y, rad, this.game.height - rad);
+        this.position = position;
 
-        if (!Vec2.equals(this.position, oldPos)) {
-            this.setDirty();
-            this.game.grid.updateEntity(this);
+        if (this.isAttacking) {
+            this.inventory.range += (6 - this.inventory.range) / 3;
+        }else if (this.isDefending){
+            this.inventory.range += (2.5 - this.inventory.range) / 3;
+        }else {
+            this.inventory.range += (3.5 - this.inventory.range) / 3;
         }
+
+        this.inventory.tick();
     }
 
     damage(amount: number, source: ServerPlayer) {
@@ -255,8 +264,8 @@ export class ServerPlayer extends ServerEntity {
             this.setDirty();
         }
         this.direction = packet.direction;
-        this.mouseDown = packet.mouseDown;
-        this.shoot = packet.shoot;
+        this.isAttacking = packet.isAttacking;
+        this.isDefending = packet.isDefending;
     }
 
     get data(): Required<EntitiesNetData[EntityType.Player]> {
