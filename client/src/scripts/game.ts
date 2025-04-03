@@ -1,4 +1,4 @@
-import { Application } from "pixi.js";
+import { Application, Graphics } from "pixi.js";
 import { UI } from "@/ui.ts";
 import { EntityPool } from "@common/utils/entityPool";
 import { ClientPlayer } from "@/scripts/entities/clientPlayer.ts";
@@ -12,6 +12,8 @@ import { JoinPacket } from "@common/packets/joinPacket.ts";
 import { GameBitStream, Packet, PacketStream } from "@common/net.ts";
 import { UpdatePacket } from "@common/packets/updatePacket.ts";
 import { ClientPetal } from "@/scripts/entities/clientPetal.ts";
+import { Input } from "@/scripts/input.ts";
+import { InputPacket } from "@common/packets/inputPacket.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -40,14 +42,23 @@ export class Game {
 
     readonly camera = new Camera(this);
 
+    readonly input = new Input(this);
+
     constructor(app: ClientApplication) {
         this.app = app;
         this.ui = app.ui;
     }
 
+    mapGraphics = new Graphics({
+        zIndex: -99
+    })
+
     async init() {
         await this.pixi.init({
             resizeTo: window,
+            resolution: window.devicePixelRatio ?? 1,
+            antialias: true,
+            preference: "webgl",
             backgroundColor: "#29ca77",
             canvas: document.getElementById("canvas") as HTMLCanvasElement
         });
@@ -145,30 +156,30 @@ export class Game {
             entity.updateFromData(entityPartialData.data, false);
         }
 
-        // if (packet.mapDirty) {
-        //     const ctx = this.mapGraphics;
-        //     ctx.clear();
-        //     this.camera.addObject(ctx);
-        //
-        //     const gridSize = 16 * Camera.scale;
-        //     const gridWidth = packet.map.width * Camera.scale;
-        //     const gridHeight = packet.map.height * Camera.scale;
-        //     for (let x = 0; x <= gridWidth; x += gridSize) {
-        //         ctx.moveTo(x, 0);
-        //         ctx.lineTo(x, gridHeight);
-        //     }
-        //
-        //     for (let y = 0; y <= gridHeight; y += gridSize) {
-        //         ctx.moveTo(0, y);
-        //         ctx.lineTo(gridWidth, y);
-        //     }
-        //
-        //     ctx.stroke({
-        //         color: 0xffffff,
-        //         alpha: 0.1,
-        //         width: 2
-        //     });
-        // }
+        if (packet.mapDirty) {
+            const ctx = this.mapGraphics;
+            ctx.clear();
+            this.camera.addObject(ctx);
+
+            const gridSize = 1.2 * Camera.scale;
+            const gridWidth = packet.map.width * Camera.scale;
+            const gridHeight = packet.map.height * Camera.scale;
+            for (let x = 0; x <= gridWidth; x += gridSize) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, gridHeight);
+            }
+
+            for (let y = 0; y <= gridHeight; y += gridSize) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(gridWidth, y);
+            }
+
+            ctx.stroke({
+                color: 0xffffff,
+                alpha: 0.1,
+                width: 2
+            });
+        }
     }
 
     sendPacket(packet: Packet) {
@@ -214,10 +225,16 @@ export class Game {
         }
 
         if (this.activePlayer) {
-            this.camera.position = this.activePlayer.position;
+            this.camera.position = this.activePlayer.container.position;
         }
 
         this.camera.render();
+
+        const inputPacket = new InputPacket();
+        inputPacket.isAttacking = this.input.isInputDown("Mouse0");
+        inputPacket.isDefending = this.input.isInputDown("Mouse2");
+        inputPacket.direction = this.input.mouseDir;
+        this.sendPacket(inputPacket);
     }
 
     resize() {
