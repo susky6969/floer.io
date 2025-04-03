@@ -207,14 +207,14 @@ export const Vec2 = {
             x: Math.cos(angle) * magnitude,
             y: Math.sin(angle) * magnitude
         };
-    }
+    },
 
     clampWithXY(vector: Vector, minX: number, maxX: number, minY: number, maxY: number): Vector{
         let clampedVector = Vec2.clone(vector);
         clampedVector.x = Numeric.clamp(clampedVector.x, minX, maxX);
         clampedVector.y = Numeric.clamp(clampedVector.y, minY, maxY);
         return clampedVector;
-    }
+    },
 
     clampWithVector(vector: Vector, min: Vector, max: Vector): Vector{
         return Vec2.clampWithXY(vector,min.x,max.x,min.y,max.y);
