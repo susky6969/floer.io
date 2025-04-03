@@ -13,6 +13,7 @@ export abstract class ClientEntity implements GameEntity {
 
     container = new Container();
 
+    oldPosition: Vector = Vec2.new(0, 0);
     position: Vector = Vec2.new(0, 0);
 
     protected constructor(game: Game, id: number) {

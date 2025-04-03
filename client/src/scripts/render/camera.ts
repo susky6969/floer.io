@@ -48,9 +48,8 @@ export class Camera {
     }
 
     init(): void{
-        this.resize();
-
         this.game.pixi.stage.addChild(this.container);
+        this.resize();
     }
 
     resize(): void {

@@ -2,6 +2,9 @@ import { ClientEntity } from "./clientEntity";
 import { EntityType } from "@common/constants";
 import { GameSprite } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
+import { EntitiesNetData } from "@common/packets/updatePacket.ts";
+import { Camera } from "@/scripts/render/camera.ts";
+import { Vec2 } from "@common/utils/vector.ts";
 
 export class ClientPetal extends ClientEntity {
     type = EntityType.Petal;
@@ -21,10 +24,15 @@ export class ClientPetal extends ClientEntity {
     }
 
     render(): void {
-        this.container.position = this.position;
+        const position = Camera.vecToScreen(this.position);
+        this.container.position = position;
+    }
+
+    updateFromData(_data: EntitiesNetData[EntityType.Petal], _isNew: boolean): void {
+        this.position = _data.position;
     }
 
     destroy() {
-
+        this.game.camera.container.removeChild(this.container);
     }
 }
