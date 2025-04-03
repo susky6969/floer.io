@@ -30,6 +30,9 @@ export class Input {
     constructor(game: Game) {
         this.game = game;
 
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
         window.addEventListener("pointerdown", this.handleMouseEvent.bind(this, true));
         window.addEventListener("pointerup", this.handleMouseEvent.bind(this, false));
 
