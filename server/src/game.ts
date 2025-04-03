@@ -8,7 +8,8 @@ import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";
 import { type Explosion } from "../../common/src/packets/updatePacket";
 import { IDAllocator } from "./idAllocator";
-import { type Vector } from "../../common/src/utils/vector";
+import { Vec2, type Vector } from "../../common/src/utils/vector";
+import { Numeric } from "../../common/src/utils/math";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -24,8 +25,12 @@ export class Game {
 
     grid = new Grid(GameConstants.maxPosition, GameConstants.maxPosition);
 
-    width = 128;
-    height = 128;
+    width = GameConstants.game.width;
+    height = GameConstants.game.height;
+
+    minVector = Vec2.new(0, 0);
+    maxVector = Vec2.new(GameConstants.game.width, GameConstants.game.height);
+
     mapDirty = false;
 
     idAllocator = new IDAllocator(16);
@@ -44,6 +49,15 @@ export class Game {
     constructor(config: ServerConfig) {
         this.deltaMs = 1000 / config.tps;
         this.timer.setInterval(this.tick.bind(this), "", `${this.deltaMs}m`);
+    }
+
+    clampPosition(position: Vector, radius: number){
+        const maxVector = Vec2.sub(this.maxVector, Vec2.new(radius, radius));
+        return Vec2.clampWithVector(
+            position,
+            this.minVector,
+            maxVector
+        );
     }
 
     addPlayer(socket: WebSocket): ServerPlayer {

@@ -3,8 +3,11 @@ import { PetalBunch } from "./petalBunch";
 import { Game } from "../game";
 import { Petals } from "../../../common/src/definitions/petal";
 import { P2 } from "../../../common/src/utils/math";
+import { Vector } from "../../../common/src/utils/vector";
 
 export class Inventory {
+    position!: Vector;
+
     readonly game: Game;
     readonly player: ServerPlayer;
 
@@ -13,7 +16,7 @@ export class Inventory {
     private totalDisplayedPetals = 0;
 
     private revolutionRadians = 0;
-    range = 80;
+    range = 3;
 
     constructor(player: ServerPlayer) {
         this.game = player.game;
@@ -22,14 +25,15 @@ export class Inventory {
         this.petalBunches = [];
 
         for (let i = 0; i < 2; i++) {
-            this.petalBunches.push(new PetalBunch(this.game, Petals.fromString("light")));
+            this.petalBunches.push(new PetalBunch(this.game, this, Petals.fromString("light")));
         }
         for (let i = 0; i < 3; i++) {
-            this.petalBunches.push(new PetalBunch(this.game, Petals.fromString("lighter")));
+            this.petalBunches.push(new PetalBunch(this.game, this, Petals.fromString("sand")));
         }
     }
 
-    update(): void {
+    tick(): void {
+        this.position = this.player.position;
         this.totalDisplayedPetals = 0;
 
         this.petalBunches.forEach(petalBunch => {
@@ -44,7 +48,7 @@ export class Inventory {
         const singleOccupiedRadians = P2 / this.totalDisplayedPetals;
 
         this.petalBunches.forEach(petalBunch => {
-            petalBunch.update(radius, revolutionRadians, singleOccupiedRadians);
+            petalBunch.tick(radius, revolutionRadians, singleOccupiedRadians);
             revolutionRadians += singleOccupiedRadians * petalBunch.totalDisplayedPieces;
         });
     }
