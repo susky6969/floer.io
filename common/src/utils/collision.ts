@@ -1,4 +1,4 @@
-import { Graphics, Numeric } from "./math";
+import { MathGraphics, MathNumeric } from "./math";
 import { Vec2, type Vector } from "./vector";
 
 export type CollisionResponse = { dir: Vector, pen: number } | null;
@@ -29,8 +29,8 @@ export const Collision = {
     */
     checkRectCircle(min: Vector, max: Vector, pos: Vector, rad: number): boolean {
         const cpt = {
-            x: Numeric.clamp(pos.x, min.x, max.x),
-            y: Numeric.clamp(pos.y, min.y, max.y)
+            x: MathNumeric.clamp(pos.x, min.x, max.x),
+            y: MathNumeric.clamp(pos.y, min.y, max.y)
         };
 
         const distX = pos.x - cpt.x;
@@ -60,10 +60,10 @@ export const Collision = {
      * @return The intersection position if it happened, if not returns null
     */
     lineIntersectsLine(a0: Vector, a1: Vector, b0: Vector, b1: Vector): Vector | null {
-        const x1 = Graphics.signedAreaTri(a0, a1, b1);
-        const x2 = Graphics.signedAreaTri(a0, a1, b0);
+        const x1 = MathGraphics.signedAreaTri(a0, a1, b1);
+        const x2 = MathGraphics.signedAreaTri(a0, a1, b0);
         if (x1 !== 0 && x2 !== 0 && x1 * x2 < 0) {
-            const x3 = Graphics.signedAreaTri(b0, b1, a0);
+            const x3 = MathGraphics.signedAreaTri(b0, b1, a0);
             const x4 = x3 + x2 - x1;
             if (x3 * x4 < 0) {
                 const t = x3 / (x3 - x4);
@@ -228,8 +228,8 @@ export const Collision = {
             };
         }
         const cpt = Vec2.new(
-            Numeric.clamp(pos.x, min.x, max.x),
-            Numeric.clamp(pos.y, min.y, max.y)
+            MathNumeric.clamp(pos.x, min.x, max.x),
+            MathNumeric.clamp(pos.y, min.y, max.y)
         );
         let dir = Vec2.sub(pos, cpt);
 

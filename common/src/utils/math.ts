@@ -4,7 +4,7 @@ export const PI = Math.PI;
 export const P2 = PI * 2;
 export const halfPI = PI / 2;
 
-export const Graphics = {
+export const MathGraphics = {
     getPositionOnCircle(radians: number, radius: number): Vector {
         return Vec2.new(
             Math.cos(radians) * radius,
@@ -30,7 +30,7 @@ export const Graphics = {
     }
 };
 
-export const Numeric = {
+export const MathNumeric = {
     /**
      * Interpolate between two values
      * @param start The start value
