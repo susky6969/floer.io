@@ -2,7 +2,7 @@ import { type GameEntity } from "../../../common/src/utils/entityPool";
 import { EntityType } from "../../../common/src/constants";
 import { GameBitStream } from "../../../common/src/net";
 import { type EntitiesNetData, EntitySerializations } from "../../../common/src/packets/updatePacket";
-import { type Hitbox } from "../../../common/src/utils/hitbox";
+import { CircleHitbox, type Hitbox } from "../../../common/src/utils/hitbox";
 import { type Vector } from "../../../common/src/utils/vector";
 import { type Game } from "../game";
 import { ServerPlayer } from "./serverPlayer";
@@ -74,6 +74,24 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     setFullDirty(): void {
         if (!this.hasInited) return;
         this.game.fullDirtyEntities.add(this);
+    }
+
+    updatePosition(position: Vector): Vector | undefined {
+        if (this._oldPosition && this._oldPosition == position) return;
+
+        if (this.hitbox instanceof CircleHitbox) {
+            this.hitbox.position = this.game.clampPosition(
+                position, this.hitbox.radius, this.hitbox.radius
+            );
+            this._position = this.hitbox.position;
+        }else {
+            this._position = position;
+        }
+
+        if (!this.hasInited) return;
+
+        this.setDirty();
+        this.game.grid.updateEntity(this);
     }
 
     abstract get data(): Required<EntitiesNetData[EntityType]>;

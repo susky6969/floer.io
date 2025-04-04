@@ -18,6 +18,17 @@ import { ServerMob } from "./serverMob";
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
     socket: WebSocket;
+
+    get position(): Vector {
+        return this.hitbox.position;
+    }
+
+    set position(position: Vector) {
+        this.updatePosition(position);
+    }
+
+    hitbox = new CircleHitbox(GameConstants.player.radius);
+
     name = "";
     direction = Vec2.new(0, 0);
     mouseDistance: number = 0;
@@ -25,16 +36,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     isDefending = false;
 
     inventory: Inventory;
-
-    get petals(): ServerPetal[]{
-        return this.inventory.petalBunches
-            .reduce(
-                (pre, petalBunch) => pre.concat(petalBunch.petals),
-                [] as ServerPetal[]
-            )
-    }
-
-    hitbox = new CircleHitbox(GameConstants.player.radius);
 
     damage: number = GameConstants.player.defaultBodyDamage;
 
@@ -48,22 +49,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         if (health === this._health) return;
         this._health = MathNumeric.clamp(health, 0, GameConstants.player.maxHealth);
         this.setFullDirty();
-    }
-
-    get position(): Vector {
-        return this.hitbox.position;
-    }
-
-    set position(position: Vector) {
-        if (this._oldPosition && this._oldPosition == position) return;
-
-        this.hitbox.position = this.game.clampPosition(position, this.hitbox.radius);
-        this._position = this.hitbox.position;
-
-        if (!this.hasInited) return;
-        // send data
-        this.setDirty();
-        this.game.grid.updateEntity(this);
     }
 
     dead = false;
@@ -93,6 +78,14 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         if (this._zoom === zoom) return;
         this._zoom = zoom;
         this.dirty.zoom = true;
+    }
+
+    get petals(): ServerPetal[]{
+        return this.inventory.petalBunches
+            .reduce(
+                (pre, petalBunch) => pre.concat(petalBunch.petals),
+                [] as ServerPetal[]
+            )
     }
 
     constructor(game: Game, socket: WebSocket) {

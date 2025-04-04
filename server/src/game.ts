@@ -50,11 +50,11 @@ export class Game {
         this.timer.setInterval(this.tick.bind(this), "", `${this.deltaMs}m`);
     }
 
-    clampPosition(position: Vector, radius: number){
-        const maxVector = Vec2.sub(this.maxVector, Vec2.new(radius, radius));
+    clampPosition(position: Vector, width: number, height: number){
+        const maxVector = Vec2.sub(this.maxVector, Vec2.new(width, height));
         return Vec2.clampWithVector(
             position,
-            Vec2.new(radius, radius),
+            Vec2.new(width, height),
             maxVector
         );
     }

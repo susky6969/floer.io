@@ -18,15 +18,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     }
 
     set position(position: Vector) {
-        if (this._oldPosition && this._oldPosition == position) return;
-
-        this.hitbox.position = this.game.clampPosition(position, this.hitbox.radius);
-        this._position = this.hitbox.position;
-
-        if (!this.hasInited) return;
-        // send data
-        this.setDirty();
-        this.game.grid.updateEntity(this);
+        this.updatePosition(position);
     }
 
     hitbox: CircleHitbox;
