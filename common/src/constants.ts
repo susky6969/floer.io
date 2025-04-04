@@ -7,14 +7,15 @@ export const GameConstants = {
     maxPosition: 2048,
     player: {
         radius: 2,
+        defaultBodyDamage: 5,
         defaultHealth: 100,
         maxHealth: 100,
-        speed: 10,
+        maxSpeed: 10,
         defaultName: "Player",
         maxNameLength: 20
     },
     petal: {
-        rotationRadius: 0.8
+        rotationRadius: 0.5
     },
     game: {
         width: 100,
