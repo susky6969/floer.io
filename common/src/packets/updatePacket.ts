@@ -2,6 +2,7 @@ import { EntityType, GameConstants } from "../constants";
 import { type GameBitStream, type Packet } from "../net";
 import { type Vector } from "../utils/vector";
 import { PetalDefinition, Petals } from "../definitions/petal";
+import { MobDefinition, Mobs } from "../definitions/mob";
 
 export interface EntitiesNetData {
     [EntityType.Player]: {
@@ -19,6 +20,15 @@ export interface EntitiesNetData {
 
         full?: {
 
+        }
+    }
+    [EntityType.Mob]: {
+        position: Vector
+        direction: Vector
+        definition: MobDefinition
+
+        full?: {
+            healthPercent: number
         }
     }
 }
@@ -77,7 +87,31 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         deserializeFull(stream) {
             return {};
         }
-    }
+    },
+    [EntityType.Mob]: {
+        partialSize: 12,
+        fullSize: 2,
+        serializePartial(stream, data): void {
+            Mobs.writeToStream(stream, data.definition);
+            stream.writePosition(data.position);
+            stream.writeUnit(data.direction, 16)
+        },
+        serializeFull(stream, data): void {
+            stream.writeFloat(data.healthPercent, 0.0, 1.0, 16);
+        },
+        deserializePartial(stream) {
+            return {
+                definition: Mobs.readFromStream(stream),
+                position: stream.readPosition(),
+                direction: stream.readUnit(16)
+            };
+        },
+        deserializeFull(stream) {
+            return {
+                healthPercent: stream.readFloat(0.0, 1.0, 16)
+            };
+        }
+    },
 };
 
 interface Entity {
