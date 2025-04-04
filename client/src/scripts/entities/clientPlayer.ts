@@ -53,6 +53,7 @@ export class ClientPlayer extends ClientEntity {
         const healthbarWidth = 80;
         const fillWidth = MathNumeric.remap(this.health, 0, GameConstants.player.maxHealth, 0, healthbarWidth);
 
+        this.healthBar.visible = this.health < GameConstants.player.maxHealth;
         this.healthBar.clear()
             .roundRect(-healthbarWidth / 2, 0, healthbarWidth, 10)
             .fill({
