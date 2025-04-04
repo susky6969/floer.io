@@ -6,29 +6,28 @@ import { P2 } from "../../../common/src/utils/math";
 import { Vector } from "../../../common/src/utils/vector";
 
 export class Inventory {
-    position!: Vector;
+    position: Vector;
 
     readonly game: Game;
     readonly player: ServerPlayer;
 
-    petalBunches: PetalBunch[];
+    petalBunches: PetalBunch[] = [];
 
     private totalDisplayedPetals = 0;
 
     private revolutionRadians = 0;
-    range = 3;
+    range = 0;
 
     constructor(player: ServerPlayer) {
         this.game = player.game;
         this.player = player;
-
-        this.petalBunches = [];
+        this.position = player.position;
 
         for (let i = 0; i < 2; i++) {
-            this.petalBunches.push(new PetalBunch(this.game, this, Petals.fromString("light")));
+            this.petalBunches.push(new PetalBunch(this, Petals.fromString("light")));
         }
         for (let i = 0; i < 3; i++) {
-            this.petalBunches.push(new PetalBunch(this.game, this, Petals.fromString("sand")));
+            this.petalBunches.push(new PetalBunch(this, Petals.fromString("sand")));
         }
     }
 

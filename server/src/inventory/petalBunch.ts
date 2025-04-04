@@ -1,34 +1,36 @@
 import { PetalDefinition, getDisplayedPieces } from "../../../common/src/definitions/petal";
 import { ServerPetal } from "../entities/serverPetal";
-import { Game } from "../game";
-import { P2, Graphics } from "../../../common/src/utils/math";
+import { P2, MathGraphics } from "../../../common/src/utils/math";
 import { Vec2, Vector } from "../../../common/src/utils/vector";
 import { Inventory } from "./inventory";
 import { GameConstants } from "../../../common/src/constants";
+import { ServerPlayer } from "../entities/serverPlayer";
 
 export class PetalBunch {
-    position!: Vector;
-    readonly inventory: Inventory;
+    position: Vector;
+    player: ServerPlayer;
+
+    inventory: Inventory;
 
     readonly totalPieces: number;
     readonly totalDisplayedPieces: number;
     readonly definition: PetalDefinition;
-    private petals: ServerPetal[] = [];
+    petals: ServerPetal[] = [];
 
     rotationRadians = 0;
 
-    constructor(game: Game, inventory: Inventory, definition: PetalDefinition) {
-        this.definition = definition;
+    constructor(inventory: Inventory, definition: PetalDefinition) {
         this.inventory = inventory;
+        const player = inventory.player;
+        this.player = player;
+        this.definition = definition;
+        this.position = player.position;
 
         this.totalPieces = definition.pieceAmount;
         this.totalDisplayedPieces = getDisplayedPieces(definition);
 
         for (let i = 0; i < this.totalPieces; i++) {
-            this.petals.push(new ServerPetal(game, Vec2.new(0, 0)));
-            game.grid.addEntity(this.petals[i]);
-
-            this.petals[i].setFullDirty();
+            this.petals.push(new ServerPetal(player, definition));
         }
     }
 
@@ -37,9 +39,9 @@ export class PetalBunch {
 
         this.rotationRadians += 0.01;
 
-        const petalCenter = Vec2.add(
+        const firstPetalCenter = Vec2.add(
             this.position,
-            Graphics.getPositionOnCircle(revolutionRadians, radius)
+            MathGraphics.getPositionOnCircle(revolutionRadians, radius)
         );
 
         if (this.definition.isDuplicate) {
@@ -51,8 +53,8 @@ export class PetalBunch {
 
                 this.petals.forEach(petal => {
                     petal.position = Vec2.add(
-                        petalCenter,
-                        Graphics.getPositionOnCircle(rotationRadians, GameConstants.petal.rotationRadius)
+                        firstPetalCenter,
+                        MathGraphics.getPositionOnCircle(rotationRadians, GameConstants.petal.rotationRadius)
                     );
 
                     rotationRadians += singleRotatedRadians;
@@ -63,14 +65,14 @@ export class PetalBunch {
                 this.petals.forEach(petal => {
                     petal.position = Vec2.add(
                         this.position,
-                        Graphics.getPositionOnCircle(rotationRadians, radius)
+                        MathGraphics.getPositionOnCircle(rotationRadians, radius)
                     )
 
                     rotationRadians += singleOccupiedRadians;
                 });
             }
         } else {
-            this.petals[0].position = petalCenter;
+            this.petals[0].position = firstPetalCenter;
         }
     }
 }
