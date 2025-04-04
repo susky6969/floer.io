@@ -1,10 +1,18 @@
 import { type GameEntity } from "../../../common/src/utils/entityPool";
 import { EntityType } from "../../../common/src/constants";
 import { GameBitStream } from "../../../common/src/net";
-import { EntitySerializations, type EntitiesNetData } from "../../../common/src/packets/updatePacket";
+import { type EntitiesNetData, EntitySerializations } from "../../../common/src/packets/updatePacket";
 import { type Hitbox } from "../../../common/src/utils/hitbox";
-import { Vec2, type Vector } from "../../../common/src/utils/vector";
+import { type Vector } from "../../../common/src/utils/vector";
 import { type Game } from "../game";
+import { ServerPlayer } from "./serverPlayer";
+import { ServerPetal } from "./serverPetal";
+
+type damageableEntity = ServerPetal | ServerPlayer
+
+export function isDamageableEntity(entity: ServerEntity): entity is damageableEntity {
+    return entity.type === EntityType.Petal ||  entity.type === EntityType.Player;
+}
 
 export abstract class ServerEntity<T extends EntityType = EntityType> implements GameEntity{
     abstract type: T;
@@ -66,6 +74,7 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     abstract get data(): Required<EntitiesNetData[EntityType]>;
 
     destroy(): void {
+        this.tick();
         this.game.grid.remove(this);
     }
 }

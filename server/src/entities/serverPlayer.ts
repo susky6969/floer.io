@@ -1,5 +1,5 @@
 import { type WebSocket } from "ws";
-import { ServerEntity } from "./serverEntity";
+import { isDamageableEntity, ServerEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
@@ -114,12 +114,23 @@ export class ServerPlayer extends ServerEntity {
         const entities = this.game.grid.intersectsHitbox(this.hitbox);
 
         for (const entity of entities) {
-            if (!(entity instanceof ServerPlayer)) continue;
-            if (entity === this) continue;
-
+            if (!isDamageableEntity(entity)) continue;
             const collision = this.hitbox.getIntersection(entity.hitbox);
-            if (collision) {
-                position = Vec2.sub(position, Vec2.mul(collision.dir, collision.pen));
+            switch (entity.type) {
+                case EntityType.Player:
+                    if (entity === this) continue;
+
+                    if (collision) {
+                        position = Vec2.sub(position, Vec2.mul(collision.dir, collision.pen));
+                        entity.receiveDamage(this.damage, this);
+                    }
+                    break;
+                case EntityType.Petal:
+                    if (entity.owner === this) continue;
+
+                    if (collision) {
+                        entity.receiveDamage(this.damage);
+                    }
             }
         }
 

@@ -1,4 +1,4 @@
-import { ServerEntity } from "./serverEntity";
+import { ServerEntity, isDamageableEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
@@ -76,15 +76,24 @@ export class ServerPetal extends ServerEntity {
             const entities = this.game.grid.intersectsHitbox(this.hitbox);
 
             for (const entity of entities) {
-                if (!(entity instanceof ServerPlayer)) continue;
-                if (entity === this.owner) continue;
-
+                if (!isDamageableEntity(entity)) continue;
                 const collision = this.hitbox.getIntersection(entity.hitbox);
-                if (collision) {
-                    if (this.definition.damage)
-                        entity.receiveDamage(this.definition.damage, this.owner);
-                    if (this.definition.health)
-                        this.receiveDamage(entity.damage);
+                switch (entity.type) {
+                    case EntityType.Player:
+                        if (entity === this.owner) continue;
+
+                        if (collision && this.definition.damage) {
+                            entity.receiveDamage(this.definition.damage, this.owner);
+                        }
+
+                        break;
+                    case EntityType.Petal:
+                        if (entity === this) continue;
+                        if (entity.owner === this.owner) continue;
+
+                        if (collision && this.definition.damage) {
+                            entity.receiveDamage(this.definition.damage);
+                        }
                 }
             }
         }
