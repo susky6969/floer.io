@@ -5,6 +5,7 @@ import { Vec2, type Vector } from "../../common/src/utils/vector";
 import { type ServerEntity } from "./entities/serverEntity";
 import { type ServerPlayer } from "./entities/serverPlayer";
 import { ServerPetal } from "./entities/serverPetal";
+import { ServerMob } from "./entities/serverMob";
 
 /**
  * A Grid to filter collision detection of game entities
@@ -26,7 +27,8 @@ export class Grid {
 
     readonly byCategory = {
         [EntityType.Player]: new Set<ServerPlayer>(),
-        [EntityType.Petal]: new Set<ServerPetal>()
+        [EntityType.Petal]: new Set<ServerPetal>(),
+        [EntityType.Mob]: new Set<ServerMob>()
     };
 
     constructor(width: number, height: number) {

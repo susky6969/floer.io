@@ -4,6 +4,7 @@ import { Game } from "../game";
 import { Petals } from "../../../common/src/definitions/petal";
 import { P2 } from "../../../common/src/utils/math";
 import { Vector } from "../../../common/src/utils/vector";
+import { GameConstants } from "../../../common/src/constants";
 
 export class Inventory {
     position: Vector;
@@ -42,7 +43,7 @@ export class Inventory {
 
         const radius = this.range;
 
-        this.revolutionRadians += 0.02;
+        this.revolutionRadians += GameConstants.player.revolutionSpeed * this.game.dt;
 
         let revolutionRadians = this.revolutionRadians;
         const singleOccupiedRadians = P2 / this.totalDisplayedPetals;

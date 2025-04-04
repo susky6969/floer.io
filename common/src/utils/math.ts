@@ -5,11 +5,11 @@ export const P2 = PI * 2;
 export const halfPI = PI / 2;
 
 export const MathGraphics = {
-    getPositionOnCircle(radians: number, radius: number): Vector {
-        return Vec2.new(
+    getPositionOnCircle(radians: number, radius: number, basic: Vector = Vec2.new(0, 0)): Vector {
+        return Vec2.add(basic, Vec2.new(
             Math.cos(radians) * radius,
             Math.sin(radians) * radius
-        );
+        ));
     },
 
     degreesToRadians(degrees: number): number {
@@ -23,6 +23,14 @@ export const MathGraphics = {
         const dy = a.y - b.y;
         const dx = a.x - b.x;
         return Math.atan2(dy, dx);
+    },
+
+    directionBetweenPoints(a: Vector, b: Vector): Vector {
+        const radians = this.angleBetweenPoints(a, b);
+        return Vec2.new(
+            Math.cos(radians),
+            Math.sin(radians)
+        )
     },
 
     signedAreaTri(a: Vector, b: Vector, c: Vector): number {

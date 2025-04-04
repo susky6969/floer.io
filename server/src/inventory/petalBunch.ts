@@ -21,8 +21,10 @@ export class PetalBunch {
 
     constructor(inventory: Inventory, definition: PetalDefinition) {
         this.inventory = inventory;
+
         const player = inventory.player;
         this.player = player;
+
         this.definition = definition;
         this.position = player.position;
 
@@ -52,34 +54,25 @@ export class PetalBunch {
                 const singleRotatedRadians = P2 / totalPieces;
 
                 this.petals.forEach(petal => {
-                    if (!petal.isReloading && !petal.isUsing) {
-                        petal.position = Vec2.add(
-                            firstPetalCenter,
-                            MathGraphics.getPositionOnCircle(rotationRadians, GameConstants.petal.rotationRadius)
-                        );
-                    }
+                    petal.setPositionSafe(
+                        MathGraphics.getPositionOnCircle(rotationRadians, GameConstants.petal.rotationRadius, firstPetalCenter)
+                    )
 
                     rotationRadians += singleRotatedRadians;
                 });
             } else {
-                let rotationRadians = revolutionRadians;
+                let radiansNow = revolutionRadians;
 
                 this.petals.forEach(petal => {
-                    if (!petal.isReloading && !petal.isUsing) {
-                        petal.position = Vec2.add(
-                            this.position,
-                            MathGraphics.getPositionOnCircle(rotationRadians, radius)
-                        )
-                    }
+                    petal.setPositionSafe(
+                        MathGraphics.getPositionOnCircle(radiansNow, radius, this.position)
+                    )
 
-                    rotationRadians += singleOccupiedRadians;
+                    radiansNow += singleOccupiedRadians;
                 });
             }
         } else {
-            const petal = this.petals[0];
-            if (!petal.isReloading && !petal.isUsing) {
-                petal.position = firstPetalCenter;
-            }
+            this.petals[0].setPositionSafe(firstPetalCenter)
         }
     }
 }
