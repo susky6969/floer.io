@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="8.7001944mm"
-   height="10.099926mm"
-   viewBox="0 0 8.7001944 10.099926"
+   width="41.178974mm"
+   height="48.101131mm"
+   viewBox="0 0 41.178974 48.101131"
    version="1.1"
    id="svg1"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
@@ -23,14 +23,14 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="3.0680976"
-     inkscape:cx="-13.852232"
-     inkscape:cy="5.0519905"
-     inkscape:window-width="1004"
-     inkscape:window-height="615"
-     inkscape:window-x="560"
-     inkscape:window-y="298"
-     inkscape:window-maximized="0"
+     inkscape:zoom="1.5340488"
+     inkscape:cx="17.926418"
+     inkscape:cy="236.30278"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
      id="defs1" />
@@ -38,7 +38,7 @@
      inkscape:label="图层 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0.0673851,-0.0330271)">
+     transform="translate(-0.34959041,-0.08018988)">
     <path
        sodipodi:type="star"
        style="fill:#323232;fill-opacity:1;stroke:#292931;stroke-width:2.50454;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:1;stroke-dasharray:none;stroke-opacity:1"
@@ -54,8 +54,8 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="m 37.513066,37.081881 0.03284,-21.750668 18.820212,10.903772 z"
-       inkscape:transform-center-x="-1.2013906"
-       inkscape:transform-center-y="-0.032435814"
-       transform="matrix(0.3980363,0,0,-0.40051697,-14.340876,15.664789)" />
+       inkscape:transform-center-x="-5.9947721"
+       inkscape:transform-center-y="-0.16286092"
+       transform="matrix(1.9861476,0,0,-2.0109455,-71.669705,76.832595)" />
   </g>
 </svg>

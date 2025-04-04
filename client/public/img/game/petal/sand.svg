@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="9.999094mm"
-   height="10.000242mm"
-   viewBox="0 0 9.999094 10.000242"
+   width="201.04791"
+   height="200.30128"
+   viewBox="0 0 53.193927 52.996379"
    version="1.1"
    id="svg1"
    inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.76702441"
-     inkscape:cx="395.03306"
-     inkscape:cy="455.65695"
+     inkscape:zoom="2.1694726"
+     inkscape:cx="17.976719"
+     inkscape:cy="106.70796"
      inkscape:window-width="1397"
      inkscape:window-height="1041"
      inkscape:window-x="253"
@@ -38,7 +38,7 @@
      inkscape:label="图层 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-0.17466923,-0.17409488)">
+     transform="translate(-0.3734911,-0.37867356)">
     <path
        sodipodi:type="star"
        style="fill:#e0c85c;fill-opacity:1;stroke:#b5a24b;stroke-width:12.4723;stroke-dasharray:none;stroke-opacity:1"
@@ -54,8 +54,8 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        d="M 84.167246,72.094075 53.03373,78.416122 31.991919,54.614729 42.083624,24.49129 73.21714,18.169244 94.258951,41.970636 Z"
-       transform="matrix(0.13091116,0,0,0.13531632,-3.0896079,-1.3605721)"
-       inkscape:transform-center-x="-5.174216"
-       inkscape:transform-center-y="5.174216" />
+       transform="matrix(0.696431,0,0,0.71711016,-16.992055,-7.7543091)"
+       inkscape:transform-center-x="-27.526183"
+       inkscape:transform-center-y="27.420808" />
   </g>
 </svg>
