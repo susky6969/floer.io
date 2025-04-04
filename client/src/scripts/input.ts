@@ -9,7 +9,7 @@ export class Input {
     /**
      * The angle between the mouse pointer and the screen center
      */
-    mouseDir = Vec2.new(0, 0);
+    mouseDirection = Vec2.new(0, 0);
 
     /**
      * The distance between the mouse pointer and the screen center
@@ -37,12 +37,23 @@ export class Input {
         window.addEventListener("pointerup", this.handleMouseEvent.bind(this, false));
 
         window.addEventListener("mousemove", e => {
-            const rotation = Math.atan2(window.innerHeight / 2 - e.clientY, window.innerWidth / 2 - e.clientX) - Math.PI / 2;
+            const rotation = Math.atan2(e.clientY - window.innerHeight / 2, e.clientX - window.innerWidth / 2);
 
-            this.mouseDir = Vec2.new(
-                Math.sin(rotation),
-                -Math.cos(rotation)
+            this.mouseDirection = Vec2.new(
+                Math.cos(rotation),
+                Math.sin(rotation)
             );
+
+            const distance = Vec2.length(
+                Vec2.new(
+                    e.clientY - window.innerHeight / 2, e.clientX - window.innerWidth / 2
+                )
+            );
+
+            this.mouseDistance = distance;
+
+            if (distance > 255)
+                this.mouseDistance = 255;
         });
     }
 
