@@ -21,6 +21,9 @@ export class ClientPlayer extends ClientEntity {
 
     constructor(game: Game, id: number) {
         super(game, id)
+
+        this.images.body.setZIndex(-2)
+
         this.name = new Text({
             text: this.game.playerNames.get(id),
             style: {
