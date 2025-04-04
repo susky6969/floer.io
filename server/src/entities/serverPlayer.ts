@@ -126,11 +126,11 @@ export class ServerPlayer extends ServerEntity {
         this.position = position;
 
         if (this.isAttacking) {
-            this.inventory.range += (6 - this.inventory.range) / 3;
+            this.inventory.range = 6;
         }else if (this.isDefending){
-            this.inventory.range += (2.5 - this.inventory.range) / 3;
+            this.inventory.range = 2.5;
         }else {
-            this.inventory.range += (3.8 - this.inventory.range) / 3;
+            this.inventory.range = 3.8;
         }
 
         this.inventory.tick();
