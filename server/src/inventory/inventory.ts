@@ -23,9 +23,9 @@ export class Inventory {
         this.player = player;
         this.position = player.position;
 
-        for (let i = 0; i < 2; i++) {
-            this.petalBunches.push(new PetalBunch(this, Petals.fromString("light")));
-        }
+        this.petalBunches.push(new PetalBunch(this, Petals.fromString("light")));
+        this.petalBunches.push(new PetalBunch(this, Petals.fromString("rose")));
+
         for (let i = 0; i < 2; i++) {
             this.petalBunches.push(new PetalBunch(this, Petals.fromString("sand")));
         }

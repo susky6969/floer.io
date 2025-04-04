@@ -2,7 +2,7 @@ import { ServerEntity, isDamageableEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
-import { EntityType } from "../../../common/src/constants";
+import { EntityType, GameConstants } from "../../../common/src/constants";
 import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { Game } from "../game";
 import { ServerPlayer } from "./serverPlayer";
@@ -31,6 +31,7 @@ export class ServerPetal extends ServerEntity {
 
     hitbox: CircleHitbox;
     definition: PetalDefinition;
+
     _isReloading: boolean = false;
 
     get isReloading(): boolean {
@@ -47,14 +48,22 @@ export class ServerPetal extends ServerEntity {
         this.setDirty();
     }
 
+    isUsing: boolean = false;
+
     reloadTime: number = 0;
+    useReload: number = 0;
+
+    get canUse(): boolean {
+        return !this.definition.useTime
+            || this.useReload >= GameConstants.petal.useReload;
+    }
 
     readonly damage?: number;
     health?: number;
 
     constructor(player: ServerPlayer, definition: PetalDefinition) {
         super(player.game, player.position);
-        this.hitbox = new CircleHitbox(definition.radius);
+        this.hitbox = new CircleHitbox(definition.hitboxRadius);
         this.definition = definition;
         this.owner = player;
 
@@ -64,15 +73,27 @@ export class ServerPetal extends ServerEntity {
 
     join(): void {
         this.game.grid.addEntity(this);
+        this.isReloading = true;
     }
 
     tick(): void{
         if (this.isReloading) {
-            if (!this.definition.reload || this.reloadTime >= this.definition.reload){
+            if (
+                !this.definition.reloadTime
+                || this.reloadTime >= this.definition.reloadTime
+            ){
                 this.isReloading = false;
             }
             this.reloadTime += this.game.dt;
-        } else {
+            this.position = this.owner.position;
+        } else if (this.isUsing) {
+            this.position = Vec2.add(
+                this.position,
+                Vec2.div(
+                    Vec2.sub(this.owner.position, this.position), 4
+                )
+            );
+        }else {
             const entities = this.game.grid.intersectsHitbox(this.hitbox);
 
             for (const entity of entities) {
@@ -94,6 +115,30 @@ export class ServerPetal extends ServerEntity {
                         if (collision && this.definition.damage) {
                             entity.receiveDamage(this.definition.damage);
                         }
+                }
+            }
+
+            if (this.definition.useTime) {
+                this.useReload += this.game.dt;
+            }
+
+            if (this.definition.heal && this.canUse) {
+                const canHealOwner = this.owner.health < GameConstants.player.maxHealth
+                    && new CircleHitbox(10, this.position).getIntersection(this.owner.hitbox);
+
+                if (canHealOwner) {
+                    this.isUsing = true;
+                    const timeDelay = this.definition.useTime
+                        ? this.definition.useTime * 1000
+                        : 0;
+                    setTimeout(() => {
+                        if (this.definition.heal && !this.isReloading) {
+                            this.owner.health += this.definition.heal;
+                            this.isReloading = true;
+                            this.isUsing = false;
+                            this.useReload = 0;
+                        }
+                    }, timeDelay);
                 }
             }
         }

@@ -52,10 +52,12 @@ export class PetalBunch {
                 const singleRotatedRadians = P2 / totalPieces;
 
                 this.petals.forEach(petal => {
-                    petal.position = Vec2.add(
-                        firstPetalCenter,
-                        MathGraphics.getPositionOnCircle(rotationRadians, GameConstants.petal.rotationRadius)
-                    );
+                    if (!petal.isReloading && !petal.isUsing) {
+                        petal.position = Vec2.add(
+                            firstPetalCenter,
+                            MathGraphics.getPositionOnCircle(rotationRadians, GameConstants.petal.rotationRadius)
+                        );
+                    }
 
                     rotationRadians += singleRotatedRadians;
                 });
@@ -63,16 +65,21 @@ export class PetalBunch {
                 let rotationRadians = revolutionRadians;
 
                 this.petals.forEach(petal => {
-                    petal.position = Vec2.add(
-                        this.position,
-                        MathGraphics.getPositionOnCircle(rotationRadians, radius)
-                    )
+                    if (!petal.isReloading && !petal.isUsing) {
+                        petal.position = Vec2.add(
+                            this.position,
+                            MathGraphics.getPositionOnCircle(rotationRadians, radius)
+                        )
+                    }
 
                     rotationRadians += singleOccupiedRadians;
                 });
             }
         } else {
-            this.petals[0].position = firstPetalCenter;
+            const petal = this.petals[0];
+            if (!petal.isReloading && !petal.isUsing) {
+                petal.position = firstPetalCenter;
+            }
         }
     }
 }
