@@ -7,11 +7,14 @@ import { type Vector } from "../../../common/src/utils/vector";
 import { type Game } from "../game";
 import { ServerPlayer } from "./serverPlayer";
 import { ServerPetal } from "./serverPetal";
+import { ServerMob } from "./serverMob";
 
-type damageableEntity = ServerPetal | ServerPlayer
+type damageableEntity = ServerPetal | ServerPlayer | ServerMob
 
 export function isDamageableEntity(entity: ServerEntity): entity is damageableEntity {
-    return entity.type === EntityType.Petal ||  entity.type === EntityType.Player;
+    return entity.type === EntityType.Petal
+        ||  entity.type === EntityType.Player
+        || entity.type === EntityType.Mob;
 }
 
 export abstract class ServerEntity<T extends EntityType = EntityType> implements GameEntity{
@@ -64,10 +67,12 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     }
 
     setDirty(): void {
+        if (!this.hasInited) return;
         this.game.partialDirtyEntities.add(this);
     }
 
     setFullDirty(): void {
+        if (!this.hasInited) return;
         this.game.fullDirtyEntities.add(this);
     }
 

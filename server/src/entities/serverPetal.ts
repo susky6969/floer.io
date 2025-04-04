@@ -1,15 +1,14 @@
-import { ServerEntity, isDamageableEntity } from "./serverEntity";
+import { isDamageableEntity, ServerEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType, GameConstants } from "../../../common/src/constants";
-import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
-import { Game } from "../game";
+import { PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
-import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
+import { ServerMob } from "./serverMob";
 
-export class ServerPetal extends ServerEntity {
-    type = EntityType.Petal;
+export class ServerPetal extends ServerEntity<EntityType.Petal> {
+    type: EntityType.Petal = EntityType.Petal;
 
     owner: ServerPlayer;
 
@@ -64,6 +63,8 @@ export class ServerPetal extends ServerEntity {
     constructor(player: ServerPlayer, definition: PetalDefinition) {
         super(player.game, player.position);
         this.hitbox = new CircleHitbox(definition.hitboxRadius);
+
+        this.position = player.position;
         this.definition = definition;
         this.owner = player;
 
@@ -113,8 +114,14 @@ export class ServerPetal extends ServerEntity {
                         if (entity.owner === this.owner) continue;
 
                         if (collision && this.definition.damage) {
-                            entity.receiveDamage(this.definition.damage);
+                            entity.receiveDamage(this.definition.damage, this.owner);
                         }
+                        break
+                    case EntityType.Mob:
+                        if (collision && this.definition.damage) {
+                            entity.receiveDamage(this.definition.damage, this.owner);
+                        }
+                        break;
                 }
             }
 
@@ -135,16 +142,16 @@ export class ServerPetal extends ServerEntity {
                         if (this.definition.heal && !this.isReloading) {
                             this.owner.health += this.definition.heal;
                             this.isReloading = true;
-                            this.isUsing = false;
-                            this.useReload = 0;
                         }
+                        this.isUsing = false;
+                        this.useReload = 0;
                     }, timeDelay);
                 }
             }
         }
     }
 
-    receiveDamage(amount: number) {
+    receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
         if (!this.health) return;
         if (this.isReloading) return;
 
@@ -153,6 +160,15 @@ export class ServerPetal extends ServerEntity {
         if (this.health <= 0) {
             this.isReloading = true;
         }
+    }
+
+    canSetPosition(): boolean {
+        return (!this.isUsing && !this.isReloading);
+    }
+
+    setPositionSafe(position: Vector) {
+        if (!this.canSetPosition()) return;
+        this.position = position;
     }
 
     get data(): Required<EntitiesNetData[EntityType]>{

@@ -13,9 +13,10 @@ import { EntityType, GameConstants } from "../../../common/src/constants";
 import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
 import { ServerPetal } from "./serverPetal";
+import { ServerMob } from "./serverMob";
 
-export class ServerPlayer extends ServerEntity {
-    readonly type = EntityType.Player;
+export class ServerPlayer extends ServerEntity<EntityType.Player> {
+    type: EntityType.Player = EntityType.Player;
     socket: WebSocket;
     name = "";
     direction = Vec2.new(0, 0);
@@ -95,7 +96,12 @@ export class ServerPlayer extends ServerEntity {
     }
 
     constructor(game: Game, socket: WebSocket) {
-        const position = Random.vector(0, game.width, 0, game.height);
+        const position = Random.vector(
+            0,
+            GameConstants.player.spawnMaxX,
+            0,
+            GameConstants.player.spawnMaxY
+        );
         super(game, position);
         this.position = position;
         this.socket = socket;
@@ -129,8 +135,15 @@ export class ServerPlayer extends ServerEntity {
                     if (entity.owner === this) continue;
 
                     if (collision) {
-                        entity.receiveDamage(this.damage);
+                        entity.receiveDamage(this.damage, this);
                     }
+                    break;
+                case EntityType.Mob:
+                    if (collision) {
+                        position = Vec2.sub(position, Vec2.mul(collision.dir, collision.pen));
+                        entity.receiveDamage(this.damage, this);
+                    }
+                    break;
             }
         }
 
@@ -147,14 +160,14 @@ export class ServerPlayer extends ServerEntity {
         this.inventory.tick();
     }
 
-    receiveDamage(amount: number, source: ServerPlayer) {
+    receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
+        if (this.dead) return;
         this.health -= amount;
 
         if (this.health <= 0) {
-            this.dead = true;
             this.destroy();
 
-            source.kills++;
+            if (source instanceof ServerPlayer) source.kills++;
 
             const gameOverPacket = new GameOverPacket();
             gameOverPacket.kills = this.kills;
@@ -295,6 +308,7 @@ export class ServerPlayer extends ServerEntity {
     }
 
     destroy() {
+        this.dead = true;
         super.destroy();
         for (const i of this.petals){
             i.destroy();
