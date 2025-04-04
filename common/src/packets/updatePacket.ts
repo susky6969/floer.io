@@ -15,6 +15,7 @@ export interface EntitiesNetData {
     [EntityType.Petal]: {
         position: Vector
         definition: PetalDefinition
+        isReloading: boolean
 
         full?: {
 
@@ -61,6 +62,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         serializePartial(stream, data): void {
             Petals.writeToStream(stream, data.definition);
             stream.writePosition(data.position);
+            stream.writeBoolean(data.isReloading)
         },
         serializeFull(stream, data): void {
 
@@ -68,7 +70,8 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         deserializePartial(stream) {
             return {
                 definition: Petals.readFromStream(stream),
-                position: stream.readPosition()
+                position: stream.readPosition(),
+                isReloading: stream.readBoolean()
             };
         },
         deserializeFull(stream) {
