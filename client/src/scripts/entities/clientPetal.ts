@@ -10,7 +10,7 @@ export class ClientPetal extends ClientEntity {
     type = EntityType.Petal;
 
     images = {
-        body: new GameSprite("light.svg").setScale(0.2)
+        body: new GameSprite()
     };
 
     constructor(game: Game, id: number) {
@@ -30,6 +30,8 @@ export class ClientPetal extends ClientEntity {
 
     updateFromData(_data: EntitiesNetData[EntityType.Petal], _isNew: boolean): void {
         this.position = _data.position;
+        this.images.body.setFrame(`${_data.definition.idString}.svg`).setScale(_data.definition.radius)
+        this.images.body.setVisible(!_data.isReloading)
     }
 
     destroy() {
