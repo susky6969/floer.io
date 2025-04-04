@@ -15,8 +15,6 @@ export class ClientPetal extends ClientEntity {
 
     angle: number = 0;
 
-    firstPacket: boolean = true;
-
     constructor(game: Game, id: number) {
         super(game, id);
         this.images.body.setZIndex(0)
@@ -29,24 +27,23 @@ export class ClientPetal extends ClientEntity {
     }
 
     render(): void {
+        this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
+
         this.angle += 0.1
         this.images.body.setAngle(this.angle);
     }
 
-    renderPosition(): void {
-        const position = Vec2.div(Vec2.sub(Camera.vecToScreen(this.position), this.container.position), 4);
-        this.container.position = Vec2.add(this.container.position, position);
-    }
-
     updateFromData(data: EntitiesNetData[EntityType.Petal], _isNew: boolean): void {
         this.position = data.position;
-        this.images.body.setFrame(`${data.definition.idString}.svg`).setScale(data.definition.hitboxRadius)
+        this.render();
+
+        this.images.body
+            .setFrame(`${data.definition.idString}.svg`)
+            .setScaleByUnit(data.definition.hitboxRadius)
         this.images.body.setVisible(!data.isReloading)
-        if (this.firstPacket){
-            this.firstPacket = false;
+        if (_isNew){
             this.container.position = Camera.vecToScreen(this.position);
         }
-        this.renderPosition();
     }
 
     destroy() {

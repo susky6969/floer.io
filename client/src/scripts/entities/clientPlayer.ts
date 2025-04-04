@@ -11,7 +11,7 @@ export class ClientPlayer extends ClientEntity {
     type = EntityType.Player;
 
     images = {
-        body: new GameSprite("flower_body.svg")
+        body: new GameSprite("flower_body.svg").setScaleByUnit(GameConstants.player.radius)
     };
 
     name: Text;
@@ -48,8 +48,9 @@ export class ClientPlayer extends ClientEntity {
     }
 
     render(): void {
-        const pos = Camera.vecToScreen(this.position);
-        this.container.position = pos;
+        const name = this.game.playerNames.get(this.id)
+        if(name) this.name.text = name;
+        this.container.position = Camera.vecToScreen(this.position);
     }
 
     drawHealthBar(): void {
