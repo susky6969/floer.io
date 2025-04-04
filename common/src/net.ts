@@ -1,7 +1,7 @@
 import { BitStream } from "bit-buffer";
 import { type Vector } from "./utils/vector";
 import { GameConstants } from "./constants";
-import { Numeric } from "./utils/math";
+import { MathNumeric } from "./utils/math";
 import { JoinPacket } from "./packets/joinPacket";
 import { InputPacket } from "./packets/inputPacket";
 import { UpdatePacket } from "./packets/updatePacket";
@@ -28,7 +28,7 @@ export class GameBitStream extends BitStream {
             throw new Error(`Value out of range: ${value}, range: [${min}, ${max}]`);
         }
         const range = (1 << bitCount) - 1;
-        const clamped = Numeric.clamp(value, min, max);
+        const clamped = MathNumeric.clamp(value, min, max);
         this.writeBits(((clamped - min) / (max - min)) * range + 0.5, bitCount);
     }
 

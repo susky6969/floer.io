@@ -6,16 +6,18 @@ export class UI {
     readonly app: ClientApplication;
 
     readonly canvas = $<HTMLCanvasElement>("#canvas");
-    readonly ready_button = $<HTMLDivElement>("#btn-ready");
+    readonly readyButton = $<HTMLDivElement>("#btn-ready");
 
-    readonly out_game_screen =  $<HTMLDivElement>("#out-game-screen");
+    readonly outGameScreen =  $<HTMLDivElement>("#out-game-screen");
 
-    readonly equip_petal_column= $<HTMLDivElement>("#equip-petal-column");
+    readonly equipPetalColumn= $<HTMLDivElement>("#equipped-petals-column");
+
+    readonly nameInput = $<HTMLInputElement>("#name");
 
     constructor(app: ClientApplication) {
         this.app = app;
 
-        this.ready_button.on("click", (e: Event) => {
+        this.readyButton.on("click", (e: Event) => {
             app.game.connect(Config.address);
         });
     }
