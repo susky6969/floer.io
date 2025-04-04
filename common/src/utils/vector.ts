@@ -1,4 +1,4 @@
-import { Numeric } from "./math";
+import { MathNumeric } from "./math";
 
 /**
  * 2D vector
@@ -211,8 +211,8 @@ export const Vec2 = {
 
     clampWithXY(vector: Vector, minX: number, maxX: number, minY: number, maxY: number): Vector{
         let clampedVector = Vec2.clone(vector);
-        clampedVector.x = Numeric.clamp(clampedVector.x, minX, maxX);
-        clampedVector.y = Numeric.clamp(clampedVector.y, minY, maxY);
+        clampedVector.x = MathNumeric.clamp(clampedVector.x, minX, maxX);
+        clampedVector.y = MathNumeric.clamp(clampedVector.y, minY, maxY);
         return clampedVector;
     },
 
