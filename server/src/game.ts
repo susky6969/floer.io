@@ -52,7 +52,7 @@ export class Game {
         const maxVector = Vec2.sub(this.maxVector, Vec2.new(radius, radius));
         return Vec2.clampWithVector(
             position,
-            this.minVector,
+            Vec2.new(radius, radius),
             maxVector
         );
     }
