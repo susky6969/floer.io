@@ -1,10 +1,14 @@
 @use './utils/button.scss';
 @use './utils/rarity.scss';
 
+$none_bg: #fff;
+$none_bd: #ccc;
+
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap');
 
 *{
     font-family: 'Ubuntu', sans-serif;
+    user-select: none;
 }
 
 body {
@@ -64,7 +68,6 @@ body {
   position: relative;
   z-index: 0;
   --x: 0.1em;
-  user-select: none;
 }
 
 [textStroke]:before{
@@ -107,34 +110,48 @@ body {
   margin: 0;
 }
 
-#equip-petal-column {
+#equipped-petals-column {
     margin-top: 15px;
     display: flex;
 }
 
-.equip-petals {
+.petal {
+    width: 100%;
+    height: 100%;
+    border-style: solid;
+    border-width: 4px;
+    border-radius: 5px;
+}
+
+.equipped-petal-slot>.petal {
     position: relative;
+    top: -4px;
+    left: -4px;
+}
+
+.equipped-petal-slot {
+    --x: 12px;
+    position: relative;
+    z-index: -1;
     width: 50px;
     height: 50px;
     border-style: solid;
-    border-width: 3px;
+    border-width: 4px;
     border-radius: 5px;
-    margin: 0px 5px;
+    margin: 0 4px;
+    background: $none_bg;
+    border-color: $none_bd;
 }
 
 .piece-petal {
     position: absolute;
 }
 
-[rarity] {
-    @include rarity.get_background(attr(rarity));
-}
-
 [petalName]:before{
     content: attr(petalName);
     position: absolute;
     transform: translate(-50%, -50%);
-    font-size: 10px;
+    font-size: var(--x);
     top: 80%;
     left: 50%;
     -webkit-text-stroke: 2px #000;
@@ -144,7 +161,7 @@ body {
     content: attr(petalName);
     position: absolute;
     transform: translate(-50%, -50%);
-    font-size: 10px;
+    font-size: var(--x);
     color: white;
     top: 80%;
     left: 50%;

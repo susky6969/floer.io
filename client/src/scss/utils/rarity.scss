@@ -1,7 +1,7 @@
-$none_bg: #fff;
-$none_bd: #ccc;
+$common_bg: #7eef6d;
+$common_bd: #66c258;
 
-@mixin get_background($rarity){
-    border-color: $none_bd;
-    background-color: $none_bg;
+.rarity-common {
+    background: $common_bg;
+    border-color: $common_bd;
 }
