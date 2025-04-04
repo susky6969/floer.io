@@ -1,4 +1,4 @@
-import { isDamageableEntity, ServerEntity } from "./serverEntity";
+import { damageableEntity, isDamageableEntity, ServerEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
@@ -52,6 +52,18 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     readonly damage?: number;
     health?: number;
 
+    canReceiveDamageFrom(source: damageableEntity): boolean {
+        switch (source.type) {
+            case EntityType.Player:
+                return source != this.owner
+            case EntityType.Mob:
+                return true
+            case EntityType.Petal:
+                return source != this
+                    && source.owner != this.owner
+        }
+    }
+
     constructor(player: ServerPlayer, definition: PetalDefinition) {
         super(player.game, player.position);
         this.hitbox = new CircleHitbox(definition.hitboxRadius);
@@ -92,28 +104,9 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             for (const entity of entities) {
                 if (!isDamageableEntity(entity)) continue;
                 const collision = this.hitbox.getIntersection(entity.hitbox);
-                switch (entity.type) {
-                    case EntityType.Player:
-                        if (entity === this.owner) continue;
-
-                        if (collision && this.definition.damage) {
-                            entity.receiveDamage(this.definition.damage, this.owner);
-                        }
-
-                        break;
-                    case EntityType.Petal:
-                        if (entity === this) continue;
-                        if (entity.owner === this.owner) continue;
-
-                        if (collision && this.definition.damage) {
-                            entity.receiveDamage(this.definition.damage, this.owner);
-                        }
-                        break
-                    case EntityType.Mob:
-                        if (collision && this.definition.damage) {
-                            entity.receiveDamage(this.definition.damage, this.owner);
-                        }
-                        break;
+                if (collision) {
+                    if (this.damage && entity.canReceiveDamageFrom(this))
+                        entity.receiveDamage(this.damage, this.owner);
                 }
             }
 
@@ -154,12 +147,12 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         }
     }
 
-    canSetPosition(): boolean {
+    canSetPositionSafe(): boolean {
         return (!this.isUsing && !this.isReloading);
     }
 
     setPositionSafe(position: Vector) {
-        if (!this.canSetPosition()) return;
+        if (!this.canSetPositionSafe()) return;
         this.position = position;
     }
 

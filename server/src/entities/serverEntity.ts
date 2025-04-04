@@ -9,7 +9,7 @@ import { ServerPlayer } from "./serverPlayer";
 import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
 
-type damageableEntity = ServerPetal | ServerPlayer | ServerMob
+export type damageableEntity = ServerPetal | ServerPlayer | ServerMob
 
 export function isDamageableEntity(entity: ServerEntity): entity is damageableEntity {
     return entity.type === EntityType.Petal
@@ -34,6 +34,10 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
 
     partialStream!: GameBitStream;
     fullStream!: GameBitStream;
+
+    canReceiveDamageFrom(entity: ServerEntity): boolean {
+        return !(this === entity);
+    }
 
     constructor(game: Game, pos: Vector) {
         this.game = game;

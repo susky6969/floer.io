@@ -1,5 +1,5 @@
 import { type WebSocket } from "ws";
-import { isDamageableEntity, ServerEntity } from "./serverEntity";
+import { damageableEntity, isDamageableEntity, ServerEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
@@ -88,6 +88,17 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             )
     }
 
+    canReceiveDamageFrom(source: damageableEntity): boolean {
+        switch (source.type) {
+            case EntityType.Player:
+                return source != this
+            case EntityType.Mob:
+                return true
+            case EntityType.Petal:
+                return source.owner != this
+        }
+    }
+
     constructor(game: Game, socket: WebSocket) {
         const position = Random.vector(
             0,
@@ -115,28 +126,15 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         for (const entity of entities) {
             if (!isDamageableEntity(entity)) continue;
             const collision = this.hitbox.getIntersection(entity.hitbox);
-            switch (entity.type) {
-                case EntityType.Player:
-                    if (entity === this) continue;
-
-                    if (collision) {
+            if (collision) {
+                if (entity.canReceiveDamageFrom(this))
+                    entity.receiveDamage(this.damage, this);
+                switch (entity.type) {
+                    case EntityType.Player:
+                        if (entity === this) continue;
                         position = Vec2.sub(position, Vec2.mul(collision.dir, collision.pen));
-                        entity.receiveDamage(this.damage, this);
-                    }
-                    break;
-                case EntityType.Petal:
-                    if (entity.owner === this) continue;
-
-                    if (collision) {
-                        entity.receiveDamage(this.damage, this);
-                    }
-                    break;
-                case EntityType.Mob:
-                    if (collision) {
-                        position = Vec2.sub(position, Vec2.mul(collision.dir, collision.pen));
-                        entity.receiveDamage(this.damage, this);
-                    }
-                    break;
+                        break;
+                }
             }
         }
 
