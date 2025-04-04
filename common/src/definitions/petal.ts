@@ -65,7 +65,7 @@ export const Petals = new Definitions<PetalDefinition>([
         heal: 10,
         reloadTime: 1.5,
         useTime: 1.5,
-        hitboxRadius: 0.4,
+        hitboxRadius: 0.5,
         isDuplicate: false,
         pieceAmount: 1
     }
