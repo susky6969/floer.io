@@ -209,6 +209,10 @@ export const Vec2 = {
         };
     },
 
+    targetEasing(a: Vector, b: Vector, n: number = 4): Vector {
+        return  Vec2.add(a, Vec2.div(Vec2.sub(b, a), n));
+    },
+
     clampWithXY(vector: Vector, minX: number, maxX: number, minY: number, maxY: number): Vector{
         let clampedVector = Vec2.clone(vector);
         clampedVector.x = MathNumeric.clamp(clampedVector.x, minX, maxX);
@@ -218,5 +222,16 @@ export const Vec2 = {
 
     clampWithVector(vector: Vector, min: Vector, max: Vector): Vector{
         return Vec2.clampWithXY(vector,min.x,max.x,min.y,max.y);
+    },
+
+    directionToRadians(vector: Vector): number {
+        return Math.atan2(vector.y, vector.x);
+    },
+
+    radiansToDirection(n: number): Vector {
+        return {
+            x: Math.cos(n),
+            y: Math.sin(n)
+        }
     }
 };
