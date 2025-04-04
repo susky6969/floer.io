@@ -9,7 +9,7 @@ import { type ServerConfig } from "./config";
 import { type Explosion } from "../../common/src/packets/updatePacket";
 import { IDAllocator } from "./idAllocator";
 import { Vec2, type Vector } from "../../common/src/utils/vector";
-import { Numeric } from "../../common/src/utils/math";
+import { MathNumeric } from "../../common/src/utils/math";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -19,9 +19,6 @@ export class Game {
 
     partialDirtyEntities = new Set<ServerEntity>();
     fullDirtyEntities = new Set<ServerEntity>();
-
-    explosions: Explosion[] = [];
-    shots: Vector[] = [];
 
     grid = new Grid(GameConstants.maxPosition, GameConstants.maxPosition);
 
@@ -68,7 +65,7 @@ export class Game {
 
     removePlayer(player: ServerPlayer): void {
         this.players.delete(player);
-        this.grid.remove(player);
+        player.destroy();
         this.deletedPlayers.push(player.id);
         console.log(`"${player.name}" left the game.`);
     }
@@ -115,8 +112,6 @@ export class Game {
         this.fullDirtyEntities.clear();
         this.newPlayers.length = 0;
         this.deletedPlayers.length = 0;
-        this.explosions.length = 0;
-        this.shots.length = 0;
         this.mapDirty = false;
     }
 }

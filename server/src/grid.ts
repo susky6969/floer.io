@@ -1,6 +1,6 @@
 import { EntityType } from "../../common/src/constants";
 import { type Hitbox, RectHitbox } from "../../common/src/utils/hitbox";
-import { Numeric } from "../../common/src/utils/math";
+import { MathNumeric } from "../../common/src/utils/math";
 import { Vec2, type Vector } from "../../common/src/utils/vector";
 import { type ServerEntity } from "./entities/serverEntity";
 import { type ServerPlayer } from "./entities/serverPlayer";
@@ -139,8 +139,8 @@ export class Grid {
      */
     private _roundToCells(vector: Vector): Vector {
         return {
-            x: Numeric.clamp(Math.floor(vector.x / this.cellSize), 0, this.width),
-            y: Numeric.clamp(Math.floor(vector.y / this.cellSize), 0, this.height)
+            x: MathNumeric.clamp(Math.floor(vector.x / this.cellSize), 0, this.width),
+            y: MathNumeric.clamp(Math.floor(vector.y / this.cellSize), 0, this.height)
         };
     }
 }
