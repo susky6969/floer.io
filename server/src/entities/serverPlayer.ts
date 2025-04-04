@@ -6,24 +6,36 @@ import { type Game } from "../game";
 import { UpdatePacket, type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, RectHitbox } from "../../../common/src/utils/hitbox";
 import { Random } from "../../../common/src/utils/random";
-import { Numeric } from "../../../common/src/utils/math";
+import { MathNumeric } from "../../../common/src/utils/math";
 import { InputPacket } from "../../../common/src/packets/inputPacket";
 import { JoinPacket } from "../../../common/src/packets/joinPacket";
 import { EntityType, GameConstants } from "../../../common/src/constants";
 import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
+import { ServerPetal } from "./serverPetal";
 
 export class ServerPlayer extends ServerEntity {
     readonly type = EntityType.Player;
     socket: WebSocket;
     name = "";
     direction = Vec2.new(0, 0);
+    mouseDistance: number = 0;
     isAttacking = false;
     isDefending = false;
 
-    inventory = new Inventory(this);
+    inventory: Inventory;
+
+    get petals(): ServerPetal[]{
+        return this.inventory.petalBunches
+            .reduce(
+                (pre, petalBunch) => pre.concat(petalBunch.petals),
+                [] as ServerPetal[]
+            )
+    }
 
     hitbox = new CircleHitbox(GameConstants.player.radius);
+
+    damage: number = GameConstants.player.defaultBodyDamage;
 
     private _health = GameConstants.player.defaultHealth;
 
@@ -33,7 +45,7 @@ export class ServerPlayer extends ServerEntity {
 
     set health(health: number) {
         if (health === this._health) return;
-        this._health = Numeric.clamp(health, 0, GameConstants.player.maxHealth);
+        this._health = MathNumeric.clamp(health, 0, GameConstants.player.maxHealth);
         this.setFullDirty();
     }
 
@@ -87,12 +99,16 @@ export class ServerPlayer extends ServerEntity {
         super(game, position);
         this.position = position;
         this.socket = socket;
+        this.inventory = new Inventory(this);
     }
 
     tick(): void {
         let position = Vec2.clone(this.position);
 
-        const speed = Vec2.mul(this.direction, GameConstants.player.speed);
+        const speed = Vec2.mul(
+            this.direction,
+            MathNumeric.remap(this.mouseDistance, 0, 150, 0, GameConstants.player.maxSpeed)
+        );
         position = Vec2.add(position, Vec2.mul(speed, this.game.dt));
 
         const entities = this.game.grid.intersectsHitbox(this.hitbox);
@@ -120,23 +136,18 @@ export class ServerPlayer extends ServerEntity {
         this.inventory.tick();
     }
 
-    damage(amount: number, source: ServerPlayer) {
+    receiveDamage(amount: number, source: ServerPlayer) {
         this.health -= amount;
 
         if (this.health <= 0) {
             this.dead = true;
-            this.game.grid.remove(this);
+            this.destroy();
 
             source.kills++;
 
             const gameOverPacket = new GameOverPacket();
             gameOverPacket.kills = this.kills;
             this.sendPacket(gameOverPacket);
-
-            this.game.explosions.push({
-                position: this.position,
-                radius: 25
-            });
         }
     }
 
@@ -183,17 +194,6 @@ export class ServerPlayer extends ServerEntity {
 
         updatePacket.newPlayers = this.firstPacket ? [...this.game.players] : this.game.newPlayers;
         updatePacket.deletedPlayers = this.game.deletedPlayers;
-
-        for (const explosion of this.game.explosions) {
-            if (rect.isPointInside(explosion.position)) {
-                updatePacket.explosions.push(explosion);
-            }
-        }
-        for (const shoot of this.game.shots) {
-            if (rect.isPointInside(shoot)) {
-                updatePacket.shots.push(shoot);
-            }
-        }
 
         updatePacket.map.width = this.game.width;
         updatePacket.map.height = this.game.height;
@@ -255,6 +255,10 @@ export class ServerPlayer extends ServerEntity {
         this.game.players.add(this);
         this.game.grid.addEntity(this);
 
+        for (const i of this.petals){
+            i.join();
+        }
+
         console.log(`"${this.name}" joined the game`);
     }
 
@@ -264,6 +268,7 @@ export class ServerPlayer extends ServerEntity {
             this.setDirty();
         }
         this.direction = packet.direction;
+        this.mouseDistance = packet.mouseDistance;
         this.isAttacking = packet.isAttacking;
         this.isDefending = packet.isDefending;
     }
@@ -276,5 +281,12 @@ export class ServerPlayer extends ServerEntity {
                 health: this.health
             }
         };
+    }
+
+    destroy() {
+        super.destroy();
+        for (const i of this.petals){
+            i.destroy();
+        }
     }
 }

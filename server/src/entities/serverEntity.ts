@@ -26,7 +26,7 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
 
     constructor(game: Game, pos: Vector) {
         this.game = game;
-        this.id = game.idAllocator.getNextId();
+        this.id = game.nextEntityID;
         this._position = pos;
     }
 
@@ -64,4 +64,8 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     }
 
     abstract get data(): Required<EntitiesNetData[EntityType]>;
+
+    destroy(): void {
+        this.game.grid.remove(this);
+    }
 }
