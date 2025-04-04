@@ -10,6 +10,8 @@ import { type Explosion } from "../../common/src/packets/updatePacket";
 import { IDAllocator } from "./idAllocator";
 import { Vec2, type Vector } from "../../common/src/utils/vector";
 import { MathNumeric } from "../../common/src/utils/math";
+import { ServerMob } from "./entities/serverMob";
+import { Mobs } from "../../common/src/definitions/mob";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -60,6 +62,8 @@ export class Game {
     addPlayer(socket: WebSocket): ServerPlayer {
         const player = new ServerPlayer(this, socket);
         this.newPlayers.push(player);
+        const mob = new ServerMob(this, Vec2.new(10, 10), Mobs.fromString("ladybug"))
+
         return player;
     }
 

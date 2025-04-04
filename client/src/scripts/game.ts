@@ -14,10 +14,13 @@ import { UpdatePacket } from "@common/packets/updatePacket.ts";
 import { ClientPetal } from "@/scripts/entities/clientPetal.ts";
 import { Input } from "@/scripts/input.ts";
 import { InputPacket } from "@common/packets/inputPacket.ts";
+import { Minimap } from "@/scripts/render/minimap.ts";
+import { ClientMob } from "@/scripts/entities/clientMob.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
-    [EntityType.Petal]: ClientPetal
+    [EntityType.Petal]: ClientPetal,
+    [EntityType.Mob]: ClientMob
 }
 
 
@@ -32,6 +35,8 @@ export class Game {
 
     // This means which player are controlled by the user
     activePlayerID = -1;
+    width: number = 0;
+    height: number = 0;
 
     get activePlayer(): ClientPlayer | undefined {
         if (this.activePlayerID) return this.entityPool.get(this.activePlayerID) as ClientPlayer;
@@ -45,6 +50,8 @@ export class Game {
 
     readonly input = new Input(this);
 
+    readonly miniMap = new Minimap(this);
+
     constructor(app: ClientApplication) {
         this.app = app;
         this.ui = app.ui;
@@ -57,8 +64,9 @@ export class Game {
     async init() {
         await this.pixi.init({
             resizeTo: window,
-            resolution: window.devicePixelRatio ?? 1,
+            resolution: 1,
             antialias: true,
+            autoDensity: true,
             preference: "webgl",
             backgroundColor: "#29ca77",
             canvas: document.getElementById("canvas") as HTMLCanvasElement
@@ -67,6 +75,8 @@ export class Game {
         this.pixi.stop();
         this.pixi.ticker.add(() => this.render());
         this.pixi.renderer.on("resize", () => this.resize());
+
+        this.miniMap.init();
 
         this.camera.init();
 
@@ -158,11 +168,16 @@ export class Game {
         }
 
         if (packet.mapDirty) {
+            this.width = packet.map.width;
+            this.height = packet.map.height;
+
+            this.miniMap.resize();
+
             const ctx = this.mapGraphics;
             ctx.clear();
             this.camera.addObject(ctx);
 
-            const gridSize = 1.2 * Camera.scale;
+            const gridSize = 1.4 * Camera.scale;
             const gridWidth = packet.map.width * Camera.scale;
             const gridHeight = packet.map.height * Camera.scale;
             for (let x = 0; x <= gridWidth; x += gridSize) {
@@ -176,8 +191,8 @@ export class Game {
             }
 
             ctx.stroke({
-                color: 0xffffff,
-                alpha: 0.1,
+                color: 0x000000,
+                alpha: 0.05,
                 width: 2
             });
         }
@@ -232,6 +247,8 @@ export class Game {
 
         this.camera.render();
 
+        this.miniMap.render();
+
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0");
         inputPacket.isDefending = this.input.isInputDown("Mouse2");
@@ -242,5 +259,6 @@ export class Game {
 
     resize() {
         this.camera.resize();
+        this.miniMap.resize();
     }
 }
