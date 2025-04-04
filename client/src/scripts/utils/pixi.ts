@@ -1,5 +1,6 @@
 import { Sprite, Assets, Texture, type ColorSource } from "pixi.js";
 import { Vec2, Vector } from "@common/utils/vector";
+import { Camera } from "@/scripts/render/camera.ts";
 
 let fullLoaded = false;
 export let unloadedSprites: Map<GameSprite, string> | undefined;
@@ -75,6 +76,12 @@ export class GameSprite extends Sprite {
         return this;
     }
 
+    setScaleByUnit(radius: number): this {
+        const scale = Camera.unitToScreen(radius) / 100
+        this.scale = Vec2.new(scale, scale);
+        return this;
+    }
+
     setTint(tint: ColorSource): this {
         this.tint = tint;
         return this;
@@ -118,3 +125,4 @@ export async function loadAssets(): Promise<void> {
 
     if (unloadedSprites) unloadedSprites.forEach((v, k) => { k.setFrame(v); });
 }
+
