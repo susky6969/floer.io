@@ -30,7 +30,7 @@
      inkscape:window-width="1397"
      inkscape:window-height="1041"
      inkscape:window-x="206"
-     inkscape:window-y="57"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -40,12 +40,11 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-68.444366,-66.335487)">
-    <ellipse
-       style="fill:#ffffff;fill-opacity:1;stroke:#cccccc;stroke-width:0.937605;stroke-opacity:1"
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#d2d2d2;stroke-width:1.84368;stroke-dasharray:none;stroke-opacity:1"
        id="path1"
        cx="73.444366"
        cy="71.335487"
-       rx="4.5311975"
-       ry="4.531198" />
+       r="4.0781617" />
   </g>
 </svg>

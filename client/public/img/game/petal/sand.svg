@@ -29,7 +29,7 @@
      inkscape:window-width="1397"
      inkscape:window-height="1041"
      inkscape:window-x="253"
-     inkscape:window-y="101"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -41,7 +41,7 @@
      transform="translate(-0.17466923,-0.17409488)">
     <path
        sodipodi:type="star"
-       style="fill:#d5b13a;fill-opacity:1;stroke:#ffb13a;stroke-width:12.4723;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#e0c85c;fill-opacity:1;stroke:#b5a24b;stroke-width:12.4723;stroke-dasharray:none;stroke-opacity:1"
        id="path1"
        inkscape:flatsided="true"
        sodipodi:sides="6"
