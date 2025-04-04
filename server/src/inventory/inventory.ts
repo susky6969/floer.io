@@ -26,9 +26,10 @@ export class Inventory {
         for (let i = 0; i < 2; i++) {
             this.petalBunches.push(new PetalBunch(this, Petals.fromString("light")));
         }
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             this.petalBunches.push(new PetalBunch(this, Petals.fromString("sand")));
         }
+        this.petalBunches.push(new PetalBunch(this, Petals.fromString("stinger")));
     }
 
     tick(): void {

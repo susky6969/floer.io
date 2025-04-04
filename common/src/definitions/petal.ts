@@ -26,10 +26,23 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "light",
         displayName: "Light",
+        damage: 1,
+        health: 1,
+        reload: 0.5,
         radius: 0.3,
         isDuplicate: true,
         pieceAmount: 5,
         isShowedInOne: false
+    },
+    {
+        idString: "stinger",
+        displayName: "Stinger",
+        damage: 50,
+        health: 1,
+        reload: 5,
+        radius: 0.3,
+        isDuplicate: false,
+        pieceAmount: 1
     },
     {
         idString: "sand",

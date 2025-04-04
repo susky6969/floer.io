@@ -130,7 +130,7 @@ export class ServerPlayer extends ServerEntity {
         }else if (this.isDefending){
             this.inventory.range += (2.5 - this.inventory.range) / 3;
         }else {
-            this.inventory.range += (3.5 - this.inventory.range) / 3;
+            this.inventory.range += (3.8 - this.inventory.range) / 3;
         }
 
         this.inventory.tick();
