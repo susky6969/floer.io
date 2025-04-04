@@ -5,8 +5,8 @@ import { ClientPlayer } from "@/scripts/entities/clientPlayer.ts";
 import { loadAssets } from "@/scripts/utils/pixi";
 import { Camera } from "@/scripts/render/camera";
 import { ClientEntity } from "@/scripts/entities/clientEntity.ts";
-import { EntityType } from "@common/constants.ts";
-import { updateEquipPetalColumn } from "@/scripts/render/petal";
+import { EntityType, GameConstants } from "@common/constants.ts";
+import { updateEquipPetalColumn } from "@/scripts/render/petalRender.ts";
 import { ClientApplication } from "../main.ts";
 import { JoinPacket } from "@common/packets/joinPacket.ts";
 import { GameBitStream, Packet, PacketStream } from "@common/net.ts";
@@ -39,6 +39,7 @@ export class Game {
     }
 
     readonly entityPool = new EntityPool<ClientEntity>();
+    readonly playerNames = new Map<number, string>();
 
     readonly camera = new Camera(this);
 
@@ -78,7 +79,7 @@ export class Game {
         this.running = true;
 
         this.ui.canvas.css("display", "block");
-        this.ui.out_game_screen.css("display", "none");
+        this.ui.outGameScreen.css("display", "none");
 
         this.pixi.start();
     }
@@ -127,12 +128,12 @@ export class Game {
             this.entityPool.deleteByID(id);
         }
 
-        // for (const newPlayer of packet.newPlayers) {
-        //     this.playerNames.set(newPlayer.id, newPlayer.name);
-        // }
-        // for (const id of packet.deletedPlayers) {
-        //     this.playerNames.delete(id);
-        // }
+        for (const newPlayer of packet.newPlayers) {
+            this.playerNames.set(newPlayer.id, newPlayer.name);
+        }
+        for (const id of packet.deletedPlayers) {
+            this.playerNames.delete(id);
+        }
 
         for (const entityData of packet.fullEntities) {
             let entity = this.entityPool.get(entityData.id);
@@ -191,7 +192,7 @@ export class Game {
     }
 
     connect(address: string) {
-        this.ui.ready_button.prop("disabled", true);
+        this.ui.readyButton.prop("disabled", true);
 
         this.socket = new WebSocket(address);
 
@@ -203,7 +204,8 @@ export class Game {
 
         this.socket.onopen = () => {
             const joinPacket = new JoinPacket();
-            joinPacket.name = "Player";
+            const name = this.ui.nameInput.val();
+            joinPacket.name = name ? name : GameConstants.player.defaultName;
             this.sendPacket(joinPacket);
         };
 
@@ -233,7 +235,8 @@ export class Game {
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0");
         inputPacket.isDefending = this.input.isInputDown("Mouse2");
-        inputPacket.direction = this.input.mouseDir;
+        inputPacket.direction = this.input.mouseDirection;
+        inputPacket.mouseDistance = this.input.mouseDistance;
         this.sendPacket(inputPacket);
     }
 
