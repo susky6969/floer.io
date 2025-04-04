@@ -15,7 +15,8 @@ export const GameConstants = {
         maxNameLength: 20
     },
     petal: {
-        rotationRadius: 0.5
+        rotationRadius: 0.5,
+        useReload: 0.9
     },
     game: {
         width: 100,

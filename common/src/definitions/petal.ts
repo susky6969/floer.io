@@ -3,8 +3,10 @@ import { ObjectDefinition, Definitions } from "../utils/definitions";
 export type PetalDefinition = ObjectDefinition & {
     readonly damage?: number
     readonly health?: number
-    readonly reload?: number
-    readonly radius: number
+    readonly reloadTime?: number
+    readonly useTime?: number
+    readonly heal?: number
+    readonly hitboxRadius: number
 } & PetalPieceType;
 
 type PetalPieceType = {
@@ -28,8 +30,8 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Light",
         damage: 1,
         health: 1,
-        reload: 0.5,
-        radius: 0.3,
+        reloadTime: 0.5,
+        hitboxRadius: 0.3,
         isDuplicate: true,
         pieceAmount: 5,
         isShowedInOne: false
@@ -39,8 +41,8 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Stinger",
         damage: 50,
         health: 1,
-        reload: 5,
-        radius: 0.3,
+        reloadTime: 5,
+        hitboxRadius: 0.3,
         isDuplicate: false,
         pieceAmount: 1
     },
@@ -49,16 +51,21 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Sand",
         damage: 6,
         health: 3,
-        reload: 0.8,
-        radius: 0.4,
+        reloadTime: 0.8,
+        hitboxRadius: 0.4,
         isDuplicate: true,
         pieceAmount: 4,
         isShowedInOne: true
     },
     {
-        idString: "basic",
-        displayName: "Basic",
-        radius: 0.5,
+        idString: "rose",
+        displayName: "Rose",
+        damage: 3,
+        health: 3,
+        heal: 10,
+        reloadTime: 1.5,
+        useTime: 1.5,
+        hitboxRadius: 0.4,
         isDuplicate: false,
         pieceAmount: 1
     }

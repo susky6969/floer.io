@@ -19,6 +19,7 @@ export class ClientPetal extends ClientEntity {
 
     constructor(game: Game, id: number) {
         super(game, id);
+        this.images.body.setZIndex(0)
 
         this.game.camera.addObject(this.container);
 
@@ -39,7 +40,7 @@ export class ClientPetal extends ClientEntity {
 
     updateFromData(data: EntitiesNetData[EntityType.Petal], _isNew: boolean): void {
         this.position = data.position;
-        this.images.body.setFrame(`${data.definition.idString}.svg`).setScale(data.definition.radius)
+        this.images.body.setFrame(`${data.definition.idString}.svg`).setScale(data.definition.hitboxRadius)
         this.images.body.setVisible(!data.isReloading)
         if (this.firstPacket){
             this.firstPacket = false;
