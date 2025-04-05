@@ -76,10 +76,14 @@ export class GameSprite extends Sprite {
         return this;
     }
 
-    setScaleByUnit(radius: number): this {
-        const scale = Camera.unitToScreen(radius) / 100
-        this.scale = Vec2.new(scale, scale);
+    setScaleByUnitRadius(radius: number): this {
+        this.scale = GameSprite.getScaleByUnitRadius(radius)
         return this;
+    }
+
+    static getScaleByUnitRadius(radius: number): Vector {
+        const scale = Camera.unitToScreen(radius) / 100
+        return Vec2.new(scale, scale);
     }
 
     setTint(tint: ColorSource): this {

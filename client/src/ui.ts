@@ -9,15 +9,20 @@ export class UI {
     readonly canvas = $<HTMLCanvasElement>("#canvas");
     readonly readyButton = $<HTMLDivElement>("#btn-ready");
 
+    readonly inGameScreen =  $<HTMLDivElement>("#in-game-screen");
     readonly outGameScreen =  $<HTMLDivElement>("#out-game-screen");
 
-    readonly equipPetalColumn= $<HTMLDivElement>("#equipped-petals-column");
+    readonly equipPetalRow= $<HTMLDivElement>(".equipped-petals-row");
+
+    readonly preparePetalRow= $<HTMLDivElement>(".preparation-petals-row");
 
     readonly nameInput = $<HTMLInputElement>("#name");
 
     readonly gameOverScreen = $<HTMLDivElement>("#game-over-screen");
 
     readonly gameOverMurderer = $<HTMLDivElement>("#game-over-murderer");
+
+    readonly gameOverKills = $<HTMLDivElement>("#game-over-kills");
 
     readonly continueButton = $<HTMLDivElement>("#btn-continue");
 
@@ -29,8 +34,7 @@ export class UI {
         });
 
         this.continueButton.on("click", (e: Event) => {
-            app.game.endGame();
-            this.gameOverScreen.css("display", "none");
+            app.game.socket?.close();
         });
 
         this.gameOverScreen.css("display", "none");
@@ -38,7 +42,11 @@ export class UI {
 
     showGameOverScreen(packet: GameOverPacket) {
         this.gameOverScreen.css("display", "flex");
+
         this.gameOverMurderer.attr("textStroke", packet.murderer);
         this.gameOverMurderer.text(packet.murderer);
+        const kills = `You killed ${packet.kills} flower${packet.kills > 1 ? "s" : ""} this run.`
+        this.gameOverKills.attr("textStroke", kills);
+        this.gameOverKills.text(kills);
     }
 }
