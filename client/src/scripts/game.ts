@@ -6,7 +6,7 @@ import { loadAssets } from "@/scripts/utils/pixi";
 import { Camera } from "@/scripts/render/camera";
 import { ClientEntity } from "@/scripts/entities/clientEntity.ts";
 import { EntityType, GameConstants } from "@common/constants.ts";
-import { updatePetalRows } from "@/scripts/render/petalRender.ts";
+import { Inventory, PetalContainer } from "@/scripts/inventory.ts";
 import { ClientApplication } from "../main.ts";
 import { JoinPacket } from "@common/packets/joinPacket.ts";
 import { GameBitStream, Packet, PacketStream } from "@common/net.ts";
@@ -18,11 +18,13 @@ import { Minimap } from "@/scripts/render/minimap.ts";
 import { ClientMob } from "@/scripts/entities/clientMob.ts";
 import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
 import { Tween } from '@tweenjs/tween.js';
+import { ClientLoot } from "@/scripts/entities/clientLoot.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
     [EntityType.Petal]: ClientPetal,
-    [EntityType.Mob]: ClientMob
+    [EntityType.Mob]: ClientMob,
+    [EntityType.Loot]: ClientLoot
 }
 
 
@@ -57,11 +59,14 @@ export class Game {
     constructor(app: ClientApplication) {
         this.app = app;
         this.ui = app.ui;
+        this.inventory = new Inventory(this);
     }
 
     mapGraphics = new Graphics({
         zIndex: -99
     })
+
+    inventory: Inventory;
 
     async init() {
         await this.pixi.init({
@@ -82,8 +87,14 @@ export class Game {
 
         this.camera.init();
 
+        this.inventory.init(GameConstants.player.defaultSlot);
+        this.inventory.load(
+            GameConstants.player.defaultEquippedPetals,
+            GameConstants.player.defaultPreparationPetals,
+        )
+
         await loadAssets();
-        updatePetalRows(this);
+        this.inventory.updatePetalRows();
     }
 
     startGame() {
@@ -92,6 +103,7 @@ export class Game {
 
         this.ui.inGameScreen.css("display", "block");
         this.ui.outGameScreen.css("display", "none");
+        this.ui.hud.append(this.ui.petalColumn);
 
         this.pixi.start();
     }
@@ -111,6 +123,9 @@ export class Game {
 
         this.ui.inGameScreen.css("display", "none");
         this.ui.outGameScreen.css("display", "block");
+
+        this.ui.main.append(this.ui.petalColumn);
+
         this.ui.gameOverScreen.css("display", "none");
     }
 
@@ -264,6 +279,8 @@ export class Game {
         inputPacket.isDefending = this.input.isInputDown("Mouse2");
         inputPacket.direction = this.input.mouseDirection;
         inputPacket.mouseDistance = this.input.mouseDistance;
+        inputPacket.equipped_petals = this.inventory.equipped_petals();
+
         this.sendPacket(inputPacket);
     }
 
