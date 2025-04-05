@@ -22,7 +22,7 @@ export const Mobs = new Definitions<MobDefinition>([
         damage: 5,
         health: 100,
         category: MobCategory.Passive,
-        hitboxRadius: 2,
+        hitboxRadius: 3,
         speed: 7.8
     }
 ] satisfies MobDefinition[]);
