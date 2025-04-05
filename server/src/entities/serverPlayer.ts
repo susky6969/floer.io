@@ -1,6 +1,6 @@
 import { type WebSocket } from "ws";
-import { damageableEntity, isDamageableEntity, ServerEntity } from "./serverEntity";
-import { Vec2, type Vector } from "../../../common/src/utils/vector";
+import { damageableEntity, ServerEntity } from "./serverEntity";
+import { Vec2 } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
 import { UpdatePacket, type EntitiesNetData } from "../../../common/src/packets/updatePacket";
@@ -14,18 +14,11 @@ import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
 import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
+import { CollisionResponse } from "../../../common/src/utils/collision";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
     socket: WebSocket;
-
-    get position(): Vector {
-        return this.hitbox.position;
-    }
-
-    set position(position: Vector) {
-        this.updatePosition(position);
-    }
 
     hitbox = new CircleHitbox(GameConstants.player.radius);
 
@@ -50,8 +43,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this._health = MathNumeric.clamp(health, 0, GameConstants.player.maxHealth);
         this.setFullDirty();
     }
-
-    dead = false;
 
     kills = 0;
 
@@ -121,28 +112,11 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         );
         position = Vec2.add(position, Vec2.mul(speed, this.game.dt));
 
-        const entities = this.game.grid.intersectsHitbox(this.hitbox);
-
-        for (const entity of entities) {
-            if (!isDamageableEntity(entity)) continue;
-            const collision = this.hitbox.getIntersection(entity.hitbox);
-            if (collision) {
-                if (entity.canReceiveDamageFrom(this))
-                    entity.receiveDamage(this.damage, this);
-                switch (entity.type) {
-                    case EntityType.Player:
-                        if (entity === this) continue;
-                        position = Vec2.sub(position, Vec2.mul(collision.dir, collision.pen));
-                        break;
-                }
-            }
-        }
-
         this.position = position;
 
         if (this.isAttacking) {
             this.inventory.range = 6;
-        }else if (this.isDefending){
+        }else if (this.isDefending) {
             this.inventory.range = 2.5;
         }else {
             this.inventory.range = 3.8;
@@ -151,8 +125,20 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.tick();
     }
 
+    dealDamageTo(entity: damageableEntity): void{
+        if (entity.canReceiveDamageFrom(this))
+            entity.receiveDamage(this.damage, this);
+    }
+
+    collideWith(collision: CollisionResponse, entity: damageableEntity): void{
+        if (entity === this) return;
+        if (collision) {
+            this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen));
+        }
+    }
+
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
-        if (this.dead) return;
+        if (!this.isActive()) return;
         this.health -= amount;
 
         if (this.health <= 0) {
@@ -299,7 +285,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     destroy() {
-        this.dead = true;
         super.destroy();
         for (const i of this.petals){
             i.destroy();

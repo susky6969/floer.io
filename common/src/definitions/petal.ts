@@ -49,8 +49,8 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "sand",
         displayName: "Sand",
-        damage: 6,
-        health: 3,
+        damage: 2,
+        health: 0.8,
         reloadTime: 0.8,
         hitboxRadius: 0.4,
         isDuplicate: true,

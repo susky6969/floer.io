@@ -2,7 +2,6 @@ import { Game } from "@/scripts/game";
 import $ from "jquery";
 import { Vec2 } from "@common/utils/vector";
 import { P2, MathGraphics } from "@common/utils/math";
-import { GameConstants } from "@common/constants.ts";
 
 const light_pieces = [0, 1, 2, 3, 4];
 
@@ -32,7 +31,7 @@ export function updateEquipPetalColumn(game: Game) {
         column.append(petal_slot);
 
         light_pieces.forEach(() => {
-            const petal = $("<img alt='' class='piece-petal' src='../../../public/img/game/petal/light.svg'>");
+            const petal = $("<img alt='' class='piece-petal' src='/img/game/petal/light.svg'>");
             petal.css("width", "25%");
             petal.css("height", "25%");
             const { x, y } = Vec2.add(center, MathGraphics.getPositionOnCircle(rad, radius));

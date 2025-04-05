@@ -9,13 +9,21 @@ import { ServerPlayer } from "./serverPlayer";
 import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
 
+export type collideableEntity = ServerMob | ServerPlayer;
+
 export type damageableEntity = ServerPetal | ServerPlayer | ServerMob
+
+export function isCollideableEntity(entity: ServerEntity): entity is collideableEntity {
+    return entity.type === EntityType.Player
+        || entity.type === EntityType.Mob;
+}
 
 export function isDamageableEntity(entity: ServerEntity): entity is damageableEntity {
     return entity.type === EntityType.Petal
         ||  entity.type === EntityType.Player
         || entity.type === EntityType.Mob;
 }
+
 
 export abstract class ServerEntity<T extends EntityType = EntityType> implements GameEntity{
     abstract type: T;
@@ -26,9 +34,14 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     _oldPosition?: Vector;
 
     hasInited: boolean = false;
+    destroyed: boolean = false;
 
-    get position(): Vector { return this._position; }
-    set position(pos: Vector) { this._position = pos; }
+    get position(): Vector {
+        return this._position;
+    }
+    set position(pos: Vector) {
+        this.updatePosition(pos);
+    }
 
     abstract hitbox: Hitbox;
 
@@ -37,6 +50,10 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
 
     canReceiveDamageFrom(entity: ServerEntity): boolean {
         return !(this === entity);
+    }
+
+    isActive(): boolean {
+        return !this.destroyed;
     }
 
     constructor(game: Game, pos: Vector) {
@@ -72,12 +89,19 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
 
     setDirty(): void {
         if (!this.hasInited) return;
+
         this.game.partialDirtyEntities.add(this);
     }
 
     setFullDirty(): void {
         if (!this.hasInited) return;
+
         this.game.fullDirtyEntities.add(this);
+    }
+
+    setPositionSafe(position: Vector) {
+        if (!this.isActive()) return;
+        this.updatePosition(position);
     }
 
     updatePosition(position: Vector): Vector | undefined {
@@ -93,6 +117,7 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
         }
 
         if (!this.hasInited) return;
+        if (this.destroyed) return;
 
         this.setDirty();
         this.game.grid.updateEntity(this);
@@ -101,7 +126,7 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     abstract get data(): Required<EntitiesNetData[EntityType]>;
 
     destroy(): void {
-        this.tick();
+        this.destroyed = true;
         this.game.grid.remove(this);
     }
 }

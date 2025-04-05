@@ -1,4 +1,4 @@
-import { isDamageableEntity, ServerEntity } from "./serverEntity";
+import { damageableEntity, isDamageableEntity, ServerEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
@@ -8,31 +8,23 @@ import { MobCategory, MobDefinition } from "../../../common/src/definitions/mob"
 import { MathGraphics, MathNumeric } from "../../../common/src/utils/math";
 import { ServerPlayer } from "./serverPlayer";
 import { Random } from "../../../common/src/utils/random";
+import { CollisionResponse } from "../../../common/src/utils/collision";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
-    private dead: boolean = false;
-
-    get position(): Vector {
-        return this.hitbox.position;
-    }
-
-    set position(position: Vector) {
-        this.updatePosition(position);
-    }
 
     hitbox: CircleHitbox;
     definition: MobDefinition;
 
     readonly damage: number;
-    _health!: number;
+
+    private _health!: number;
     get health(): number {
         return this._health;
     }
 
     set health(value: number) {
         if (value === this._health) return
-
         this._health = MathNumeric.clamp(value, 0, this.definition.health);
 
         this.setFullDirty();
@@ -75,15 +67,15 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
     tick(): void{
         if (this.aggroTarget) {
-            if (!this.aggroTarget.dead) {
+            if (this.aggroTarget.destroyed) {
+                this.aggroTarget = undefined;
+            } else {
                 this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
                 this.position = Vec2.add(
                     this.position, Vec2.mul(
                         this.direction, this.definition.speed * this.game.dt
                     )
                 );
-            } else {
-                this.aggroTarget = undefined;
             }
         }else {
             if (this.definition.category !== MobCategory.Fixed) {
@@ -107,28 +99,46 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
             }
         }
 
-        const entities = this.game.grid.intersectsHitbox(this.hitbox);
+        // const entities = this.game.grid.intersectsHitbox(this.hitbox);
+        //
+        // for (const entity of entities) {
+        //     if (!isDamageableEntity(entity)) continue;
+        //     const collision = this.hitbox.getIntersection(entity.hitbox);
+        //     if (collision) {
+        //         if (this.damage && entity.canReceiveDamageFrom(this))
+        //             entity.receiveDamage(this.damage, this);
+        //         switch (entity.type) {
+        //             case EntityType.Player:
+        //                 this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen / this.weight));
+        //                 break;
+        //             case EntityType.Mob:
+        //                 if (entity === this) continue;
+        //                 this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen));
+        //         }
+        //     }
+        // }
+    }
 
-        for (const entity of entities) {
-            if (!isDamageableEntity(entity)) continue;
-            const collision = this.hitbox.getIntersection(entity.hitbox);
-            if (collision) {
-                if (this.damage && entity.canReceiveDamageFrom(this))
-                    entity.receiveDamage(this.damage, this);
-                switch (entity.type) {
-                    case EntityType.Player:
-                        this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen / this.weight));
-                        break;
-                    case EntityType.Mob:
-                        if (entity === this) continue;
-                        this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen));
-                }
+    dealDamageTo(entity: damageableEntity): void{
+        if (entity.canReceiveDamageFrom(this))
+            entity.receiveDamage(this.damage, this);
+    }
+
+    collideWith(collision: CollisionResponse, entity: damageableEntity): void{
+        if (entity === this) return;
+        if (collision) {
+            switch (entity.type) {
+                case EntityType.Player:
+                    this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen / this.weight));
+                    break;
+                case EntityType.Mob:
+                    this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen));
             }
         }
     }
 
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
-        if (this.dead) return;
+        if (!this.isActive()) return;
 
         if (!this.aggroTarget && source instanceof ServerPlayer) {
             this.aggroTarget = source;
@@ -137,7 +147,6 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         this.health -= amount;
 
         if (this.health <= 0) {
-            this.dead = true;
             this.destroy();
         }
     }

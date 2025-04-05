@@ -1,5 +1,5 @@
-import { damageableEntity, isDamageableEntity, ServerEntity } from "./serverEntity";
-import { Vec2, type Vector } from "../../../common/src/utils/vector";
+import { damageableEntity, ServerEntity } from "./serverEntity";
+import { Vec2 } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType, GameConstants } from "../../../common/src/constants";
@@ -12,14 +12,6 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
 
     owner: ServerPlayer;
 
-    get position(): Vector {
-        return this.hitbox.position;
-    }
-
-    set position(position: Vector) {
-        this.updatePosition(position);
-    }
-
     hitbox: CircleHitbox;
     definition: PetalDefinition;
 
@@ -28,6 +20,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     get isReloading(): boolean {
         return this._isReloading;
     }
+
     set isReloading(isReloading: boolean) {
         if (this._isReloading === isReloading) return;
         this._isReloading = isReloading;
@@ -53,6 +46,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     health?: number;
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
+        if (!this.health) return false;
         switch (source.type) {
             case EntityType.Player:
                 return source != this.owner
@@ -62,6 +56,10 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
                 return source != this
                     && source.owner != this.owner
         }
+    }
+
+    isActive(): boolean {
+        return !this.isReloading && !this.isUsing && !this.destroyed;
     }
 
     constructor(player: ServerPlayer, definition: PetalDefinition) {
@@ -98,18 +96,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
                     Vec2.sub(this.owner.position, this.position), 4
                 )
             );
-        }else {
-            const entities = this.game.grid.intersectsHitbox(this.hitbox);
-
-            for (const entity of entities) {
-                if (!isDamageableEntity(entity)) continue;
-                const collision = this.hitbox.getIntersection(entity.hitbox);
-                if (collision) {
-                    if (this.damage && entity.canReceiveDamageFrom(this))
-                        entity.receiveDamage(this.damage, this.owner);
-                }
-            }
-
+        } else {
             if (this.definition.useTime) {
                 this.useReload += this.game.dt;
             }
@@ -136,24 +123,21 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         }
     }
 
+    dealDamageTo(entity: damageableEntity): void{
+        if (this.damage && entity.canReceiveDamageFrom(this)) {
+            entity.receiveDamage(this.damage, this.owner);
+        }
+    }
+
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
         if (!this.health) return;
-        if (this.isReloading) return;
+        if (!this.isActive()) return;
 
         this.health -= amount;
 
         if (this.health <= 0) {
             this.isReloading = true;
         }
-    }
-
-    canSetPositionSafe(): boolean {
-        return (!this.isUsing && !this.isReloading);
-    }
-
-    setPositionSafe(position: Vector) {
-        if (!this.canSetPositionSafe()) return;
-        this.position = position;
     }
 
     get data(): Required<EntitiesNetData[EntityType]>{

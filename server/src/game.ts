@@ -1,15 +1,17 @@
 import { type WebSocket } from "ws";
 import { ServerPlayer } from "./entities/serverPlayer";
-import { type ServerEntity } from "./entities/serverEntity";
+import {
+    isCollideableEntity,
+    isDamageableEntity,
+    ServerEntity
+} from "./entities/serverEntity";
 import { Grid } from "./grid";
 import { EntityPool } from "../../common/src/utils/entityPool";
 import { GameConstants } from "../../common/src/constants";
 import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";
-import { type Explosion } from "../../common/src/packets/updatePacket";
 import { IDAllocator } from "./idAllocator";
 import { Vec2, type Vector } from "../../common/src/utils/vector";
-import { MathNumeric } from "../../common/src/utils/math";
 import { ServerMob } from "./entities/serverMob";
 import { Mobs } from "../../common/src/definitions/mob";
 
@@ -82,9 +84,33 @@ export class Game {
         this.dt = (Date.now() - this.now) / 1000;
         this.now = Date.now();
 
+        const activeEntities = new Set<ServerEntity>();
+
         // update entities
         for (const entity of this.grid.entities.values()) {
+            if (entity.isActive()) activeEntities.add(entity);
             entity.tick();
+        }
+
+        for (const entity of activeEntities) {
+            const collidedEntities =
+                this.grid.intersectsHitbox(entity.hitbox);
+
+            for (const collidedEntity of collidedEntities) {
+                if (collidedEntity === entity) continue;
+                if (!activeEntities.has(collidedEntity)) continue;
+
+                const collision =
+                    entity.hitbox.getIntersection(collidedEntity.hitbox);
+                if (collision) {
+                    if (isCollideableEntity(entity) && isCollideableEntity(collidedEntity)) {
+                        entity.collideWith(collision, collidedEntity);
+                    }
+                    if (isDamageableEntity(entity) && isDamageableEntity(collidedEntity)) {
+                        entity.dealDamageTo(collidedEntity);
+                    }
+                }
+            }
         }
 
         // Cache entity serializations
