@@ -73,7 +73,7 @@ export const MathNumeric = {
     }
 };
 
-/* export const EasingFunctions = {
+export const EasingFunctions = {
     linear: (t: number) => t,
     sineIn: (t: number) => {
         return 1 - Math.cos(t * halfPI);
@@ -84,4 +84,4 @@ export const MathNumeric = {
     sineInOut: (t: number) => {
         return (1 - Math.cos(Math.PI * t)) / 2;
     }
-}; */
+};
