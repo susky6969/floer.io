@@ -26,7 +26,7 @@ export class ClientPlayer extends ClientEntity {
         this.images.body.setZIndex(-2)
 
         this.name = new Text({
-            text: "",
+            text: this.game.playerNames.get(id),
             style: {
                 fontFamily: 'Ubuntu',
                 fontSize: 14,
@@ -49,6 +49,10 @@ export class ClientPlayer extends ClientEntity {
     }
 
     render(): void {
+        const name = this.game.playerNames.get(this.id)
+
+        if( name ) this.name.text = name;
+
         this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
     }
 
@@ -73,8 +77,6 @@ export class ClientPlayer extends ClientEntity {
         this.position = data.position;
 
         this.render();
-
-        this.name.text = data.name;
 
         if (_isNew){
             this.container.position = Camera.vecToScreen(this.position);

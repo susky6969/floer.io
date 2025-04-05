@@ -48,6 +48,7 @@ export class Game {
     }
 
     readonly entityPool = new EntityPool<ClientEntity>();
+    readonly playerNames = new Map<number, string>();
 
     readonly camera = new Camera(this);
 
@@ -160,6 +161,13 @@ export class Game {
         for (const id of packet.deletedEntities) {
             this.entityPool.get(id)?.destroy();
             this.entityPool.deleteByID(id);
+        }
+
+        for (const newPlayer of packet.newPlayers) {
+            this.playerNames.set(newPlayer.id, newPlayer.name);
+        }
+        for (const id of packet.deletedPlayers) {
+            this.playerNames.delete(id);
         }
 
         for (const entityData of packet.fullEntities) {
