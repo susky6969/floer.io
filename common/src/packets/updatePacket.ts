@@ -31,6 +31,14 @@ export interface EntitiesNetData {
             healthPercent: number
         }
     }
+    [EntityType.Loot]: {
+        position: Vector
+        definition: PetalDefinition
+
+        full?: {
+
+        }
+    }
 }
 
 interface EntitySerialization<T extends EntityType> {
@@ -110,6 +118,26 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             return {
                 healthPercent: stream.readFloat(0.0, 1.0, 16)
             };
+        }
+    },
+    [EntityType.Loot]: {
+        partialSize: 8,
+        fullSize: 0,
+        serializePartial(stream, data): void {
+            Petals.writeToStream(stream, data.definition);
+            stream.writePosition(data.position);
+        },
+        serializeFull(stream, data): void {
+
+        },
+        deserializePartial(stream) {
+            return {
+                definition: Petals.readFromStream(stream),
+                position: stream.readPosition(),
+            };
+        },
+        deserializeFull(stream) {
+            return {};
         }
     },
 };
