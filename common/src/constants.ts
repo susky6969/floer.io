@@ -10,9 +10,9 @@ export const GameConstants = {
     maxPosition: 2048,
     player: {
         radius: 1.5,
-        defaultBodyDamage: 5,
-        defaultHealth: 100,
-        maxHealth: 100,
+        defaultBodyDamage: 20,
+        defaultHealth: 150,
+        maxHealth: 150,
         maxSpeed: 8,
         defaultName: "Player",
         maxNameLength: 20,

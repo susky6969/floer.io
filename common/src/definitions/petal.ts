@@ -42,8 +42,8 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "stinger",
         displayName: "Stinger",
-        damage: 50,
-        health: 1,
+        damage: 35,
+        health: 8,
         displaySize: 25,
         reloadTime: 5,
         hitboxRadius: 0.3,
