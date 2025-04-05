@@ -12,6 +12,7 @@ export type PetalDefinition = ObjectDefinition & {
 type PetalPieceType = {
     readonly isDuplicate: false
     readonly pieceAmount: 1
+    readonly displaySize: number
 } | {
     readonly isDuplicate: true
     // Only allowed to use duplicateDisplay when have more than one
@@ -41,6 +42,7 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Stinger",
         damage: 50,
         health: 1,
+        displaySize: 25,
         reloadTime: 5,
         hitboxRadius: 0.3,
         isDuplicate: false,
@@ -62,6 +64,7 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Rose",
         damage: 3,
         health: 3,
+        displaySize: 35,
         heal: 10,
         reloadTime: 1.5,
         useTime: 1.5,
