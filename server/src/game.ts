@@ -14,6 +14,7 @@ import { IDAllocator } from "./idAllocator";
 import { Vec2, type Vector } from "../../common/src/utils/vector";
 import { ServerMob } from "./entities/serverMob";
 import { Mobs } from "../../common/src/definitions/mob";
+import { CollisionResponse } from "../../common/src/utils/collision";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -92,6 +93,8 @@ export class Game {
             entity.tick();
         }
 
+        const collisionTasks = new Set<CollisionTask>();
+
         for (const entity of activeEntities) {
             const collidedEntities =
                 this.grid.intersectsHitbox(entity.hitbox);
@@ -103,13 +106,23 @@ export class Game {
                 const collision =
                     entity.hitbox.getIntersection(collidedEntity.hitbox);
                 if (collision) {
-                    if (isCollideableEntity(entity) && isCollideableEntity(collidedEntity)) {
-                        entity.collideWith(collision, collidedEntity);
-                    }
                     if (isDamageableEntity(entity) && isDamageableEntity(collidedEntity)) {
                         entity.dealDamageTo(collidedEntity);
                     }
+
+                    collisionTasks.add({
+                        source: entity,
+                        target: collidedEntity,
+                        collision
+                    })
                 }
+            }
+        }
+
+        for (const collisionTask of collisionTasks) {
+            const { source, target, collision } = collisionTask;
+            if (isCollideableEntity(source) && isCollideableEntity(target)) {
+                source.collideWith(collision, target);
             }
         }
 
@@ -144,4 +157,10 @@ export class Game {
         this.deletedPlayers.length = 0;
         this.mapDirty = false;
     }
+}
+
+interface CollisionTask {
+    source: ServerEntity;
+    target: ServerEntity;
+    collision: CollisionResponse;
 }

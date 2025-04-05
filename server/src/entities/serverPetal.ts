@@ -6,6 +6,7 @@ import { EntityType, GameConstants } from "../../../common/src/constants";
 import { PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
 import { ServerMob } from "./serverMob";
+import { CollisionResponse } from "../../../common/src/utils/collision";
 
 export class ServerPetal extends ServerEntity<EntityType.Petal> {
     type: EntityType.Petal = EntityType.Petal;
@@ -44,6 +45,8 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
 
     readonly damage?: number;
     health?: number;
+
+    elasticity = 0.1;
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
         if (!this.health) return false;

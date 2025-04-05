@@ -1,12 +1,12 @@
 import { type WebSocket } from "ws";
-import { damageableEntity, ServerEntity } from "./serverEntity";
+import { collideableEntity, damageableEntity, ServerEntity } from "./serverEntity";
 import { Vec2 } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
 import { UpdatePacket, type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, RectHitbox } from "../../../common/src/utils/hitbox";
 import { Random } from "../../../common/src/utils/random";
-import { MathNumeric } from "../../../common/src/utils/math";
+import { MathGraphics, MathNumeric } from "../../../common/src/utils/math";
 import { InputPacket } from "../../../common/src/packets/inputPacket";
 import { JoinPacket } from "../../../common/src/packets/joinPacket";
 import { EntityType, GameConstants } from "../../../common/src/constants";
@@ -130,13 +130,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             entity.receiveDamage(this.damage, this);
     }
 
-    collideWith(collision: CollisionResponse, entity: damageableEntity): void{
-        if (entity === this) return;
-        if (collision) {
-            this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen));
-        }
-    }
-
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
         if (!this.isActive()) return;
         this.health -= amount;
@@ -148,6 +141,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
             const gameOverPacket = new GameOverPacket();
             gameOverPacket.kills = this.kills;
+            gameOverPacket.murderer = source.name;
             this.sendPacket(gameOverPacket);
         }
     }

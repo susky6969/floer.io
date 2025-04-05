@@ -16,6 +16,10 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     hitbox: CircleHitbox;
     definition: MobDefinition;
 
+    get name(): string {
+        return this.definition.displayName
+    }
+
     readonly damage: number;
 
     private _health!: number;
@@ -32,6 +36,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
     aggroTarget?: ServerPlayer;
     weight: number;
+    elasticity: number;
 
     _direction: Vector = Vec2.new(0, 0);
 
@@ -60,6 +65,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         this.damage = definition.damage;
         this.health = definition.health;
         this.weight = definition.hitboxRadius;
+        this.elasticity = this.weight * 2.5;
 
         this.game.grid.addEntity(this);
         this.position = position;
@@ -98,43 +104,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                 }
             }
         }
-
-        // const entities = this.game.grid.intersectsHitbox(this.hitbox);
-        //
-        // for (const entity of entities) {
-        //     if (!isDamageableEntity(entity)) continue;
-        //     const collision = this.hitbox.getIntersection(entity.hitbox);
-        //     if (collision) {
-        //         if (this.damage && entity.canReceiveDamageFrom(this))
-        //             entity.receiveDamage(this.damage, this);
-        //         switch (entity.type) {
-        //             case EntityType.Player:
-        //                 this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen / this.weight));
-        //                 break;
-        //             case EntityType.Mob:
-        //                 if (entity === this) continue;
-        //                 this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen));
-        //         }
-        //     }
-        // }
     }
 
     dealDamageTo(entity: damageableEntity): void{
         if (entity.canReceiveDamageFrom(this))
             entity.receiveDamage(this.damage, this);
-    }
-
-    collideWith(collision: CollisionResponse, entity: damageableEntity): void{
-        if (entity === this) return;
-        if (collision) {
-            switch (entity.type) {
-                case EntityType.Player:
-                    this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen / this.weight));
-                    break;
-                case EntityType.Mob:
-                    this.position = Vec2.sub(this.position, Vec2.mul(collision.dir, collision.pen));
-            }
-        }
     }
 
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {

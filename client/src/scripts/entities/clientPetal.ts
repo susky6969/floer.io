@@ -41,6 +41,7 @@ export class ClientPetal extends ClientEntity {
             .setFrame(`${data.definition.idString}.svg`)
             .setScaleByUnit(data.definition.hitboxRadius)
         this.images.body.setVisible(!data.isReloading)
+
         if (_isNew){
             this.container.position = Camera.vecToScreen(this.position);
         }

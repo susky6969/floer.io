@@ -6,6 +6,7 @@ import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
 import { Text, Graphics } from "pixi.js";
 import { MathGraphics, MathNumeric } from "@common/utils/math.ts";
+import { Vec2 } from "@common/utils/vector.ts";
 
 export class ClientPlayer extends ClientEntity {
     type = EntityType.Player;
@@ -50,7 +51,7 @@ export class ClientPlayer extends ClientEntity {
     render(): void {
         const name = this.game.playerNames.get(this.id)
         if(name) this.name.text = name;
-        this.container.position = Camera.vecToScreen(this.position);
+        this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
     }
 
     drawHealthBar(): void {
@@ -75,6 +76,12 @@ export class ClientPlayer extends ClientEntity {
         if (data.full) {
              this.health = data.full.health;
              this.drawHealthBar();
+        }
+
+        this.render();
+
+        if (_isNew){
+            this.container.position = Camera.vecToScreen(this.position);
         }
     }
 

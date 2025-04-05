@@ -3,18 +3,21 @@ import { EntityType } from "../../../common/src/constants";
 import { GameBitStream } from "../../../common/src/net";
 import { type EntitiesNetData, EntitySerializations } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, type Hitbox } from "../../../common/src/utils/hitbox";
-import { type Vector } from "../../../common/src/utils/vector";
+import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type Game } from "../game";
 import { ServerPlayer } from "./serverPlayer";
 import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
+import { CollisionResponse } from "../../../common/src/utils/collision";
+import { MathGraphics } from "../../../common/src/utils/math";
 
-export type collideableEntity = ServerMob | ServerPlayer;
+export type collideableEntity = ServerPetal | ServerPlayer | ServerMob;
 
-export type damageableEntity = ServerPetal | ServerPlayer | ServerMob
+export type damageableEntity = ServerPetal | ServerPlayer | ServerMob;
 
 export function isCollideableEntity(entity: ServerEntity): entity is collideableEntity {
-    return entity.type === EntityType.Player
+    return entity.type === EntityType.Petal
+        || entity.type === EntityType.Player
         || entity.type === EntityType.Mob;
 }
 
@@ -47,6 +50,9 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
 
     partialStream!: GameBitStream;
     fullStream!: GameBitStream;
+
+    weight: number = 1;
+    elasticity: number = 1;
 
     canReceiveDamageFrom(entity: ServerEntity): boolean {
         return !(this === entity);
@@ -121,6 +127,23 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
 
         this.setDirty();
         this.game.grid.updateEntity(this);
+    }
+
+    collideWith(collision: CollisionResponse, entity: damageableEntity): void{
+        if (entity.id === this.id) return;
+        if (collision) {
+            if (entity.type === this.type) {
+                this.position = Vec2.sub(
+                    this.position,
+                    Vec2.mul(collision.dir, collision.pen)
+                );
+            } else {
+                this.position = Vec2.sub(
+                    this.position,
+                    Vec2.mul(collision.dir, collision.pen * entity.elasticity / this.weight)
+                );
+            }
+        }
     }
 
     abstract get data(): Required<EntitiesNetData[EntityType]>;

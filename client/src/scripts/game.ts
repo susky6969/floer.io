@@ -16,6 +16,7 @@ import { Input } from "@/scripts/input.ts";
 import { InputPacket } from "@common/packets/inputPacket.ts";
 import { Minimap } from "@/scripts/render/minimap.ts";
 import { ClientMob } from "@/scripts/entities/clientMob.ts";
+import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -64,7 +65,7 @@ export class Game {
     async init() {
         await this.pixi.init({
             resizeTo: window,
-            resolution: 1,
+            resolution: 2,
             antialias: true,
             autoDensity: true,
             preference: "webgl",
@@ -97,6 +98,9 @@ export class Game {
     endGame() {
         this.running = false;
 
+        this.ui.canvas.css("display", "none");
+        this.ui.outGameScreen.css("display", "block");
+
         this.pixi.stop();
 
         for (const entity of this.entityPool) {
@@ -106,6 +110,8 @@ export class Game {
         this.camera.clear();
         this.entityPool.clear();
         this.activePlayerID = -1;
+
+        this.socket?.close();
     }
 
     onMessage(data: ArrayBuffer): void {
@@ -118,6 +124,10 @@ export class Game {
                 case packet instanceof UpdatePacket: {
                     this.updateFromPacket(packet);
                     this.startGame();
+                    break;
+                }
+                case packet instanceof GameOverPacket: {
+                    this.ui.showGameOverScreen(packet);
                     break;
                 }
             }
