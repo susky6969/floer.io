@@ -1,10 +1,11 @@
 import { ServerPlayer } from "../entities/serverPlayer";
 import { PetalBunch } from "./petalBunch";
 import { Game } from "../game";
-import { Petals } from "../../../common/src/definitions/petal";
+import { PetalDefinition, Petals, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { P2 } from "../../../common/src/utils/math";
 import { Vector } from "../../../common/src/utils/vector";
 import { GameConstants } from "../../../common/src/constants";
+import { differencesOfSameLengthArray } from "../../../common/src/utils/array";
 
 export class Inventory {
     position: Vector;
@@ -13,6 +14,7 @@ export class Inventory {
     readonly player: ServerPlayer;
 
     petalBunches: PetalBunch[] = [];
+    petals: SavedPetalDefinitionData[] = [];
 
     private totalDisplayedPetals = 0;
 
@@ -24,13 +26,23 @@ export class Inventory {
         this.player = player;
         this.position = player.position;
 
-        this.petalBunches.push(new PetalBunch(this, Petals.fromString("light")));
-        this.petalBunches.push(new PetalBunch(this, Petals.fromString("rose")));
-
-        for (let i = 0; i < 2; i++) {
-            this.petalBunches.push(new PetalBunch(this, Petals.fromString("sand")));
+        for (let i = 0; i < GameConstants.player.defaultSlot; i++) {
+            this.petals.push(null);
+            this.petalBunches.push(new PetalBunch(this, null));
         }
-        this.petalBunches.push(new PetalBunch(this, Petals.fromString("stinger")));
+    }
+
+    loadFrom(petals: SavedPetalDefinitionData[]) {
+        const differences =
+            differencesOfSameLengthArray<SavedPetalDefinitionData>(
+                this.petals, petals
+            );
+
+        differences.forEach((d) => {
+            this.petalBunches[d.index].destroy();
+            this.petalBunches[d.index] = new PetalBunch(this, d.to);
+            this.petals[d.index] = d.to
+        })
     }
 
     tick(): void {

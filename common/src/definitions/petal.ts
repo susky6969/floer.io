@@ -1,5 +1,7 @@
 import { ObjectDefinition, Definitions } from "../utils/definitions";
 
+export type SavedPetalDefinitionData = PetalDefinition | null
+
 export type PetalDefinition = ObjectDefinition & {
     readonly damage?: number
     readonly health?: number

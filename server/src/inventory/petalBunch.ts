@@ -1,4 +1,4 @@
-import { PetalDefinition, getDisplayedPieces } from "../../../common/src/definitions/petal";
+import { PetalDefinition, getDisplayedPieces, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { ServerPetal } from "../entities/serverPetal";
 import { P2, MathGraphics } from "../../../common/src/utils/math";
 import { Vec2, Vector } from "../../../common/src/utils/vector";
@@ -12,14 +12,14 @@ export class PetalBunch {
 
     inventory: Inventory;
 
-    readonly totalPieces: number;
-    readonly totalDisplayedPieces: number;
-    readonly definition: PetalDefinition;
+    readonly totalPieces: number = 0;
+    readonly totalDisplayedPieces: number = 0;
+    readonly definition: SavedPetalDefinitionData;
     petals: ServerPetal[] = [];
 
     rotationRadians = 0;
 
-    constructor(inventory: Inventory, definition: PetalDefinition) {
+    constructor(inventory: Inventory, definition: SavedPetalDefinitionData) {
         this.inventory = inventory;
 
         const player = inventory.player;
@@ -28,15 +28,21 @@ export class PetalBunch {
         this.definition = definition;
         this.position = player.position;
 
-        this.totalPieces = definition.pieceAmount;
-        this.totalDisplayedPieces = getDisplayedPieces(definition);
+        if (definition) {
+            this.totalPieces = definition.pieceAmount;
+            this.totalDisplayedPieces = getDisplayedPieces(definition);
 
-        for (let i = 0; i < this.totalPieces; i++) {
-            this.petals.push(new ServerPetal(player, definition));
+            for (let i = 0; i < this.totalPieces; i++) {
+                const petal = new ServerPetal(player, definition);
+                this.petals.push(petal);
+                petal.join()
+            }
         }
     }
 
     tick(radius: number, revolutionRadians: number, singleOccupiedRadians: number): void {
+        if (!this.definition) return;
+
         this.position = this.inventory.position;
 
         this.rotationRadians += 0.01;
@@ -74,5 +80,11 @@ export class PetalBunch {
         } else {
             this.petals[0].setPositionSafe(firstPetalCenter)
         }
+    }
+
+    destroy(): void {
+        this.petals.forEach(petal => {
+            petal.destroy();
+        })
     }
 }
