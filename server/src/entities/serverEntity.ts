@@ -10,6 +10,8 @@ import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { MathGraphics } from "../../../common/src/utils/math";
+import { ServerLoot } from "./serverLoot";
+import { Petals } from "../../../common/src/definitions/petal";
 
 export type collideableEntity = ServerPetal | ServerPlayer | ServerMob;
 

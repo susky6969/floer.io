@@ -9,6 +9,8 @@ import { MathGraphics, MathNumeric } from "../../../common/src/utils/math";
 import { ServerPlayer } from "./serverPlayer";
 import { Random } from "../../../common/src/utils/random";
 import { CollisionResponse } from "../../../common/src/utils/collision";
+import { ServerLoot } from "./serverLoot";
+import { Petals } from "../../../common/src/definitions/petal";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
@@ -144,4 +146,9 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
             }
         };
     };
+
+    destroy() {
+        super.destroy();
+        new ServerLoot(this.game, this.position, Petals.fromString("light"))
+    }
 }

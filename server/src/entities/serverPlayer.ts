@@ -74,7 +74,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     get petals(): ServerPetal[]{
         return this.inventory.petalBunches
             .reduce(
-                (pre, petalBunch) => pre.concat(petalBunch.petals),
+                (pre, petalBunch) =>
+                    pre.concat(petalBunch.petals),
                 [] as ServerPetal[]
             )
     }
@@ -252,10 +253,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.game.players.add(this);
         this.game.grid.addEntity(this);
 
-        for (const i of this.petals){
-            i.join();
-        }
-
         console.log(`"${this.name}" joined the game`);
     }
 
@@ -268,6 +265,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.mouseDistance = packet.mouseDistance;
         this.isAttacking = packet.isAttacking;
         this.isDefending = packet.isDefending;
+        this.inventory.loadFrom(packet.equipped_petals);
     }
 
     get data(): Required<EntitiesNetData[EntityType.Player]> {
