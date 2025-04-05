@@ -8,6 +8,7 @@ export interface EntitiesNetData {
     [EntityType.Player]: {
         position: Vector
         direction: Vector
+        name: string
 
         full?: {
             health: number
@@ -58,6 +59,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         serializePartial(stream, data): void {
             stream.writePosition(data.position);
             stream.writeUnit(data.direction, 16);
+            stream.writeASCIIString(data.name, GameConstants.player.maxNameLength)
         },
         serializeFull(stream, data): void {
             stream.writeFloat(data.health, 0, GameConstants.player.maxHealth, 12);
@@ -65,7 +67,8 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         deserializePartial(stream) {
             return {
                 position: stream.readPosition(),
-                direction: stream.readUnit(16)
+                direction: stream.readUnit(16),
+                name: stream.readASCIIString(GameConstants.player.maxNameLength)
             };
         },
         deserializeFull(stream) {
@@ -238,23 +241,6 @@ export class UpdatePacket implements Packet {
             flags |= UpdateFlags.PartialEntities;
         }
 
-        if (this.newPlayers.length) {
-            stream.writeArray(this.newPlayers, 8, player => {
-                stream.writeUint16(player.id);
-                stream.writeASCIIString(player.name, GameConstants.player.maxNameLength);
-            });
-
-            flags |= UpdateFlags.NewPlayers;
-        }
-
-        if (this.deletedPlayers.length) {
-            stream.writeArray(this.deletedPlayers, 8, id => {
-                stream.writeUint16(id);
-            });
-
-            flags |= UpdateFlags.DeletedPlayers;
-        }
-
         if (Object.values(this.playerDataDirty).includes(true)) {
             stream.writeBoolean(this.playerDataDirty.id);
             if (this.playerDataDirty.id) {
@@ -305,29 +291,6 @@ export class UpdatePacket implements Packet {
                     id,
                     type: entityType,
                     data
-                };
-            });
-        }
-
-        if (flags & UpdateFlags.PartialEntities) {
-            stream.readArray(this.partialEntities, 16, () => {
-                const id = stream.readUint16();
-                const entityType = stream.readUint8() as EntityType;
-                const data = EntitySerializations[entityType].deserializePartial(stream);
-                stream.readAlignToNextByte();
-                return {
-                    id,
-                    type: entityType,
-                    data
-                };
-            });
-        }
-
-        if (flags & UpdateFlags.NewPlayers) {
-            stream.readArray(this.newPlayers, 8, () => {
-                return {
-                    id: stream.readUint16(),
-                    name: stream.readASCIIString(GameConstants.player.maxNameLength)
                 };
             });
         }

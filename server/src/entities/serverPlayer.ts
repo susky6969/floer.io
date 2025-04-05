@@ -22,7 +22,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     hitbox = new CircleHitbox(GameConstants.player.radius);
 
-    name = "";
+    name = GameConstants.player.defaultName;
     direction = Vec2.new(0, 0);
     mouseDistance: number = 0;
     isAttacking = false;
@@ -272,6 +272,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         return {
             position: this.position,
             direction: this.direction,
+            name: this.name,
             full: {
                 health: this.health
             }
