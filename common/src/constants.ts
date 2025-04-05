@@ -1,7 +1,9 @@
 export enum EntityType {
     Player,
     Petal,
-    Mob
+    Mob,
+    Loot
+
 }
 
 export const GameConstants = {
@@ -16,7 +18,10 @@ export const GameConstants = {
         maxNameLength: 20,
         spawnMaxX: 100,
         spawnMaxY: 50,
-        revolutionSpeed: 2
+        revolutionSpeed: 2,
+        defaultSlot: 5,
+        defaultEquippedPetals: ["light","stinger","sand","sand","rose"],
+        defaultPreparationPetals: ["stinger","stinger","stinger","stinger","rose"]
     },
     petal: {
         rotationRadius: 0.5,
@@ -25,6 +30,9 @@ export const GameConstants = {
     game: {
         width: 2048,
         height: 50
+    },
+    loot: {
+        radius: 0.1
     },
     mob: {
         maxHealth: 100000,
