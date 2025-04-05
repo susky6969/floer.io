@@ -41,6 +41,9 @@ importers:
       pixi.js:
         specifier: ^8.3.3
         version: 8.4.1
+      tween.js:
+        specifier: ^16.6.0
+        version: 16.6.0
     devDependencies:
       '@tsconfig/node20':
         specifier: ^20.1.4
@@ -1731,6 +1734,10 @@ packages:
 
   tweedle.js@2.1.0:
     resolution: {integrity: sha512-0ReQgVjepoZkE6t0upWNgCRbplHkQJQYk1LStXugwSR728GLFmGDRuaQJlxeC/iBlxud6+P1RdODjaO25vHAqw==}
+
+  tween.js@16.6.0:
+    resolution: {integrity: sha512-IIhm0VsiBxNJO+WsXUvjcq+u3sKfOwSu67Yh9T5xSpXb2eHHi9+uZDDGBc7uMXjfud0bYiLkYCEb7JXIGXi5KA==}
+    deprecated: This package has moved to @tweenjs/tween.js. Please update your dependencies.
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -3522,6 +3529,8 @@ snapshots:
       safe-buffer: 5.1.2
 
   tweedle.js@2.1.0: {}
+
+  tween.js@16.6.0: {}
 
   type-check@0.4.0:
     dependencies:
