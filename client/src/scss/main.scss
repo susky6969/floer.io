@@ -31,20 +31,24 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    color: white;
 }
 
 #game-over-title {
-    color: white;
     font-size: 20px;
 }
 
 #game-over-murderer {
-    color: white;
     font-size: 30px;
 }
 
+#game-over-kills {
+    margin-top: 20px;
+    font-size: 15px;
+}
+
 #btn-continue {
-    margin-top: 50px;
+    margin-top: 20px;
     height: 35px;
     width: 120px;
     font-size: 20px;
@@ -116,6 +120,13 @@ body {
   align-items: center;
 }
 
+.column-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 #bottom-left-buttons {
   position: absolute;
   left: 5px;
@@ -143,8 +154,13 @@ body {
   margin: 0;
 }
 
-#equipped-petals-column {
+#equipped-petals-row {
     margin-top: 15px;
+    display: flex;
+}
+
+#preparation-petals-row {
+    margin-top: 8px;
     display: flex;
 }
 
@@ -162,12 +178,21 @@ body {
     left: -4px;
 }
 
-.equipped-petal-slot {
+#equipped-petals-row>.equipped-petal-slot{
     --x: 12px;
-    position: relative;
-    z-index: -1;
     width: 50px;
     height: 50px;
+}
+
+#preparation-petals-row>.equipped-petal-slot{
+    --x: 8px;
+    width: 35px;
+    height: 35px;
+}
+
+.equipped-petal-slot {
+    position: relative;
+    z-index: -1;
     border-style: solid;
     border-width: 4px;
     border-radius: 5px;
