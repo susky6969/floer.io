@@ -65,7 +65,6 @@ if (Cluster.isPrimary) {
         * */
 
         if (req.url?.startsWith("/floer/play")) {
-            console.log("hi");
             worker.send({
                 req: { headers: req.headers, method: req.method } as IncomingMessage
             } as ProcessMessage, req.socket);

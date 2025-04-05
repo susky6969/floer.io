@@ -71,10 +71,21 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         this.position = position;
     }
 
+    changeAggroTo(entity?: ServerEntity): void {
+        if (this.definition.category === MobCategory.Fixed) return;
+
+        if (this.aggroTarget && !entity) {
+            this.aggroTarget = undefined;
+        } else if (!this.aggroTarget && entity) {
+            if (!(entity instanceof ServerPlayer) ) return;
+            this.aggroTarget = entity;
+        }
+    }
+
     tick(): void{
         if (this.aggroTarget) {
             if (this.aggroTarget.destroyed) {
-                this.aggroTarget = undefined;
+                this.changeAggroTo();
             } else {
                 this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
                 this.position = Vec2.add(
@@ -106,17 +117,15 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         }
     }
 
-    dealDamageTo(entity: damageableEntity): void{
-        if (entity.canReceiveDamageFrom(this))
-            entity.receiveDamage(this.damage, this);
+    dealDamageTo(to: damageableEntity): void{
+        if (to.canReceiveDamageFrom(this))
+            to.receiveDamage(this.damage, this);
     }
 
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
         if (!this.isActive()) return;
 
-        if (!this.aggroTarget && source instanceof ServerPlayer) {
-            this.aggroTarget = source;
-        }
+        this.changeAggroTo(source)
 
         this.health -= amount;
 

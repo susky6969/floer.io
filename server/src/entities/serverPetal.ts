@@ -126,10 +126,9 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         }
     }
 
-    dealDamageTo(entity: damageableEntity): void{
-        if (this.damage && entity.canReceiveDamageFrom(this)) {
-            entity.receiveDamage(this.damage, this.owner);
-        }
+    dealDamageTo(to: damageableEntity): void{
+        if (this.damage && to.canReceiveDamageFrom(this))
+            to.receiveDamage(this.damage, this.owner);
     }
 
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
@@ -142,6 +141,8 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             this.isReloading = true;
         }
     }
+
+    collideWith(collision: CollisionResponse, entity: damageableEntity): void{}
 
     get data(): Required<EntitiesNetData[EntityType]>{
         return {

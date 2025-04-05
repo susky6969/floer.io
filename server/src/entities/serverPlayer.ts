@@ -79,6 +79,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             )
     }
 
+    weight = 2;
+
     canReceiveDamageFrom(source: damageableEntity): boolean {
         switch (source.type) {
             case EntityType.Player:
@@ -125,9 +127,9 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.tick();
     }
 
-    dealDamageTo(entity: damageableEntity): void{
-        if (entity.canReceiveDamageFrom(this))
-            entity.receiveDamage(this.damage, this);
+    dealDamageTo(to: damageableEntity): void{
+        if (to.canReceiveDamageFrom(this))
+            to.receiveDamage(this.damage, this);
     }
 
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {

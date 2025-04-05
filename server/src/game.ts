@@ -110,19 +110,35 @@ export class Game {
                         entity.dealDamageTo(collidedEntity);
                     }
 
-                    collisionTasks.add({
+                    const task: CollisionTask = {
                         source: entity,
                         target: collidedEntity,
                         collision
-                    })
+                    }
+
+                    const reversedTask: CollisionTask = {
+                        source: collidedEntity,
+                        target: entity,
+                        collision
+                    }
+
+                    if (collisionTasks.has(task) || collisionTasks.has(reversedTask)) continue;
+
+                    collisionTasks.add(task)
                 }
             }
         }
 
         for (const collisionTask of collisionTasks) {
             const { source, target, collision } = collisionTask;
-            if (isCollideableEntity(source) && isCollideableEntity(target)) {
+            if (collision && isCollideableEntity(source) && isCollideableEntity(target)) {
+                const reversedCollision = {
+                    dir: collision.dir,
+                    pen: collision.pen * -1
+                }
+
                 source.collideWith(collision, target);
+                target.collideWith(reversedCollision, source);
             }
         }
 
