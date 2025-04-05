@@ -12,7 +12,7 @@ export class ClientPlayer extends ClientEntity {
     type = EntityType.Player;
 
     images = {
-        body: new GameSprite("flower_body.svg").setScaleByUnit(GameConstants.player.radius)
+        body: new GameSprite("flower_body.svg").setScaleByUnitRadius(GameConstants.player.radius)
     };
 
     name: Text;

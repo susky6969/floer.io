@@ -6,7 +6,7 @@ import { loadAssets } from "@/scripts/utils/pixi";
 import { Camera } from "@/scripts/render/camera";
 import { ClientEntity } from "@/scripts/entities/clientEntity.ts";
 import { EntityType, GameConstants } from "@common/constants.ts";
-import { updateEquipPetalColumn } from "@/scripts/render/petalRender.ts";
+import { updatePetalRows } from "@/scripts/render/petalRender.ts";
 import { ClientApplication } from "../main.ts";
 import { JoinPacket } from "@common/packets/joinPacket.ts";
 import { GameBitStream, Packet, PacketStream } from "@common/net.ts";
@@ -17,6 +17,7 @@ import { InputPacket } from "@common/packets/inputPacket.ts";
 import { Minimap } from "@/scripts/render/minimap.ts";
 import { ClientMob } from "@/scripts/entities/clientMob.ts";
 import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
+import { Tween } from '@tweenjs/tween.js';
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -82,14 +83,14 @@ export class Game {
         this.camera.init();
 
         await loadAssets();
-        updateEquipPetalColumn(this);
+        updatePetalRows(this);
     }
 
     startGame() {
         if (this.running) return;
         this.running = true;
 
-        this.ui.canvas.css("display", "block");
+        this.ui.inGameScreen.css("display", "block");
         this.ui.outGameScreen.css("display", "none");
 
         this.pixi.start();
@@ -97,9 +98,6 @@ export class Game {
 
     endGame() {
         this.running = false;
-
-        this.ui.canvas.css("display", "none");
-        this.ui.outGameScreen.css("display", "block");
 
         this.pixi.stop();
 
@@ -111,7 +109,9 @@ export class Game {
         this.entityPool.clear();
         this.activePlayerID = -1;
 
-        this.socket?.close();
+        this.ui.inGameScreen.css("display", "none");
+        this.ui.outGameScreen.css("display", "block");
+        this.ui.gameOverScreen.css("display", "none");
     }
 
     onMessage(data: ArrayBuffer): void {

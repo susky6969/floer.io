@@ -5,7 +5,7 @@ import { Game } from "@/scripts/game";
 import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
 import { Text, Graphics } from "pixi.js";
-import { MathGraphics, MathNumeric } from "@common/utils/math.ts";
+import { EasingFunctions, MathGraphics, MathNumeric } from "@common/utils/math.ts";
 import { MobDefinition } from "@common/definitions/mob.ts";
 import { Vec2, Vector } from "@common/utils/vector.ts";
 
@@ -59,7 +59,7 @@ export class ClientMob extends ClientEntity {
 
             this.images.body
                 .setFrame(`${data.definition.idString}.svg`)
-                .setScaleByUnit(data.definition.hitboxRadius)
+                .setScaleByUnitRadius(data.definition.hitboxRadius)
 
             const healthBarY = Camera.unitToScreen(data.definition.hitboxRadius + 5 / 20);
             this.healthBar.position.set(0, healthBarY);

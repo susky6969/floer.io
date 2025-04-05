@@ -36,6 +36,7 @@ export class Camera {
         return a * this.scale;
     }
 
+
     get zoom(): number { return this._zoom; }
     set zoom(zoom: number) {
         if (zoom === this._zoom) return;
