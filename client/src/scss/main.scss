@@ -145,21 +145,40 @@ body {
   margin-bottom: 5px;
 }
 
-#canvas {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0;
-  margin: 0;
+#in-game-screen {
+    display: none;
 }
 
-#equipped-petals-row {
+#canvas {
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0;
+    margin: 0;
+}
+
+#hud {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#hud>.petal-column {
+    position: absolute;
+    bottom: 15px;
+}
+
+.equipped-petals-row {
     margin-top: 15px;
     display: flex;
 }
 
-#preparation-petals-row {
+.preparation-petals-row {
     margin-top: 8px;
     display: flex;
 }
@@ -178,13 +197,13 @@ body {
     left: -4px;
 }
 
-#equipped-petals-row>.equipped-petal-slot{
+.equipped-petals-row>.equipped-petal-slot{
     --x: 12px;
     width: 50px;
     height: 50px;
 }
 
-#preparation-petals-row>.equipped-petal-slot{
+.preparation-petals-row>.equipped-petal-slot{
     --x: 8px;
     width: 35px;
     height: 35px;
