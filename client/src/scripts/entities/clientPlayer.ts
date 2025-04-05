@@ -50,7 +50,9 @@ export class ClientPlayer extends ClientEntity {
 
     render(): void {
         const name = this.game.playerNames.get(this.id)
-        if(name) this.name.text = name;
+
+        if( name ) this.name.text = name;
+
         this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
     }
 
@@ -73,15 +75,16 @@ export class ClientPlayer extends ClientEntity {
 
     updateFromData(data: EntitiesNetData[EntityType.Player], _isNew: boolean): void {
         this.position = data.position;
-        if (data.full) {
-             this.health = data.full.health;
-             this.drawHealthBar();
-        }
 
         this.render();
 
         if (_isNew){
             this.container.position = Camera.vecToScreen(this.position);
+        }
+
+        if (data.full) {
+            this.health = data.full.health;
+            this.drawHealthBar();
         }
     }
 

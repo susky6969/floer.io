@@ -36,32 +36,35 @@ export class ClientMob extends ClientEntity {
     }
 
     render(): void {
-        this.container.position = Camera.vecToScreen(this.position);
+        this.container.position =
+            Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
         this.images.body.rotation =
             Vec2.directionToRadians(Vec2.targetEasing(Vec2.radiansToDirection(this.images.body.rotation), this.direction, 8));
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Mob], isNew: boolean): void {
+        this.position = data.position;
+        this.direction = data.direction;
+
+        this.render()
+
         const radius = MathNumeric.clamp(
             Camera.unitToScreen(data.definition.hitboxRadius) * 2,
             80,
             Infinity
         );
 
-        this.position = data.position;
-
-        this.render()
-
-        this.direction = data.direction;
-
         if (isNew) {
+            this.container.position = Camera.vecToScreen(this.position);
+
             this.images.body
                 .setFrame(`${data.definition.idString}.svg`)
                 .setScaleByUnit(data.definition.hitboxRadius)
+
+            const healthBarY = Camera.unitToScreen(data.definition.hitboxRadius + 5 / 20);
+            this.healthBar.position.set(0, healthBarY);
         }
 
-        const healthBarY = Camera.unitToScreen(data.definition.hitboxRadius + 5 / 20);
-        this.healthBar.position.set(0, healthBarY);
 
         if (data.full){
             this.healthPercent = data.full.healthPercent

@@ -35,15 +35,17 @@ export class ClientPetal extends ClientEntity {
 
     updateFromData(data: EntitiesNetData[EntityType.Petal], _isNew: boolean): void {
         this.position = data.position;
-        this.render();
 
-        this.images.body
-            .setFrame(`${data.definition.idString}.svg`)
-            .setScaleByUnit(data.definition.hitboxRadius)
         this.images.body.setVisible(!data.isReloading)
+
+        this.render();
 
         if (_isNew){
             this.container.position = Camera.vecToScreen(this.position);
+
+            this.images.body
+                .setFrame(`${data.definition.idString}.svg`)
+                .setScaleByUnit(data.definition.hitboxRadius)
         }
     }
 
