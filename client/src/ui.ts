@@ -12,9 +12,12 @@ export class UI {
     readonly inGameScreen =  $<HTMLDivElement>("#in-game-screen");
     readonly outGameScreen =  $<HTMLDivElement>("#out-game-screen");
 
-    readonly equipPetalRow= $<HTMLDivElement>(".equipped-petals-row");
+    readonly main =  $<HTMLDivElement>("#main");
+    readonly hud = $<HTMLDivElement>("#hud");
 
-    readonly preparePetalRow= $<HTMLDivElement>(".preparation-petals-row");
+    readonly petalColumn= $<HTMLDivElement>(".petal-column");
+    readonly equippedPetalRow= $<HTMLDivElement>(".equipped-petals-row");
+    readonly preparationPetalRow= $<HTMLDivElement>(".preparation-petals-row");
 
     readonly nameInput = $<HTMLInputElement>("#name");
 
