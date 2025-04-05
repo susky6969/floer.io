@@ -27,6 +27,7 @@ export class ClientPetal extends ClientEntity {
     constructor(game: Game, id: number) {
         super(game, id);
         this.images.body.setZIndex(0)
+        this.images.body.anchor.set(0.5)
 
         this.game.camera.addObject(this.container);
 
@@ -84,9 +85,5 @@ export class ClientPetal extends ClientEntity {
         }
 
         this.changeVisibleTo(!data.isReloading);
-    }
-
-    destroy() {
-        this.game.camera.container.removeChild(this.container);
     }
 }

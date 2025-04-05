@@ -24,6 +24,7 @@ export class ClientMob extends ClientEntity {
     constructor(game: Game, id: number) {
         super(game, id);
         this.images.body.setZIndex(0)
+        this.images.body.anchor.set(0.5)
 
         this.healthBar.position.set(0, 50);
 
@@ -87,9 +88,5 @@ export class ClientMob extends ClientEntity {
             .fill({
                 color: 0x87e63e
             });
-    }
-
-    destroy() {
-        this.game.camera.container.removeChild(this.container);
     }
 }

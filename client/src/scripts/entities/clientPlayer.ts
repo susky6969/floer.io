@@ -87,8 +87,4 @@ export class ClientPlayer extends ClientEntity {
             this.drawHealthBar();
         }
     }
-
-    destroy() {
-        this.game.camera.container.removeChild(this.container);
-    }
 }

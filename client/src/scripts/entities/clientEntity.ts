@@ -25,5 +25,7 @@ export abstract class ClientEntity implements GameEntity {
 
     abstract render(): void;
 
-    abstract destroy(): void;
+    destroy() {
+        this.game.camera.container.removeChild(this.container);
+    }
 }
