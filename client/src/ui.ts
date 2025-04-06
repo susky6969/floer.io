@@ -29,6 +29,8 @@ export class UI {
 
     readonly continueButton = $<HTMLDivElement>("#btn-continue");
 
+    readonly deletePetal = $<HTMLDivElement>("<div id='delete-petal'></div>");
+
     constructor(app: ClientApplication) {
         this.app = app;
 

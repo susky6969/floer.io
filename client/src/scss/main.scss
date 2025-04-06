@@ -205,7 +205,7 @@ body {
 
 .dragging-petal>.petal {
     position: relative;
-    top: -5px;  
+    top: -5px;
     left: -5px;
     cursor: pointer;
     border-width: 5px;
@@ -267,4 +267,12 @@ body {
 
 img {
     pointer-events: none;
+}
+
+#delete-petal {
+    margin-left: 5px;
+    width: 35px;
+    height: 35px;
+    background: #b7816d;
+    border: #9a7661 4px solid;
 }
