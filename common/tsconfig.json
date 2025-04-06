@@ -12,6 +12,10 @@
         "strict": true,
         "skipLibCheck": true
     },
+    "include": [
+        "./src/*",
+        "../server/src/*"
+    ],
     "exclude": [
         "node_modules"
     ]
