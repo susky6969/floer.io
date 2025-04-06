@@ -1,6 +1,6 @@
 import { ClientEntity } from "./clientEntity";
 import { EntityType, GameConstants } from "@common/constants";
-import { GameSprite } from "@/scripts/utils/pixi";
+import { GameSprite, getGameAssetsPath } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
 import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
@@ -21,9 +21,13 @@ export class ClientMob extends ClientEntity {
 
     direction: Vector = Vec2.new(0, 0);
 
+    definition!: MobDefinition;
+
     constructor(game: Game, id: number) {
         super(game, id);
-        this.images.body.setZIndex(0)
+
+        this.container.zIndex = 0;
+
         this.images.body.anchor.set(0.5)
 
         this.healthBar.position.set(0, 50);
@@ -46,11 +50,12 @@ export class ClientMob extends ClientEntity {
     updateFromData(data: EntitiesNetData[EntityType.Mob], isNew: boolean): void {
         this.position = data.position;
         this.direction = data.direction;
+        this.definition = data.definition;
 
         this.render()
 
         const radius = MathNumeric.clamp(
-            Camera.unitToScreen(data.definition.hitboxRadius) * 2,
+            Camera.unitToScreen(this.definition.hitboxRadius) * 2,
             80,
             Infinity
         );
@@ -59,10 +64,10 @@ export class ClientMob extends ClientEntity {
             this.container.position = Camera.vecToScreen(this.position);
 
             this.images.body
-                .setFrame(`${data.definition.idString}.svg`)
+                .setFrame(getGameAssetsPath("mob", this.definition))
                 .setScaleByUnitRadius(data.definition.hitboxRadius)
 
-            const healthBarY = Camera.unitToScreen(data.definition.hitboxRadius + 5 / 20);
+            const healthBarY = Camera.unitToScreen(this.definition.hitboxRadius + 5 / 20);
             this.healthBar.position.set(0, healthBarY);
         }
 

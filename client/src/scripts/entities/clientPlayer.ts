@@ -12,7 +12,8 @@ export class ClientPlayer extends ClientEntity {
     type = EntityType.Player;
 
     images = {
-        body: new GameSprite("flower_body.svg").setScaleByUnitRadius(GameConstants.player.radius)
+        body: new GameSprite("flower_body.svg")
+            .setScaleByUnitRadius(GameConstants.player.radius)
     };
 
     name: Text;
@@ -23,7 +24,7 @@ export class ClientPlayer extends ClientEntity {
     constructor(game: Game, id: number) {
         super(game, id)
 
-        this.images.body.setZIndex(-2)
+        this.container.zIndex = 0;
 
         this.name = new Text({
             text: this.game.playerNames.get(id),
@@ -73,12 +74,12 @@ export class ClientPlayer extends ClientEntity {
             });
     }
 
-    updateFromData(data: EntitiesNetData[EntityType.Player], _isNew: boolean): void {
+    updateFromData(data: EntitiesNetData[EntityType.Player], isNew: boolean): void {
         this.position = data.position;
 
         this.render();
 
-        if (_isNew){
+        if (isNew){
             this.container.position = Camera.vecToScreen(this.position);
         }
 

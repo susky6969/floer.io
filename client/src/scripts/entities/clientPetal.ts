@@ -1,6 +1,6 @@
 import { ClientEntity } from "./clientEntity";
 import { EntityType } from "@common/constants";
-import { GameSprite } from "@/scripts/utils/pixi";
+import { GameSprite, getGameAssetsPath } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
 import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
@@ -26,7 +26,9 @@ export class ClientPetal extends ClientEntity {
 
     constructor(game: Game, id: number) {
         super(game, id);
-        this.images.body.setZIndex(0)
+
+        this.container.zIndex = 1;
+
         this.images.body.anchor.set(0.5)
 
         this.game.camera.addObject(this.container);
@@ -43,8 +45,10 @@ export class ClientPetal extends ClientEntity {
             this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8)
         }
 
-        this.angle += 0.1
-        this.images.body.setAngle(this.angle);
+        if (this.definition && !this.definition.isDuplicate) {
+            this.angle += this.definition.selfRotation;
+            this.images.body.setAngle(this.angle);
+        }
     }
 
     changeVisibleTo(visible: boolean): void {
@@ -80,7 +84,7 @@ export class ClientPetal extends ClientEntity {
             this.container.position = Camera.vecToScreen(this.position);
 
             this.images.body
-                .setFrame(`${data.definition.idString}.svg`)
+                .setFrame(getGameAssetsPath("petal", this.definition))
                 .setScaleByUnitRadius(data.definition.hitboxRadius)
         }
 
