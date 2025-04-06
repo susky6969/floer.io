@@ -6,6 +6,7 @@ import { Game } from "../game";
 import { GameConstants } from "../../../common/src/constants";
 
 export function spawnLoot(game: Game, loots: PetalDefinition[], position: Vector): void {
+    if (loots.length <= 0) return;
     if (loots.length > 1) {
         let radiansNow = 0;
         const everyOccupiedRadians = P2 / loots.length;
