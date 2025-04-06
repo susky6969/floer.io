@@ -7,7 +7,7 @@ import {
 } from "./entities/serverEntity";
 import { Grid } from "./grid";
 import { EntityPool } from "../../common/src/utils/entityPool";
-import { GameConstants } from "../../common/src/constants";
+import { EntityType, GameConstants } from "../../common/src/constants";
 import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";
 import { IDAllocator } from "./idAllocator";
@@ -65,7 +65,8 @@ export class Game {
     addPlayer(socket: WebSocket): ServerPlayer {
         const player = new ServerPlayer(this, socket);
         this.newPlayers.push(player);
-        const mob = new ServerMob(this, Vec2.new(10, 10), Mobs.fromString("ladybug"))
+        if (this.grid.byCategory[EntityType.Mob].size <= 10)
+            new ServerMob(this, Vec2.new(10, 10), Mobs.fromString("ladybug"));
 
         return player;
     }
