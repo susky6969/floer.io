@@ -19,8 +19,8 @@ export const Mobs = new Definitions<MobDefinition>([
     {
         idString: "ladybug",
         displayName: "Ladybug",
-        damage: 5,
-        health: 100,
+        damage: 10,
+        health: 150,
         category: MobCategory.Passive,
         hitboxRadius: 3,
         speed: 7.8
