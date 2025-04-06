@@ -148,7 +148,7 @@ export class Inventory{
                 }
 
                 if (deletingPetal) {
-                    draggingData.container.petalDefinition = undefined;
+                    draggingData.container.petalDefinition = null;
                     this.deletedPetalIndex = this.inventory.indexOf(draggingData.container);
                 }
 
@@ -195,7 +195,7 @@ export class Inventory{
                 if (equip) {
                     this.preparationPetals[pindex].petalDefinition = equip;
                 } else {
-                    this.preparationPetals[pindex].petalDefinition = undefined;
+                    this.preparationPetals[pindex].petalDefinition = null;
                 }
 
                 index ++;
@@ -205,7 +205,7 @@ export class Inventory{
             if (equip) {
                 this.equippedPetals[index].petalDefinition = equip;
             } else {
-                this.equippedPetals[index].petalDefinition = undefined;
+                this.equippedPetals[index].petalDefinition = null;
             }
             index ++;
         }
@@ -253,7 +253,7 @@ export class Inventory{
     }
 
     switchSlot(slot: number) {
-        if (slot >= this.equippedPetals.length) return;
+        if (slot - 1 >= this.equippedPetals.length) return;
         this.switchedPetalIndex = slot - 1;
         this.switchedToPetalIndex = slot + 4;
     }
@@ -261,14 +261,12 @@ export class Inventory{
 
 export class PetalContainer {
     ui_slot?: JQuery;
-    petalDefinition?: PetalDefinition;
+    petalDefinition: SavedPetalDefinitionData = null;
 
     constructor() {}
 
     loadFromString(idString: string): this{
-        const definition = Petals.fromStringData(idString)
-        if (definition)
-            this.petalDefinition = definition;
+        this.petalDefinition = Petals.fromStringData(idString);
         return this;
     }
 
