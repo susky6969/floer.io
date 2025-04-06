@@ -1,9 +1,8 @@
 import { damageableEntity, ServerEntity } from "./serverEntity";
-import { Vec2 } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
-import { EntityType, GameConstants } from "../../../common/src/constants";
-import { PetalDefinition } from "../../../common/src/definitions/petal";
+import { EntityType } from "../../../common/src/constants";
+import { PetalDefinition, PetalUsageData, Usages, UsageAnimationType } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
 import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
@@ -33,20 +32,20 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         this.setDirty();
     }
 
-    isUsing: boolean = false;
-
+    isUsing?: PetalUsageData;
     reloadTime: number = 0;
     useReload: number = 0;
-
-    get canUse(): boolean {
-        return !this.definition.useTime
-            || this.useReload >= GameConstants.petal.useReload;
-    }
 
     readonly damage?: number;
     health?: number;
 
     elasticity = 0.1;
+
+    get canUse(): boolean {
+        if (this.definition.usable)
+            return this.useReload >= this.definition.useTime;
+        return false;
+    }
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
         if (!this.health) return false;
@@ -93,37 +92,31 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             this.reloadTime += this.game.dt;
             this.position = this.owner.position;
         } else if (this.isUsing) {
-            this.position = Vec2.add(
-                this.position,
-                Vec2.div(
-                    Vec2.sub(this.owner.position, this.position), 4
-                )
-            );
+            if (Usages[this.isUsing.name].type === UsageAnimationType.ABSORB) {
+                this.position = this.owner.position;
+            }
         } else {
-            if (this.definition.useTime) {
+            if (this.definition.usable) {
                 this.useReload += this.game.dt;
             }
-
-            if (this.definition.heal && this.canUse) {
-                const canHealOwner = this.owner.health < GameConstants.player.maxHealth
-                    && new CircleHitbox(10, this.position).getIntersection(this.owner.hitbox);
-
-                if (canHealOwner) {
-                    this.isUsing = true;
-                    const timeDelay = this.definition.useTime
-                        ? this.definition.useTime * 1000
-                        : 0;
-                    setTimeout(() => {
-                        if (this.definition.heal && !this.isReloading) {
-                            this.owner.health += this.definition.heal;
-                            this.isReloading = true;
-                        }
-                        this.isUsing = false;
-                        this.useReload = 0;
-                    }, timeDelay);
-                }
-            }
         }
+    }
+
+    use(usage: PetalUsageData): void{
+        if (!this.definition.usable) return;
+        if (!this.canUse) return
+        if (!this.definition.usages.includes(usage)) return;
+
+        this.isUsing = usage;
+        const timeDelay = 100;
+        setTimeout(() => {
+            if (!this.isReloading) {
+                Usages[usage.name].callback(this, usage.data);
+                this.isReloading = true;
+            }
+            this.isUsing = undefined;
+            this.useReload = 0;
+        }, timeDelay);
     }
 
     dealDamageTo(to: damageableEntity): void{
