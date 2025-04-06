@@ -82,7 +82,10 @@ export function renderPetalRow(petals: PetalContainer[], row: JQuery) {
             selectingPetal = undefined;
         })
 
+        row.append(petal_slot);
+
         if (petalContainer.petalDefinition) {
+            if (draggingData.item && draggingData.container == petalContainer) return;
             const petal =
                 renderPetal(petalContainer.petalDefinition);
 
@@ -92,7 +95,7 @@ export function renderPetalRow(petals: PetalContainer[], row: JQuery) {
                 if (draggingData.item) return;
 
                 const dragging = $(`<div class="dragging-petal"></div>`);
-                const { clientX, clientY } = ev;
+                const {clientX, clientY} = ev;
                 draggingData = {
                     item: dragging,
                     container: petalContainer
@@ -106,7 +109,6 @@ export function renderPetalRow(petals: PetalContainer[], row: JQuery) {
                 $("body").append(dragging);
             })
         }
-        row.append(petal_slot);
     })
 }
 
@@ -215,7 +217,6 @@ export class Inventory{
 
     updatePetalRows() {
         selectingPetal = undefined;
-        draggingData.item = null;
 
         renderPetalRow(this.equippedPetals, this.ui.equippedPetalRow);
         renderPetalRow(this.preparationPetals, this.ui.preparationPetalRow);
