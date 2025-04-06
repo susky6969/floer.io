@@ -13,6 +13,8 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
     hitbox: CircleHitbox;
     definition: PetalDefinition;
 
+    despawnTime: number = 0;
+
     constructor(game: Game, position: Vector, definition: PetalDefinition) {
         super(game, position);
         this.hitbox = new CircleHitbox(GameConstants.loot.radius);
@@ -25,14 +27,22 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
     }
 
     tick(): void{
+        this.despawnTime += this.game.dt;
+        if (this.despawnTime >= GameConstants.loot.despawnTime) {
+            this.destroy();
+        }
+
         const collidedEntities =
             this.game.grid.intersectsHitbox(this.hitbox);
 
         for (const collidedEntity of collidedEntities) {
             if (collidedEntity === this) continue;
             if (!(collidedEntity instanceof ServerPlayer)) continue;
+            if (!collidedEntity.hitbox.collidesWith(this.hitbox)) return;
 
-            this.destroy()
+            if (collidedEntity.inventory.pickUp(this.definition)){
+                this.destroy();
+            }
         }
     }
 

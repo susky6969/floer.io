@@ -66,6 +66,12 @@ export class Definitions<Def extends ObjectDefinition = ObjectDefinition> {
         return this.idStringToDefMap.get(idString) as Spec | undefined;
     }
 
+    fromStringData<Spec extends Def = Def>(idString: string): Spec | null {
+        const gotten = this.idStringToDefMap.get(idString);
+        if (gotten === undefined) return null
+        return gotten as Spec;
+    }
+
     hasString(idString: string): boolean {
         return this.idStringToDefMap.has(idString);
     }
