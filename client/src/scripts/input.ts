@@ -33,8 +33,15 @@ export class Input {
         document.addEventListener('contextmenu', function (e) {
             e.preventDefault();
         });
-        window.addEventListener("pointerdown", this.handleMouseEvent.bind(this, true));
-        window.addEventListener("pointerup", this.handleMouseEvent.bind(this, false));
+
+        window.addEventListener("mousedown",
+            this.handleMouseEvent.bind(this, true)
+        );
+        window.addEventListener("mouseup",
+            this.handleMouseEvent.bind(this, false)
+        );
+        window.addEventListener("keydown",
+            this.handleKeyboardEvent.bind(this, false))
 
         window.addEventListener("mousemove", e => {
             const rotation = Math.atan2(e.clientY - window.innerHeight / 2, e.clientX - window.innerWidth / 2);
@@ -64,10 +71,23 @@ export class Input {
         this._inputsDown[key] = down;
     }
 
-    getKeyFromInputEvent(event: MouseEvent): string {
+    handleKeyboardEvent(down: boolean, event: KeyboardEvent): void {
+        const key = this.getKeyFromInputEvent(event);
+
+        if(["1", "2", "3", "4", "5"].includes(event.key)){
+            this.game.inventory.switchSlot(+event.key);
+        }
+
+        this._inputsDown[key] = down;
+    }
+
+    getKeyFromInputEvent(event: MouseEvent | KeyboardEvent): string {
         let key = "";
         if (event instanceof MouseEvent) {
             key = `Mouse${event.button}`;
+        }
+        if (event instanceof KeyboardEvent) {
+            key = `Key${event.key}`;
         }
 
         return key;

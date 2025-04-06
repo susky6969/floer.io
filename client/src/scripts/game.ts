@@ -103,9 +103,10 @@ export class Game {
 
         this.ui.inGameScreen.css("display", "block");
         this.ui.outGameScreen.css("display", "none");
-        this.ui.hud.append(this.ui.petalColumn);
 
         this.pixi.start();
+
+        this.inventory.updatePetalRows();
     }
 
     endGame() {
@@ -120,13 +121,19 @@ export class Game {
         this.camera.clear();
         this.entityPool.clear();
         this.activePlayerID = -1;
+        this.playerNames.clear();
 
         this.ui.inGameScreen.css("display", "none");
         this.ui.outGameScreen.css("display", "block");
 
-        this.ui.main.append(this.ui.petalColumn);
-
         this.ui.gameOverScreen.css("display", "none");
+
+        this.inventory.init(GameConstants.player.defaultSlot);
+        this.inventory.load(
+            GameConstants.player.defaultEquippedPetals,
+            GameConstants.player.defaultPreparationPetals,
+        )
+        this.inventory.updatePetalRows();
     }
 
     onMessage(data: ArrayBuffer): void {
@@ -156,6 +163,10 @@ export class Game {
 
         if (packet.playerDataDirty.zoom) {
             this.camera.zoom = packet.playerData.zoom;
+        }
+
+        if (packet.playerDataDirty.inventory) {
+            this.inventory.loadInventory(packet.playerData.inventory);
         }
 
         for (const id of packet.deletedEntities) {
@@ -279,9 +290,16 @@ export class Game {
         inputPacket.isDefending = this.input.isInputDown("Mouse2");
         inputPacket.direction = this.input.mouseDirection;
         inputPacket.mouseDistance = this.input.mouseDistance;
-        inputPacket.equipped_petals = this.inventory.equipped_petals();
+
+        inputPacket.switchedPetalIndex = this.inventory.switchedPetalIndex;
+        inputPacket.switchedToPetalIndex = this.inventory.switchedToPetalIndex;
+        inputPacket.deletedPetalIndex = this.inventory.deletedPetalIndex;
 
         this.sendPacket(inputPacket);
+
+        this.inventory.switchedPetalIndex = -1;
+        this.inventory.switchedToPetalIndex = -1;
+        this.inventory.deletedPetalIndex = -1;
     }
 
     resize() {
