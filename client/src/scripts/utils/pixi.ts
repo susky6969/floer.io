@@ -1,6 +1,14 @@
 import { Sprite, Assets, Texture, type ColorSource } from "pixi.js";
 import { Vec2, Vector } from "@common/utils/vector";
 import { Camera } from "@/scripts/render/camera.ts";
+import { ObjectDefinition } from "@common/utils/definitions.ts";
+
+export function getGameAssetsPath(
+    type: string, reify: string  | ObjectDefinition
+): string {
+    if (typeof reify === "string") return `${type}_${reify}.svg`;
+    return `${type}_${reify.idString}.svg`;
+}
 
 let fullLoaded = false;
 export let unloadedSprites: Map<GameSprite, string> | undefined;
@@ -115,7 +123,7 @@ export async function loadAssets(): Promise<void> {
 
     for (const file in imgs) {
         const path = file.split("/");
-        const name = path[path.length - 1];
+        const name = path[path.length - 2] + "_" + path[path.length - 1];
 
         promises.push(Assets.load({
             alias: name,

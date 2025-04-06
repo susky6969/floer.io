@@ -21,6 +21,8 @@ const defaultBoxSize = 50;
 
 let selectingPetal: PetalContainer | undefined = undefined;
 
+let deletingPetal: boolean = false;
+
 export function renderPetalPiece(
     xOffset: number, yOffset: number, displaySize: number, petal: PetalDefinition
 ) {
@@ -110,10 +112,17 @@ export function renderPetalRow(petals: PetalContainer[], row: JQuery) {
 
 export class Inventory{
     equippedPetals: PetalContainer[] = [];
-
     preparationPetals: PetalContainer[] = [];
 
     readonly ui: UI;
+
+    get inventory(): PetalContainer[] {
+        return this.equippedPetals.concat(this.preparationPetals);
+    }
+
+    deletedPetalIndex: number = -1;
+    switchedPetalIndex: number = -1;
+    switchedToPetalIndex: number = -1;
 
     constructor(private readonly game: Game) {
         this.ui = game.ui;
@@ -134,7 +143,15 @@ export class Inventory{
                     const trans = selectingPetal.petalDefinition;
                     selectingPetal.petalDefinition = draggingData.container.petalDefinition;
                     draggingData.container.petalDefinition = trans;
+                    this.switchedPetalIndex = this.inventory.indexOf(draggingData.container);
+                    this.switchedToPetalIndex = this.inventory.indexOf(selectingPetal);
                 }
+
+                if (deletingPetal) {
+                    draggingData.container.petalDefinition = undefined;
+                    this.deletedPetalIndex = this.inventory.indexOf(draggingData.container);
+                }
+
                 this.updatePetalRows()
             }
         })
@@ -167,15 +184,61 @@ export class Inventory{
         Inventory.loadLoadout(this.preparationPetals, prepares);
     }
 
+    loadInventory(inventory: SavedPetalDefinitionData[]) {
+        let index = 0;
+        for (const equip of inventory) {
+            if (index >= this.equippedPetals.length) {
+                const pindex = index - this.equippedPetals.length;
+
+                if (pindex >= this.preparationPetals.length) break;
+
+                if (equip) {
+                    this.preparationPetals[pindex].petalDefinition = equip;
+                } else {
+                    this.preparationPetals[pindex].petalDefinition = undefined;
+                }
+
+                index ++;
+
+                continue;
+            }
+            if (equip) {
+                this.equippedPetals[index].petalDefinition = equip;
+            } else {
+                this.equippedPetals[index].petalDefinition = undefined;
+            }
+            index ++;
+        }
+
+        this.updatePetalRows();
+    }
+
     updatePetalRows() {
         selectingPetal = undefined;
         draggingData.item = null;
 
         renderPetalRow(this.equippedPetals, this.ui.equippedPetalRow);
         renderPetalRow(this.preparationPetals, this.ui.preparationPetalRow);
+
+        if (this.game.running) {
+            this.ui.hud.append(this.ui.petalColumn);
+            this.ui.preparationPetalRow.append(this.ui.deletePetal);
+
+            this.ui.deletePetal.on("mouseover",() => {
+                deletingPetal = true;
+            });
+
+            this.ui.deletePetal.on("mouseout",() => {
+                deletingPetal = false;
+            });
+
+        } else {
+            this.ui.main.append(this.ui.petalColumn);
+            this.ui.deletePetal.remove();
+        }
     }
 
-    equipped_petals(): SavedPetalDefinitionData[] {
+    equippedPetalsData(): SavedPetalDefinitionData[] {
         return this.equippedPetals.reduce(
             (pre, cur) => {
                 if (cur.petalDefinition){
@@ -188,6 +251,12 @@ export class Inventory{
             [] as SavedPetalDefinitionData[]
         )
     }
+
+    switchSlot(slot: number) {
+        if (slot >= this.equippedPetals.length) return;
+        this.switchedPetalIndex = slot - 1;
+        this.switchedToPetalIndex = slot + 4;
+    }
 }
 
 export class PetalContainer {
@@ -197,7 +266,9 @@ export class PetalContainer {
     constructor() {}
 
     loadFromString(idString: string): this{
-        this.petalDefinition = Petals.fromString(idString);
+        const definition = Petals.fromStringData(idString)
+        if (definition)
+            this.petalDefinition = definition;
         return this;
     }
 
