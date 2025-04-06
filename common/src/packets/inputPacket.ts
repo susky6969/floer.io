@@ -7,17 +7,19 @@ export class InputPacket implements Packet {
     mouseDistance: number = 0;
     isAttacking = false;
     isDefending = false;
-    equipped_petals: SavedPetalDefinitionData[] = []
+    switchedPetalIndex = -1;
+    switchedToPetalIndex = -1;
+    deletedPetalIndex: number = -1;
 
     serialize(stream: GameBitStream): void {
         stream.writeBoolean(this.isAttacking);
         stream.writeBoolean(this.isDefending);
         stream.writeUnit(this.direction, 16);
         stream.writeUint8(this.mouseDistance);
-        stream.writeArray(this.equipped_petals, 8, (item) => {
-            stream.writeBoolean(item === null);
-            if (item) Petals.writeToStream(stream, item);
-        })
+
+        stream.writeUint8(this.switchedPetalIndex);
+        stream.writeUint8(this.switchedToPetalIndex);
+        stream.writeUint8(this.deletedPetalIndex);
     }
 
     deserialize(stream: GameBitStream): void {
@@ -25,10 +27,9 @@ export class InputPacket implements Packet {
         this.isDefending = stream.readBoolean();
         this.direction = stream.readUnit(16);
         this.mouseDistance = stream.readUint8();
-        stream.readArray(this.equipped_petals, 8, () => {
-            const isEmpty = stream.readBoolean();
-            if(!isEmpty) return Petals.readFromStream(stream);
-            return null;
-        })
+
+        this.switchedPetalIndex = stream.readUint8();
+        this.switchedToPetalIndex = stream.readUint8();
+        this.deletedPetalIndex = stream.readUint8();
     }
 }

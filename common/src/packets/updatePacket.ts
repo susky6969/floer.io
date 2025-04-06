@@ -1,7 +1,7 @@
 import { EntityType, GameConstants } from "../constants";
 import { type GameBitStream, type Packet } from "../net";
 import { type Vector } from "../utils/vector";
-import { PetalDefinition, Petals } from "../definitions/petal";
+import { PetalDefinition, Petals, SavedPetalDefinitionData } from "../definitions/petal";
 import { MobDefinition, Mobs } from "../definitions/mob";
 
 export interface EntitiesNetData {
@@ -160,8 +160,6 @@ enum UpdateFlags {
     NewPlayers = 1 << 3,
     DeletedPlayers = 1 << 4,
     PlayerData = 1 << 5,
-    Explosions = 1 << 6,
-    Shots = 1 << 7,
     Map = 1 << 8
 }
 
@@ -179,17 +177,17 @@ export class UpdatePacket implements Packet {
 
     playerDataDirty = {
         id: false,
-        zoom: false
+        zoom: false,
+        inventory: false
     };
 
-    playerData = {
+    playerData: {
+        id: number, zoom: number, inventory: SavedPetalDefinitionData[]
+    } = {
         id: 0,
-        zoom: 0
+        zoom: 0,
+        inventory: []
     };
-
-    explosions: Explosion[] = [];
-
-    shots: Vector[] = [];
 
     mapDirty = false;
     map = {
@@ -264,6 +262,14 @@ export class UpdatePacket implements Packet {
             stream.writeBoolean(this.playerDataDirty.zoom);
             if (this.playerDataDirty.zoom) {
                 stream.writeUint8(this.playerData.zoom);
+            }
+
+            stream.writeBoolean(this.playerDataDirty.inventory);
+            if (this.playerDataDirty.inventory) {
+                stream.writeArray(this.playerData.inventory, 8, (item) => {
+                    stream.writeBoolean(item === null);
+                    if (item) Petals.writeToStream(stream, item);
+                })
             }
             stream.writeAlignToNextByte();
 
@@ -347,6 +353,15 @@ export class UpdatePacket implements Packet {
             if (stream.readBoolean()) {
                 this.playerDataDirty.zoom = true;
                 this.playerData.zoom = stream.readUint8();
+            }
+
+            if (stream.readBoolean()) {
+                this.playerDataDirty.inventory = true;
+                stream.readArray(this.playerData.inventory, 8, () => {
+                    const isEmpty = stream.readBoolean();
+                    if(!isEmpty) return Petals.readFromStream(stream);
+                    return null;
+                })
             }
 
             stream.readAlignToNextByte();
