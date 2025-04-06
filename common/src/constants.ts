@@ -20,19 +20,23 @@ export const GameConstants = {
         spawnMaxY: 50,
         revolutionSpeed: 2,
         defaultSlot: 5,
-        defaultEquippedPetals: ["light","stinger","sand","sand","rose"],
-        defaultPreparationPetals: ["stinger","stinger","stinger","stinger","rose"]
+        defaultEquippedPetals: ["basic","basic","basic","basic", "basic"],
+        defaultPreparationPetals: ["rose","","","","stinger"],
+        defaultPetalDistance: 3.8,
+        defaultPetalAttackingDistance: 6.5,
+        defaultPetalDefendingDistance: 2.5
     },
     petal: {
-        rotationRadius: 0.5,
-        useReload: 0.9
+        rotationRadius: 0.5
     },
     game: {
         width: 2048,
         height: 50
     },
     loot: {
-        radius: 0.1
+        radius: 0.5,
+        spawnRadius: 3,
+        despawnTime: 20
     },
     mob: {
         maxHealth: 100000,
