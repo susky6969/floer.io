@@ -11,6 +11,7 @@ import { Random } from "../../../common/src/utils/random";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { ServerLoot } from "./serverLoot";
 import { Petals } from "../../../common/src/definitions/petal";
+import { spawnLoot } from "../utils/loot";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
@@ -149,6 +150,18 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
     destroy() {
         super.destroy();
-        new ServerLoot(this.game, this.position, Petals.fromString("light"))
+        let loots =
+            [Petals.fromString("light"),
+                Petals.fromString("rose")]
+        if (Random.int(0, 100) <= 20){
+            loots.push(Petals.fromString("bubble"));
+        }
+        if (Random.int(0, 100) <= 40){
+            loots.push(Petals.fromString("sand"));
+        }
+        if (Random.int(0, 100) <= 30){
+            loots.push(Petals.fromString("stinger"));
+        }
+        spawnLoot(this.game, loots, this.position)
     }
 }

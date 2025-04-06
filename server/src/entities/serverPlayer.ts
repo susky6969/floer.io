@@ -1,12 +1,12 @@
 import { type WebSocket } from "ws";
-import { collideableEntity, damageableEntity, ServerEntity } from "./serverEntity";
+import { damageableEntity, ServerEntity } from "./serverEntity";
 import { Vec2 } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
-import { UpdatePacket, type EntitiesNetData } from "../../../common/src/packets/updatePacket";
+import { type EntitiesNetData, UpdatePacket } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, RectHitbox } from "../../../common/src/utils/hitbox";
 import { Random } from "../../../common/src/utils/random";
-import { MathGraphics, MathNumeric } from "../../../common/src/utils/math";
+import { MathNumeric } from "../../../common/src/utils/math";
 import { InputPacket } from "../../../common/src/packets/inputPacket";
 import { JoinPacket } from "../../../common/src/packets/joinPacket";
 import { EntityType, GameConstants } from "../../../common/src/constants";
@@ -14,7 +14,8 @@ import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
 import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
-import { CollisionResponse } from "../../../common/src/utils/collision";
+import { EventType, PetalDefinition, SavedPetalDefinitionData, Usages } from "../../../common/src/definitions/petal";
+import { spawnLoot } from "../utils/loot";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
@@ -56,7 +57,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     // what needs to be sent again to the client
     readonly dirty = {
         id: true,
-        zoom: true
+        zoom: true,
+        inventory: false
     };
 
     private _zoom = 45;
@@ -71,7 +73,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.dirty.zoom = true;
     }
 
-    get petals(): ServerPetal[]{
+    get petalEntities(): ServerPetal[]{
         return this.inventory.petalBunches
             .reduce(
                 (pre, petalBunch) =>
@@ -117,15 +119,21 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         this.position = position;
 
+        this.inventory.range = GameConstants.player.defaultPetalDistance;
+
+        if (this.isDefending) {
+            this.sendEvent(EventType.DEFEND);
+            this.inventory.range = GameConstants.player.defaultPetalDefendingDistance;
+        }
+
         if (this.isAttacking) {
-            this.inventory.range = 6;
-        }else if (this.isDefending) {
-            this.inventory.range = 2.5;
-        }else {
-            this.inventory.range = 3.8;
+            this.inventory.range = GameConstants.player.defaultPetalAttackingDistance;
         }
 
         this.inventory.tick();
+
+        if (this.health < GameConstants.player.maxHealth)
+            this.sendEvent(EventType.CAN_HEAL)
     }
 
     dealDamageTo(to: damageableEntity): void{
@@ -187,7 +195,11 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         }
         this.visibleEntities = newVisibleEntities;
 
-        updatePacket.playerData = this;
+        updatePacket.playerData.zoom = this.zoom;
+        updatePacket.playerData.id = this.id;
+        updatePacket.playerData.inventory = ([] as SavedPetalDefinitionData[])
+            .concat(this.inventory.inventory);
+
         updatePacket.playerDataDirty = this.dirty;
 
         updatePacket.newPlayers = this.firstPacket ? [...this.game.players] : this.game.newPlayers;
@@ -265,7 +277,23 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.mouseDistance = packet.mouseDistance;
         this.isAttacking = packet.isAttacking;
         this.isDefending = packet.isDefending;
-        this.inventory.loadFrom(packet.equipped_petals);
+        this.inventory.switchPetal(packet.switchedPetalIndex, packet.switchedToPetalIndex);
+        this.inventory.delete(packet.deletedPetalIndex);
+    }
+
+    sendEvent(event: EventType){
+        let index = 0;
+        this.petalEntities.forEach((petal) => {
+            const definition = petal.definition;
+            if (definition.usable && petal.canUse) {
+                definition.usages.forEach((usageData) => {
+                    const usage = Usages[usageData.name];
+                    if (!usage) return;
+                    if (usage.event === event) petal.use(usageData);
+                })
+            }
+            index ++;
+        })
     }
 
     get data(): Required<EntitiesNetData[EntityType.Player]> {
@@ -279,9 +307,16 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     destroy() {
+        if (this.destroyed) return;
         super.destroy();
-        for (const i of this.petals){
+        for (const i of this.petalEntities){
             i.destroy();
         }
+        spawnLoot(
+            this.game,
+            this.inventory.inventory
+                .filter(e => e != null) as PetalDefinition[],
+            this.position
+        )
     }
 }
