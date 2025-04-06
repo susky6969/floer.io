@@ -1,5 +1,5 @@
 import { Game } from "@/scripts/game.ts";
-import { Graphics } from "pixi.js";
+import { Graphics, Container } from "pixi.js";
 import { MathNumeric } from "@common/utils/math.ts";
 import { Vec2 } from "@common/utils/vector.ts";
 
@@ -11,6 +11,9 @@ export class Minimap {
     playerPosition = new Graphics({
         zIndex: 2
     })
+
+    container = new Container();
+
     private minimapPositionX: number = 0;
     private minimapPositionY: number = 0;
     private minimapWidth: number = 0;
@@ -21,9 +24,12 @@ export class Minimap {
     constructor(private game: Game) {}
 
     init(){
-       this.mapBackground.addChild(this.playerPosition);
+       this.container.addChild(
+           this.mapBackground,
+           this.playerPosition
+       );
        this.game.pixi.stage.addChild(
-           this.mapBackground
+           this.container
        );
     }
 
@@ -32,11 +38,9 @@ export class Minimap {
 
         if (position) {
             const remappedX =
-                this.minimapPositionX
-                + MathNumeric.remap(position.x, 0, this.width, 0, this.minimapWidth);
+                MathNumeric.remap(position.x, 0, this.width, 0, this.minimapWidth);
             const remappedY =
-                this.minimapPositionY
-                + MathNumeric.remap(position.y, 0, this.height, 0, this.minimapHeight);
+                MathNumeric.remap(position.y, 0, this.height, 0, this.minimapHeight);
             this.playerPosition.clear()
                 .circle(
                     remappedX,
@@ -59,10 +63,12 @@ export class Minimap {
         this.minimapPositionX = screenWidth - this.minimapWidth - 8;
         this.minimapPositionY = screenHeight - this.minimapHeight - 8;
 
+        this.container.position.set(this.minimapPositionX, this.minimapPositionY);
+
         this.mapBackground.clear()
             .rect(
-                this.minimapPositionX,
-                this.minimapPositionY,
+                0,
+                0,
                 this.minimapWidth,
                 this.minimapHeight
             )
