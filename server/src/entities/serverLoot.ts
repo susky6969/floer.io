@@ -38,7 +38,7 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
         for (const collidedEntity of collidedEntities) {
             if (collidedEntity === this) continue;
             if (!(collidedEntity instanceof ServerPlayer)) continue;
-            if (!collidedEntity.hitbox.collidesWith(this.hitbox)) return;
+            if (!collidedEntity.hitbox.collidesWith(this.hitbox)) continue;
 
             if (collidedEntity.inventory.pickUp(this.definition)){
                 this.destroy();
