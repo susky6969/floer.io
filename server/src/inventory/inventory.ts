@@ -1,11 +1,16 @@
 import { ServerPlayer } from "../entities/serverPlayer";
 import { PetalBunch } from "./petalBunch";
 import { Game } from "../game";
-import { PetalDefinition, Petals, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
+import {
+    EventType,
+    PetalDefinition,
+    Petals,
+    SavedPetalDefinitionData,
+    Usages
+} from "../../../common/src/definitions/petal";
 import { P2 } from "../../../common/src/utils/math";
 import { Vector } from "../../../common/src/utils/vector";
 import { GameConstants } from "../../../common/src/constants";
-import { differencesOfSameLengthArray } from "../../../common/src/utils/array";
 
 export class Inventory {
     position: Vector;
@@ -14,7 +19,9 @@ export class Inventory {
     readonly player: ServerPlayer;
 
     petalBunches: PetalBunch[] = [];
-    petals: SavedPetalDefinitionData[] = [];
+
+    equipped_petals: SavedPetalDefinitionData[] = [];
+    inventory: SavedPetalDefinitionData[] = [];
 
     private totalDisplayedPetals = 0;
 
@@ -27,22 +34,69 @@ export class Inventory {
         this.position = player.position;
 
         for (let i = 0; i < GameConstants.player.defaultSlot; i++) {
-            this.petals.push(null);
-            this.petalBunches.push(new PetalBunch(this, null));
+            this.equipped_petals.push(
+                Petals.fromStringData(GameConstants.player.defaultEquippedPetals[i])
+            );
+            this.petalBunches.push(new PetalBunch(this, this.equipped_petals[i]));
+            this.inventory.push(
+                Petals.fromStringData(GameConstants.player.defaultEquippedPetals[i])
+            );
+        }
+
+        for (let i = 0; i < GameConstants.player.defaultSlot; i++) {
+            this.inventory.push(
+                Petals.fromStringData(GameConstants.player.defaultPreparationPetals[i])
+            );
         }
     }
 
-    loadFrom(petals: SavedPetalDefinitionData[]) {
-        const differences =
-            differencesOfSameLengthArray<SavedPetalDefinitionData>(
-                this.petals, petals
-            );
+    switchPetal(index1: number, index2: number) {
+        if (index1 < 0 || index1 > this.inventory.length) return
+        if (index2 < 0 || index2 > this.inventory.length) return
+        if (this.inventory[index1] === this.inventory[index2]) return
 
-        differences.forEach((d) => {
-            this.petalBunches[d.index].destroy();
-            this.petalBunches[d.index] = new PetalBunch(this, d.to);
-            this.petals[d.index] = d.to
-        })
+        const trans = this.inventory[index1];
+
+        this.updateInventory(index1, this.inventory[index2]);
+        this.updateInventory(index2, trans);
+    }
+
+    delete(petalIndex: number) {
+        if (petalIndex < 0 || petalIndex > this.inventory.length) return
+        this.updateInventory(petalIndex, null);
+    }
+
+    updateInventory(index: number, petal: SavedPetalDefinitionData){
+        this.inventory[index] = petal;
+        this.updateEquipment(index, petal);
+
+        this.player.dirty.inventory = true;
+    }
+
+    updateEquipment(index: number, petal?: SavedPetalDefinitionData) {
+        if (index >= this.petalBunches.length) return;
+        if (petal === undefined) {
+            petal = this.inventory[index];
+        }
+        this.petalBunches[index].destroy();
+        this.petalBunches[index] = new PetalBunch(this, petal);
+        this.equipped_petals[index] = petal;
+    }
+
+    pickUp(petal: PetalDefinition): boolean {
+        if (this.player.destroyed) return false;
+
+        const emptySlot =
+            this.inventory.find(e => e === null)
+
+        if (emptySlot === null) {
+            const index = this.inventory.indexOf(emptySlot);
+            this.updateInventory(index, petal);
+
+            return true
+        }
+
+        return false;
     }
 
     tick(): void {
