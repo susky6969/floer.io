@@ -176,7 +176,7 @@ export const Petals = new Definitions<PetalDefinition>([
         selfRotation: 0,
         usable: false,
         reloadTime: 2.5,
-        hitboxRadius: 0.6,
+        hitboxRadius: 0.5,
         displaySize: 45,
         isDuplicate: false,
         pieceAmount: 1
