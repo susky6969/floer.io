@@ -74,7 +74,7 @@ export class Input {
     handleKeyboardEvent(down: boolean, event: KeyboardEvent): void {
         const key = this.getKeyFromInputEvent(event);
 
-        if(["1", "2", "3", "4", "5"].includes(event.key)){
+        if(["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(event.key)){
             this.game.inventory.switchSlot(+event.key);
         }
 
