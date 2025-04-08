@@ -36,6 +36,8 @@ export class PetalBunch {
                 const petal = new ServerPetal(player, definition);
                 this.petals.push(petal);
                 petal.join()
+
+                inventory.eventManager.loadPetal(petal);
             }
         }
     }
@@ -89,6 +91,7 @@ export class PetalBunch {
     destroy(): void {
         this.petals.forEach(petal => {
             petal.destroy();
+            this.inventory.eventManager.removePetal(petal);
         })
     }
 }

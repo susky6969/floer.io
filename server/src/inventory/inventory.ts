@@ -2,15 +2,14 @@ import { ServerPlayer } from "../entities/serverPlayer";
 import { PetalBunch } from "./petalBunch";
 import { Game } from "../game";
 import {
-    EventType,
     PetalDefinition,
     Petals,
-    SavedPetalDefinitionData,
-    Usages
+    SavedPetalDefinitionData
 } from "../../../common/src/definitions/petal";
 import { P2 } from "../../../common/src/utils/math";
 import { Vector } from "../../../common/src/utils/vector";
 import { GameConstants } from "../../../common/src/constants";
+import { PetalAttributeEventManager } from "../utils/eventManager";
 
 export class Inventory {
     position: Vector;
@@ -27,6 +26,8 @@ export class Inventory {
 
     private revolutionRadians = 0;
     range = 0;
+
+    eventManager = new PetalAttributeEventManager();
 
     constructor(player: ServerPlayer) {
         this.game = player.game;

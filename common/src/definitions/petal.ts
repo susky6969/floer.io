@@ -1,17 +1,6 @@
-import { ServerPetal } from "../../../server/src/entities/serverPetal";
-import { ObjectDefinition, Definitions } from "../utils/definitions";
-import { MathGraphics } from "../utils/math";
-import { Vec2 } from "../utils/vector";
-
-export enum EventType{
-    CAN_HEAL = "CAN_HEAL",
-    DEFEND = "DEFEND",
-}
-
-export enum UsageAnimationType{
-    ABSORB = "ABSORB",
-    NORMAL = "NORMAL",
-}
+import { Definitions, ObjectDefinition } from "../utils/definitions";
+import { PetalAttributeName } from "./attribute";
+import { Rarities } from "./rarity";
 
 export type SavedPetalDefinitionData = PetalDefinition | null
 
@@ -21,7 +10,9 @@ export type PetalDefinition = ObjectDefinition & {
     readonly reloadTime?: number
     readonly hitboxRadius: number
     readonly extendable: boolean
-} & PetalPieceType & PetalUsageType;
+    readonly rarity: Rarities
+    readonly attributes?: PetalAttributeData
+} & PetalPieceType & PetalAttributeType;
 
 type PetalPieceType = {
     readonly isDuplicate: false
@@ -35,54 +26,24 @@ type PetalPieceType = {
     readonly isShowedInOne: boolean
 };
 
-type PetalUsageType = {
+type PetalAttributeType = {
     readonly usable: false
 } | {
     readonly usable: true
     readonly useTime: number
-    readonly usages: PetalUsageData[]
 }
+
+export type PetalAttributeData = {
+    [K in PetalAttributeName] ?: unknown
+} & ({
+    absorbing_heal?: number
+    boost?: number
+})
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
     if (petal.isDuplicate && petal.isShowedInOne) return 1;
     return petal.pieceAmount;
 }
-
-export interface PetalUsageData{
-    name: keyof typeof Usages
-    data: Record<string, any>
-}
-
-interface Usage {
-    readonly dataKeyName: string[]
-    readonly event: EventType
-    readonly type: UsageAnimationType
-    readonly callback: (petal: ServerPetal, data: Record<string, any>) => void
-}
-
-export const Usages: Readonly<{ [key: string]: Usage}> = {
-    "absorbing_heal": {
-        dataKeyName: ["heal"],
-        event: EventType.CAN_HEAL,
-        type: UsageAnimationType.ABSORB,
-        callback: (petal: ServerPetal, data: Record<string, any>) => {
-            petal.owner.health += data.heal;
-        }
-    },
-    "boost": {
-        dataKeyName: ["distance"],
-        event: EventType.DEFEND,
-        type: UsageAnimationType.NORMAL,
-        callback: (petal: ServerPetal, data: Record<string, any>) => {
-            const direction =
-                MathGraphics.directionBetweenPoints(petal.owner.position, petal.position);
-            petal.owner.position = Vec2.add(
-                petal.owner.position,
-                Vec2.mul(direction, data.distance)
-            )
-        }
-    }
-} as const;
 
 export const Petals = new Definitions<PetalDefinition>([
     {
@@ -95,8 +56,9 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: false,
         hitboxRadius: 0.3,
         isDuplicate: true,
-        pieceAmount: 5,
-        isShowedInOne: false
+        pieceAmount: 2,
+        isShowedInOne: false,
+        rarity: Rarities.unusual
     },
     {
         idString: "stinger",
@@ -110,7 +72,8 @@ export const Petals = new Definitions<PetalDefinition>([
         displaySize: 25,
         hitboxRadius: 0.3,
         isDuplicate: false,
-        pieceAmount: 1
+        pieceAmount: 1,
+        rarity: Rarities.unusual
     },
     {
         idString: "sand",
@@ -123,7 +86,8 @@ export const Petals = new Definitions<PetalDefinition>([
         hitboxRadius: 0.4,
         isDuplicate: true,
         pieceAmount: 4,
-        isShowedInOne: true
+        isShowedInOne: true,
+        rarity: Rarities.rare
     },
     {
         idString: "rose",
@@ -134,17 +98,15 @@ export const Petals = new Definitions<PetalDefinition>([
         selfRotation: 0,
         usable: true,
         useTime: 1.5,
-        usages: [
-            {
-                name: "absorbing_heal",
-                data: {"heal": 10}
-            }
-        ],
+        attributes: {
+            absorbing_heal: 10
+        },
         reloadTime: 3.5,
         hitboxRadius: 0.5,
         displaySize: 35,
         isDuplicate: false,
-        pieceAmount: 1
+        pieceAmount: 1,
+        rarity: Rarities.unusual
     },
     {
         idString: "bubble",
@@ -155,17 +117,34 @@ export const Petals = new Definitions<PetalDefinition>([
         selfRotation: 0,
         usable: true,
         useTime: 0,
-        usages: [
-            {
-                name: "boost",
-                data: {"distance": 5}
-            }
-        ],
+        attributes: {
+            boost: 10
+        },
         reloadTime: 3.5,
         hitboxRadius: 0.6,
         displaySize: 45,
         isDuplicate: false,
-        pieceAmount: 1
+        pieceAmount: 1,
+        rarity: Rarities.rare
+    },
+    {
+        idString: "unstoppable_bubble",
+        displayName: "UNBubble",
+        damage: 0,
+        health: 1,
+        extendable: false,
+        usable: true,
+        useTime: 0,
+        attributes: {
+            boost: 10
+        },
+        reloadTime: 0,
+        hitboxRadius: 0.6,
+        isShowedInOne: false,
+        isDuplicate: true,
+        pieceAmount: 2,
+        rarity: Rarities.super,
+        usingAssets: "bubble"
     },
     {
         idString: "basic",
@@ -179,6 +158,7 @@ export const Petals = new Definitions<PetalDefinition>([
         hitboxRadius: 0.5,
         displaySize: 45,
         isDuplicate: false,
-        pieceAmount: 1
+        pieceAmount: 1,
+        rarity: Rarities.common
     },
 ] satisfies PetalDefinition[]);
