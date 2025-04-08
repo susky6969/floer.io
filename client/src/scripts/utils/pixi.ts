@@ -3,11 +3,18 @@ import { Vec2, Vector } from "@common/utils/vector";
 import { Camera } from "@/scripts/render/camera.ts";
 import { ObjectDefinition } from "@common/utils/definitions.ts";
 
+export function getGameAssetsFile(
+    reify: ObjectDefinition
+): string {
+    if (reify.usingAssets) return `${reify.usingAssets}.svg`;
+    return `${reify.idString}.svg`;
+}
+
 export function getGameAssetsPath(
     type: string, reify: string  | ObjectDefinition
 ): string {
     if (typeof reify === "string") return `${type}_${reify}.svg`;
-    return `${type}_${reify.idString}.svg`;
+    return `${type}_${getGameAssetsFile(reify)}`;
 }
 
 let fullLoaded = false;
