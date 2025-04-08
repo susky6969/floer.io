@@ -4,6 +4,8 @@ import { Vec2 } from "@common/utils/vector.ts";
 import { P2, MathGraphics } from "@common/utils/math.ts";
 import { PetalDefinition, Petals, SavedPetalDefinitionData } from "@common/definitions/petal.ts";
 import { UI } from "@/ui.ts";
+import { RarityDefinitions } from "@common/definitions/rarity.ts";
+import { getGameAssetsFile } from "@/scripts/utils/pixi.ts";
 
 const defaultCenter = Vec2.new(25, 21);
 
@@ -30,7 +32,9 @@ export function renderPetalPiece(
     const size = sizePercent / 100 * defaultBoxSize / 2;
     const center = Vec2.sub(defaultCenter, Vec2.new(size, size));
 
-    const piece = $(`<img alt='' class='piece-petal' src='/img/game/petal/${petal.idString}.svg'>`);
+    const piece = $(`<img alt='' class='piece-petal' src=
+        '/img/game/petal/${getGameAssetsFile(petal)}'>`
+    );
     piece.css("width", `${ sizePercent }%`);
     piece.css("height", `${ sizePercent }%`);
     const { x, y } = center;
@@ -43,8 +47,13 @@ export function renderPetalPiece(
 
 export function renderPetal(petal: PetalDefinition) {
     const petal_box = $<HTMLDivElement>(
-        `<div class="petal rarity-common" petalName="${petal.displayName}"></div>`
+        `<div class="petal" petalName="${petal.displayName}"></div>`
     );
+
+    const rarity = RarityDefinitions.fromString(petal.rarity);
+
+    petal_box.css("background", rarity.color);
+    petal_box.css("border-color", rarity.border);
 
     if (petal.isDuplicate) {
         let radiansNow = 0;
@@ -256,7 +265,7 @@ export class Inventory{
     switchSlot(slot: number) {
         if (slot - 1 >= this.equippedPetals.length) return;
         this.switchedPetalIndex = slot - 1;
-        this.switchedToPetalIndex = slot + 4;
+        this.switchedToPetalIndex = slot + this.equippedPetals.length - 1;
     }
 }
 
