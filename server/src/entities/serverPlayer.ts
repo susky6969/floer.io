@@ -14,8 +14,9 @@ import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
 import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
-import { EventType, PetalDefinition, SavedPetalDefinitionData, Usages } from "../../../common/src/definitions/petal";
+import { PetalDefinition, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
+import { PetalAttributeEvents } from "../utils/attribute";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
@@ -122,7 +123,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.range = GameConstants.player.defaultPetalDistance;
 
         if (this.isDefending) {
-            this.sendEvent(EventType.DEFEND);
+            this.sendEvent(PetalAttributeEvents.DEFEND);
             this.inventory.range = GameConstants.player.defaultPetalDefendingDistance;
         }
 
@@ -133,7 +134,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.tick();
 
         if (this.health < GameConstants.player.maxHealth)
-            this.sendEvent(EventType.CAN_HEAL)
+            this.sendEvent(PetalAttributeEvents.HEALING)
     }
 
     dealDamageTo(to: damageableEntity): void{
@@ -202,7 +203,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         updatePacket.playerDataDirty = this.dirty;
 
-        updatePacket.newPlayers = this.firstPacket ? [...this.game.players] : this.game.newPlayers;
+        updatePacket.newPlayers = [...this.game.players];
         updatePacket.deletedPlayers = this.game.deletedPlayers;
 
         updatePacket.map.width = this.game.width;
@@ -281,19 +282,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.delete(packet.deletedPetalIndex);
     }
 
-    sendEvent(event: EventType){
-        let index = 0;
-        this.petalEntities.forEach((petal) => {
-            const definition = petal.definition;
-            if (definition.usable && petal.canUse) {
-                definition.usages.forEach((usageData) => {
-                    const usage = Usages[usageData.name];
-                    if (!usage) return;
-                    if (usage.event === event) petal.use(usageData);
-                })
-            }
-            index ++;
-        })
+    sendEvent(event: PetalAttributeEvents){
+        this.inventory.eventManager.sendEvent(event);
     }
 
     get data(): Required<EntitiesNetData[EntityType.Player]> {

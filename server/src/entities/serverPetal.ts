@@ -2,10 +2,11 @@ import { damageableEntity, ServerEntity } from "./serverEntity";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType } from "../../../common/src/constants";
-import { PetalDefinition, PetalUsageData, Usages, UsageAnimationType } from "../../../common/src/definitions/petal";
+import { PetalAttributeData, PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
 import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
+import { PetalUsingAnimations, } from "../utils/attribute";
 
 export class ServerPetal extends ServerEntity<EntityType.Petal> {
     type: EntityType.Petal = EntityType.Petal;
@@ -32,7 +33,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         this.setDirty();
     }
 
-    isUsing?: PetalUsageData;
+    isUsing?: PetalUsingAnimations;
     reloadTime: number = 0;
     useReload: number = 0;
 
@@ -92,7 +93,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             this.reloadTime += this.game.dt;
             this.position = this.owner.position;
         } else if (this.isUsing) {
-            if (Usages[this.isUsing.name].type === UsageAnimationType.ABSORB) {
+            if (this.isUsing === PetalUsingAnimations.ABSORB) {
                 this.position = this.owner.position;
             }
         } else {
@@ -102,21 +103,16 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         }
     }
 
-    use(usage: PetalUsageData): void{
-        if (!this.definition.usable) return;
-        if (!this.canUse) return
-        if (!this.definition.usages.includes(usage)) return;
+    startUsing(animation: PetalUsingAnimations): void{
+        this.isUsing = animation;
 
-        this.isUsing = usage;
-        const timeDelay = 100;
         setTimeout(() => {
             if (!this.isReloading) {
-                Usages[usage.name].callback(this, usage.data);
                 this.isReloading = true;
             }
             this.isUsing = undefined;
             this.useReload = 0;
-        }, timeDelay);
+        }, 100);
     }
 
     dealDamageTo(to: damageableEntity): void{
