@@ -3,6 +3,7 @@ import { GameBitStream } from "../net";
 export type ObjectDefinition = {
     readonly idString: string
     readonly displayName: string
+    readonly usingAssets?: string
 };
 
 export class Definitions<Def extends ObjectDefinition = ObjectDefinition> {
