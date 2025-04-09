@@ -169,16 +169,18 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         }
     }
 
-    receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
+    receiveDamage(amount: number, source: ServerPlayer | ServerMob, disableEvent?: boolean) {
         if (!this.isActive()) return;
         this.health -= amount;
 
-        this.sendEvent<AttributeEvents.FLOWER_GET_DAMAGE>(
-            AttributeEvents.FLOWER_GET_DAMAGE, {
-                entity: source,
-                damage: amount,
-            }
-        )
+        if (!disableEvent) {
+            this.sendEvent<AttributeEvents.FLOWER_GET_DAMAGE>(
+                AttributeEvents.FLOWER_GET_DAMAGE, {
+                    entity: source,
+                    damage: amount,
+                }
+            )
+        }
 
         if (this.health <= 0) {
             this.destroy();

@@ -139,7 +139,7 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                             || entity instanceof ServerMob
                             && entity.canReceiveDamageFrom(petal.owner)
                         ) {
-                            entity.receiveDamage(data * damage, petal.owner)
+                            entity.receiveDamage(data * damage, petal.owner, true)
                         }
                     }
                 }
