@@ -5,6 +5,7 @@ export enum Rarities {
     unusual = "unusual",
     rare = "rare",
     epic = "epic",
+    legendary = "legendary",
     super = "super"
 }
 
@@ -39,6 +40,12 @@ export const RarityDefinitions = new Definitions<RarityDefinition>([
         displayName: "Epic",
         color: "#861fde",
         border: "#6d19b4",
+    },
+    {
+        idString: Rarities.legendary,
+        displayName: "Legendary",
+        color: "#de1f1f",
+        border: "#b41919",
     },
     {
         idString: Rarities.super,
