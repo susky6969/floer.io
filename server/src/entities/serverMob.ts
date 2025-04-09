@@ -128,7 +128,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
             to.receiveDamage(this.damage, this);
     }
 
-    receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
+    receiveDamage(amount: number, source: ServerPlayer | ServerMob, disableEvent?: boolean): void {
         if (!this.isActive()) return;
 
         this.changeAggroTo(source)
