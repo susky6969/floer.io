@@ -10,8 +10,9 @@ import { ServerPlayer } from "./serverPlayer";
 import { Random } from "../../../common/src/utils/random";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { ServerLoot } from "./serverLoot";
-import { Petals } from "../../../common/src/definitions/petal";
+import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
+import { Effect } from "../utils/effects";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
@@ -118,6 +119,8 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                 }
             }
         }
+
+        this.effects.tick()
     }
 
     dealDamageTo(to: damageableEntity): void{
@@ -150,18 +153,19 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
     destroy() {
         super.destroy();
-        let loots =
-            [Petals.fromString("light"),
-                Petals.fromString("rose")]
-        if (Random.int(0, 100) <= 20){
-            loots.push(Petals.fromString("bubble"));
+
+        const lootTable = this.definition.lootTable;
+
+        let loots: PetalDefinition[] = []
+
+        for (const lootsKey in lootTable) {
+            if (!Petals.hasString(lootsKey)) continue;
+            const random = Random.int(0, 1000);
+            if (random <= lootTable[lootsKey]){
+                loots.push(Petals.fromString(lootsKey));
+            }
         }
-        if (Random.int(0, 100) <= 40){
-            loots.push(Petals.fromString("sand"));
-        }
-        if (Random.int(0, 100) <= 30){
-            loots.push(Petals.fromString("stinger"));
-        }
+
         spawnLoot(this.game, loots, this.position)
     }
 }
