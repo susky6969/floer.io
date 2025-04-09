@@ -35,6 +35,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "cactus": 70,
             "poison_cactus": 45,
             "tri_cactus": 10,
+            "tri_stinger": 8,
             "dandelion": 100,
             "salt": 100
         }
@@ -43,7 +44,7 @@ export const Mobs = new Definitions<MobDefinition>([
         idString: "mega_ladybug",
         displayName: "Ladybug",
         damage: 20,
-        health: 1500,
+        health: 2000,
         category: MobCategory.Passive,
         hitboxRadius: 8,
         speed: 7.8,
@@ -55,6 +56,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "cactus": 650,
             "poison_cactus": 600,
             "tri_cactus": 300,
+            "tri_stinger": 200,
             "dandelion": 600,
             "salt": 500
         }
