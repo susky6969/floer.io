@@ -12,6 +12,7 @@ import { CollisionResponse } from "../../../common/src/utils/collision";
 import { MathGraphics } from "../../../common/src/utils/math";
 import { ServerLoot } from "./serverLoot";
 import { Petals } from "../../../common/src/definitions/petal";
+import { Effect, EffectManager } from "../utils/effects";
 
 export type collideableEntity = ServerPetal | ServerPlayer | ServerMob;
 
@@ -49,6 +50,8 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     }
 
     abstract hitbox: Hitbox;
+
+    effects = new EffectManager(this);
 
     partialStream!: GameBitStream;
     fullStream!: GameBitStream;

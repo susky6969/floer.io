@@ -2,11 +2,11 @@ import { damageableEntity, ServerEntity } from "./serverEntity";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType } from "../../../common/src/constants";
-import { PetalAttributeData, PetalDefinition } from "../../../common/src/definitions/petal";
+import { AttributeData, PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
 import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
-import { PetalUsingAnimations, } from "../utils/attribute";
+import { AttributeEvents, PetalUsingAnimations, } from "../utils/attribute";
 
 export class ServerPetal extends ServerEntity<EntityType.Petal> {
     type: EntityType.Petal = EntityType.Petal;
@@ -29,6 +29,8 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             this.reloadTime = 0;
         } else {
             this.health = this.definition.health;
+            this.firstReloading = false;
+            this.useReload = 0;
         }
         this.setDirty();
     }
@@ -36,6 +38,8 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     isUsing?: PetalUsingAnimations;
     reloadTime: number = 0;
     useReload: number = 0;
+
+    firstReloading: boolean = true;
 
     readonly damage?: number;
     health?: number;
@@ -116,8 +120,14 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     }
 
     dealDamageTo(to: damageableEntity): void{
-        if (this.damage && to.canReceiveDamageFrom(this))
+        if (this.damage && to.canReceiveDamageFrom(this)) {
             to.receiveDamage(this.damage, this.owner);
+            this.owner.sendEvent<AttributeEvents.PETAL_DEAL_DAMAGE>(
+                AttributeEvents.PETAL_DEAL_DAMAGE,
+                to,
+                this
+            )
+        }
     }
 
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
