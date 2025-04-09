@@ -1,94 +1,123 @@
-import { PetalAttributeEvents, PetalAttributeRealizes, PetalUsingAnimations } from "./attribute";
-import { PetalAttributeName } from "../../../common/src/definitions/attribute";
+import { AttributeEvents, AttributeRealize, PetalAttributeRealizes, PetalUsingAnimations } from "./attribute";
+import { AttributeName } from "../../../common/src/definitions/attribute";
 import { ServerPetal } from "../entities/serverPetal";
+import { ServerEntity } from "../entities/serverEntity";
 
-type EventFunction = () => void;
+export type EventFunctionArguments = {
+    [K in AttributeEvents] ?: unknown;
+} & {
+    [AttributeEvents.PETAL_DEAL_DAMAGE] ?: ServerEntity
+    [AttributeEvents.FLOWER_DEAL_DAMAGE]?: ServerEntity
+    [AttributeEvents.FLOWER_GET_DAMAGE]?: {
+        entity: ServerEntity
+        damage: number
+    }
+}
+
+type EventFunction<T extends AttributeEvents = AttributeEvents> =
+    (args: EventFunctionArguments[T]) => void;
+
 export type EventInitializer =
-    (on: PetalAttributeEvents, func: EventFunction, usable?: PetalUsingAnimations) => void;
+    <T extends AttributeEvents = AttributeEvents>(
+        on: AttributeEvents,
+        func: EventFunction<T>,
+        usable?: PetalUsingAnimations
+    ) => void;
 
-interface PetalEventData {
+interface EventData {
     petal: ServerPetal;
-    attributeName: PetalAttributeName;
-    event: PetalAttributeEvents;
+    attributeName: AttributeName;
+    event: AttributeEvents;
     func: EventFunction;
     use?: PetalUsingAnimations;
 }
 
-export class PetalAttributeEventManager{
-    private _feature_events = new Set<PetalEventData>;
-    private _by_event = new Map<string, Set<PetalEventData>>;
+export class AttributeEventManager {
+    private _attributes_event = new Set<EventData>;
+    private _by_event = new Map<string, Set<EventData>>;
 
     constructor() {
-        for (const e in PetalAttributeEvents){
-            this._by_event.set(e, new Set<PetalEventData>);
+        for (const e in AttributeEvents){
+            this._by_event.set(e, new Set<EventData>);
         }
     }
 
     loadPetal(petal: ServerPetal) {
         for (const name in petal.definition.attributes) {
-            this.addAttribute(petal, name as PetalAttributeName);
+            this.addAttribute(petal, name as AttributeName);
         }
     }
 
-    addAttribute(petal: ServerPetal, name: PetalAttributeName) {
+    addAttribute(petal: ServerPetal, name: AttributeName) {
         if (!petal.definition.attributes) return
-        PetalAttributeRealizes[name].callback(
+        const realize = PetalAttributeRealizes[name] as AttributeRealize<typeof name>;
+        if (realize.unstackable){
+            const finding = Array.from(this._attributes_event)
+                .find(x => x.attributeName === name);
+            if (finding) return;
+        }
+        realize.callback(
             this.getEventInitializer(petal, name),
             petal,
             petal.definition.attributes[name]
         );
     }
 
-    getEventInitializer(petal: ServerPetal, name: PetalAttributeName): EventInitializer {
-        let em: PetalAttributeEventManager = this;
-        return function(on, func, use?) {
-            em.addEvent(petal, name, on, func, use);
-        }
+    getEventInitializer(petal: ServerPetal, name: AttributeName){
+        let em: AttributeEventManager = this;
+        return function<T extends AttributeEvents>(
+            on: AttributeEvents,
+            func: EventFunction<T>,
+            use?: PetalUsingAnimations
+        ) {
+            em.addEvent({
+                petal: petal,
+                attributeName: name,
+                event: on,
+                func: func as EventFunction,
+                use: use
+            });
+        };
     }
 
-    addEvent(petal: ServerPetal
-             , name: PetalAttributeName
-             , event: PetalAttributeEvents
-             , func: EventFunction
-             , use?: PetalUsingAnimations) {
-        const data: PetalEventData = {
-            petal: petal,
-            attributeName: name,
-            event,
-            func,
-            use
-        };
-        this._feature_events.add(data);
-        this._by_event.get(event as string)?.add(data);
+    addEvent(data: EventData) {
+        this._attributes_event.add(data);
+        this._by_event.get(data.event as string)?.add(data);
     }
 
     removePetal(petal: ServerPetal) {
         const petalId = petal.id;
-        this._feature_events.forEach((e: PetalEventData) => {
-            if(e.petal.id === petalId) {
-                this._feature_events.delete(e);
-                this._by_event.get(e.event as string)?.delete(e);
-            }
+        const array = Array.from(this._attributes_event);
+        const findings = array.filter(e => e.petal.id === petalId)
+        findings.forEach(e => {
+            this._attributes_event.delete(e);
+            this._by_event.get(e.event as string)?.delete(e);
         })
     }
 
-    sendEvent(event: PetalAttributeEvents) {
-        this._by_event.get(event as string)?.forEach((e: PetalEventData) => {
-            this.applyEvent(e);
+    sendEvent<T extends AttributeEvents>(
+        event: T, data: EventFunctionArguments[T]
+    ) {
+        this._by_event.get(event as string)?.forEach((e: EventData) => {
+            this.applyEvent(e, data);
         })
     }
 
-    sendEventById(petal: ServerPetal, event: PetalAttributeEvents) {
-        this._by_event.get(event as string)?.forEach((e: PetalEventData) => {
+    sendEventByPetal<T extends AttributeEvents>(
+        petal: ServerPetal, event: T, data: EventFunctionArguments[T]
+    ) {
+        this._by_event.get(event as string)?.forEach((e: EventData) => {
             if(e.petal.id == petal.id){
-                this.applyEvent(e);
+                this.applyEvent(e, data);
             }
         })
     }
 
-    applyEvent(e: PetalEventData){
-        if (!e.petal.isActive() || e.use && !e.petal.canUse) return;
-        e.func();
+    applyEvent<T extends AttributeEvents>(
+        e: EventData, data: EventFunctionArguments[T]
+    ){
+        if (e.petal.firstReloading || e.use && (!e.petal.canUse || !e.petal.isActive())) return;
+        e.func(data);
         if (e.use) e.petal.startUsing(e.use);
     }
 }
