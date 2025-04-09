@@ -29,7 +29,7 @@ export class ClientPetal extends ClientEntity {
 
         this.container.zIndex = 1;
 
-        this.images.body.anchor.set(0.5)
+        this.images.body.anchor.set(0.5);
 
         this.game.camera.addObject(this.container);
 
@@ -86,6 +86,8 @@ export class ClientPetal extends ClientEntity {
             this.images.body
                 .setFrame(getGameAssetsPath("petal", this.definition))
                 .setScaleByUnitRadius(data.definition.hitboxRadius)
+
+            this.images.body.setVisible(!data.isReloading);
         }
 
         this.changeVisibleTo(!data.isReloading);
