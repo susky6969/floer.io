@@ -2,7 +2,7 @@ import { Definitions, ObjectDefinition } from "../utils/definitions";
 
 type AttributeDefinition = ObjectDefinition;
 
-const petalAttributeDefinitions = [
+const AttributeDefinitions = [
     {
         idString: "absorbing_heal",
         displayName: "Heal"
@@ -10,12 +10,28 @@ const petalAttributeDefinitions = [
     {
         idString: "boost",
         displayName: "Boost"
+    },
+    {
+        idString: "poison",
+        displayName: "Poison"
+    },
+    {
+        idString: "healing_debuff",
+        displayName: "Healing Debuff"
+    },
+    {
+        idString: "body_poison",
+        displayName: "Body Poison"
+    },
+    {
+        idString: "damage_reflection",
+        displayName: "Damage Reflection"
     }
 ] as const;
 
-export const PetalAttributes = new Definitions<AttributeDefinition>(
-    petalAttributeDefinitions
+export const Attributes = new Definitions<AttributeDefinition>(
+    AttributeDefinitions
 );
 
-export type PetalAttributeName =
-    typeof petalAttributeDefinitions[number]["idString"];
+export type AttributeName =
+    typeof AttributeDefinitions[number]["idString"];
