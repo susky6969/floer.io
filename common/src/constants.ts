@@ -1,3 +1,5 @@
+import { PlayerModifiers } from "./typings";
+
 export enum EntityType {
     Player,
     Petal,
@@ -12,7 +14,6 @@ export const GameConstants = {
         radius: 1.5,
         defaultBodyDamage: 20,
         defaultHealth: 150,
-        maxHealth: 150,
         maxSpeed: 8,
         defaultName: "Player",
         maxNameLength: 20,
@@ -20,11 +21,15 @@ export const GameConstants = {
         spawnMaxY: 50,
         revolutionSpeed: 2,
         defaultSlot: 8,
-        defaultEquippedPetals: ["basic","basic","basic","basic", "basic","rose","stinger",""],
+        defaultEquippedPetals: ["basic","basic","basic","basic","basic","basic","basic","basic"],
         defaultPreparationPetals: ["","","","","","","",""],
         defaultPetalDistance: 3.8,
         defaultPetalAttackingDistance: 6.5,
-        defaultPetalDefendingDistance: 2.5
+        defaultPetalDefendingDistance: 2.5,
+        defaultModifiers: (): PlayerModifiers => ({
+            healing: 1,
+            maxHealth: 150
+        })
     },
     petal: {
         rotationRadius: 0.5
