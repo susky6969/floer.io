@@ -18,7 +18,7 @@ export class ClientPlayer extends ClientEntity {
 
     name: Text;
 
-    health = GameConstants.player.defaultHealth;
+    healthPercent = 1.0;
     healthBar = new Graphics();
 
     constructor(game: Game, id: number) {
@@ -59,9 +59,9 @@ export class ClientPlayer extends ClientEntity {
 
     drawHealthBar(): void {
         const healthbarWidth = 80;
-        const fillWidth = MathNumeric.remap(this.health, 0, GameConstants.player.maxHealth, 0, healthbarWidth);
+        const fillWidth = this.healthPercent * healthbarWidth;
 
-        this.healthBar.visible = this.health < GameConstants.player.maxHealth;
+        this.healthBar.visible = this.healthPercent < 1.0;
         this.healthBar.clear()
             .roundRect(-healthbarWidth / 2, 0, healthbarWidth, 10)
             .fill({
@@ -84,7 +84,7 @@ export class ClientPlayer extends ClientEntity {
         }
 
         if (data.full) {
-            this.health = data.full.health;
+            this.healthPercent = data.full.healthPercent;
             this.drawHealthBar();
         }
     }
