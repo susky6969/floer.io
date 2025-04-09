@@ -16,7 +16,10 @@ import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
 import { PetalDefinition, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
-import { PetalAttributeEvents } from "../utils/attribute";
+import { AttributeEvents } from "../utils/attribute";
+import { PlayerModifiers } from "../../../common/src/typings";
+import { Effect } from "../utils/effects";
+import { EventFunctionArguments } from "../utils/eventManager";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
@@ -42,7 +45,21 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     set health(health: number) {
         if (health === this._health) return;
-        this._health = MathNumeric.clamp(health, 0, GameConstants.player.maxHealth);
+        this._health = MathNumeric.clamp(health, 0, this.modifiers.maxHealth);
+        this.setFullDirty();
+    }
+
+    private _maxHealth = GameConstants.player.defaultHealth;
+
+    get maxHealth(): number {
+        return this._maxHealth;
+    }
+
+    set maxHealth(maxHealth: number) {
+        if (maxHealth === this._maxHealth) return;
+        this._health = MathNumeric.clamp(this._health  * maxHealth / this._maxHealth, 0, maxHealth);
+        this._maxHealth = maxHealth;
+
         this.setFullDirty();
     }
 
@@ -85,6 +102,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     weight = 2;
 
+    modifiers: PlayerModifiers = GameConstants.player.defaultModifiers();
+
     canReceiveDamageFrom(source: damageableEntity): boolean {
         switch (source.type) {
             case EntityType.Player:
@@ -107,6 +126,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.position = position;
         this.socket = socket;
         this.inventory = new Inventory(this);
+
+        this.updateModifiers();
     }
 
     tick(): void {
@@ -123,7 +144,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.range = GameConstants.player.defaultPetalDistance;
 
         if (this.isDefending) {
-            this.sendEvent(PetalAttributeEvents.DEFEND);
+            this.sendEvent<AttributeEvents.DEFEND>(AttributeEvents.DEFEND, undefined)
             this.inventory.range = GameConstants.player.defaultPetalDefendingDistance;
         }
 
@@ -133,18 +154,31 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         this.inventory.tick();
 
-        if (this.health < GameConstants.player.maxHealth)
-            this.sendEvent(PetalAttributeEvents.HEALING)
+        if (this.health < this.modifiers.maxHealth)
+            this.sendEvent<AttributeEvents.HEALING>(AttributeEvents.HEALING, undefined)
+
+        this.effects.tick();
     }
 
     dealDamageTo(to: damageableEntity): void{
-        if (to.canReceiveDamageFrom(this))
+        if (to.canReceiveDamageFrom(this)) {
             to.receiveDamage(this.damage, this);
+            this.sendEvent<AttributeEvents.FLOWER_DEAL_DAMAGE>(
+                AttributeEvents.FLOWER_DEAL_DAMAGE, to
+            )
+        }
     }
 
     receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
         if (!this.isActive()) return;
         this.health -= amount;
+
+        this.sendEvent<AttributeEvents.FLOWER_GET_DAMAGE>(
+            AttributeEvents.FLOWER_GET_DAMAGE, {
+                entity: source,
+                damage: amount,
+            }
+        )
 
         if (this.health <= 0) {
             this.destroy();
@@ -156,6 +190,11 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             gameOverPacket.murderer = source.name;
             this.sendPacket(gameOverPacket);
         }
+    }
+
+    heal(amount: number) {
+        amount *= this.modifiers.healing;
+        this.health += amount;
     }
 
     sendPackets() {
@@ -282,8 +321,13 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.delete(packet.deletedPetalIndex);
     }
 
-    sendEvent(event: PetalAttributeEvents){
-        this.inventory.eventManager.sendEvent(event);
+    sendEvent<T extends AttributeEvents>(
+        event: T, data: EventFunctionArguments[T], petal?: ServerPetal
+    ) {
+        if (!petal){
+            return this.inventory.eventManager.sendEvent<T>(event, data);
+        }
+        this.inventory.eventManager.sendEventByPetal<T>(petal, event, data);
     }
 
     get data(): Required<EntitiesNetData[EntityType.Player]> {
@@ -291,9 +335,36 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             position: this.position,
             direction: this.direction,
             full: {
-                health: this.health
+                healthPercent: this.health / this.maxHealth
             }
         };
+    }
+
+    private _calcModifiers(now: PlayerModifiers, extra: Partial<PlayerModifiers>): PlayerModifiers {
+        now.healing *= extra.healing ?? 1;
+        now.maxHealth += extra.maxHealth ?? 0;
+
+        return now;
+    }
+
+    updateModifiers(): void {
+        let modifiersNow = GameConstants.player.defaultModifiers();
+
+        for (const petal of this.petalEntities) {
+            const modifier = petal.definition.modifiers;
+            if (modifier)
+                modifiersNow = this._calcModifiers(modifiersNow, modifier);
+        }
+
+        this.effects.effects.forEach(effect => {
+            if (effect.modifier) {
+                modifiersNow = this._calcModifiers(modifiersNow, effect.modifier);
+            }
+        })
+
+        this.modifiers = modifiersNow;
+
+        this.maxHealth = this.modifiers.maxHealth;
     }
 
     destroy() {
@@ -305,7 +376,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         spawnLoot(
             this.game,
             this.inventory.inventory
-                .filter(e => e != null) as PetalDefinition[],
+                .filter(e => e != null && !e.undroppable) as PetalDefinition[],
             this.position
         )
     }

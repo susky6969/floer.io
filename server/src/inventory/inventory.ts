@@ -9,7 +9,7 @@ import {
 import { P2 } from "../../../common/src/utils/math";
 import { Vector } from "../../../common/src/utils/vector";
 import { GameConstants } from "../../../common/src/constants";
-import { PetalAttributeEventManager } from "../utils/eventManager";
+import { AttributeEventManager } from "../utils/eventManager";
 
 export class Inventory {
     position: Vector;
@@ -27,7 +27,7 @@ export class Inventory {
     private revolutionRadians = 0;
     range = 0;
 
-    eventManager = new PetalAttributeEventManager();
+    eventManager = new AttributeEventManager();
 
     constructor(player: ServerPlayer) {
         this.game = player.game;
@@ -82,6 +82,7 @@ export class Inventory {
         this.petalBunches[index].destroy();
         this.petalBunches[index] = new PetalBunch(this, petal);
         this.equipped_petals[index] = petal;
+        this.player.updateModifiers();
     }
 
     pickUp(petal: PetalDefinition): boolean {
