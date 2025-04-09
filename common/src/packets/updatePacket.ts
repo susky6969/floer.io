@@ -10,7 +10,7 @@ export interface EntitiesNetData {
         direction: Vector
 
         full?: {
-            health: number
+            healthPercent: number
         }
     }
     [EntityType.Petal]: {
@@ -60,7 +60,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             stream.writeUnit(data.direction, 16);
         },
         serializeFull(stream, data): void {
-            stream.writeFloat(data.health, 0, GameConstants.player.maxHealth, 12);
+            stream.writeFloat(data.healthPercent, 0.0, 1.0, 16);
         },
         deserializePartial(stream) {
             return {
@@ -70,7 +70,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         },
         deserializeFull(stream) {
             return {
-                health: stream.readFloat(0, GameConstants.player.maxHealth, 12)
+                healthPercent: stream.readFloat(0.0, 1.0, 16)
             };
         }
     },
