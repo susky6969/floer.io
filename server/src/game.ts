@@ -15,6 +15,7 @@ import { Vec2, type Vector } from "../../common/src/utils/vector";
 import { ServerMob } from "./entities/serverMob";
 import { Mobs } from "../../common/src/definitions/mob";
 import { CollisionResponse } from "../../common/src/utils/collision";
+import { Random } from "../../common/src/utils/random";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -65,8 +66,6 @@ export class Game {
     addPlayer(socket: WebSocket): ServerPlayer {
         const player = new ServerPlayer(this, socket);
         this.newPlayers.push(player);
-        if (this.grid.byCategory[EntityType.Mob].size <= 10)
-            new ServerMob(this, Vec2.new(10, 10), Mobs.fromString("ladybug"));
 
         return player;
     }
@@ -173,6 +172,17 @@ export class Game {
         this.newPlayers.length = 0;
         this.deletedPlayers.length = 0;
         this.mapDirty = false;
+
+        if (this.grid.byCategory[EntityType.Mob].size <= 150) {
+            const position = Random.vector(0, this.width, 0, this.height);
+            if (Random.int(0, 100) <= 90) {
+                new ServerMob(this, position,
+                    Mobs.fromString("ladybug"));
+            }else {
+                new ServerMob(this, position,
+                    Mobs.fromString("mega_ladybug"));
+            }
+        }
     }
 }
 
