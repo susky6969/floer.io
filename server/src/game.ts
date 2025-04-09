@@ -175,7 +175,7 @@ export class Game {
 
         if (this.grid.byCategory[EntityType.Mob].size <= 150) {
             const position = Random.vector(0, this.width, 0, this.height);
-            if (Random.int(0, 100) <= 90) {
+            if (Random.int(0, 100) <= 92) {
                 new ServerMob(this, position,
                     Mobs.fromString("ladybug"));
             }else {
