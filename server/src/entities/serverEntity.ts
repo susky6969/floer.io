@@ -180,7 +180,7 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
             this.addVelocity(
                 Vec2.mul(
                     collision.dir,
-                    (collision.pen * 2 + this.knockback)
+                    (collision.pen + this.knockback)
                     * entity.weight
                     *(-1)
                     / (this.weight + entity.weight)

@@ -133,7 +133,7 @@ export const Petals = new Definitions<PetalDefinition>([
         rarity: Rarities.unusual,
     },{
         idString: "tri_leaf",
-        displayName: "Leaves",
+        displayName: "Leaf",
         damage: 8,
         health: 10,
         extendable: true,
@@ -150,7 +150,7 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: true,
         isShowedInOne: true,
         pieceAmount: 3,
-        rarity: Rarities.epic,
+        rarity: Rarities.legendary,
         usingAssets: "leaf"
     },
     {
