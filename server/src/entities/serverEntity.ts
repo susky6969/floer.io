@@ -1,5 +1,5 @@
 import { type GameEntity } from "../../../common/src/utils/entityPool";
-import { EntityType } from "../../../common/src/constants";
+import { EntityType, GameConstants } from "../../../common/src/constants";
 import { GameBitStream } from "../../../common/src/net";
 import { type EntitiesNetData, EntitySerializations } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, type Hitbox } from "../../../common/src/utils/hitbox";
@@ -9,10 +9,12 @@ import { ServerPlayer } from "./serverPlayer";
 import { ServerPetal } from "./serverPetal";
 import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
-import { MathGraphics } from "../../../common/src/utils/math";
-import { ServerLoot } from "./serverLoot";
-import { Petals } from "../../../common/src/definitions/petal";
-import { Effect, EffectManager } from "../utils/effects";
+import { EffectManager } from "../utils/effects";
+
+export interface Velocity {
+    vector: Vector;
+    downing: number;
+}
 
 export type collideableEntity = ServerPetal | ServerPlayer | ServerMob;
 
@@ -56,8 +58,11 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     partialStream!: GameBitStream;
     fullStream!: GameBitStream;
 
-    weight: number = 1;
-    elasticity: number = 1;
+    weight: number = 5;
+    elasticity: number = 0.7;
+    knockback: number = 1;
+
+    velocity: Velocity[] = [];
 
     canReceiveDamageFrom(entity: ServerEntity): boolean {
         return !(this === entity);
@@ -73,7 +78,27 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
         this._position = pos;
     }
 
-    abstract tick(): void;
+    tick() {
+        const newVelocity = this.velocity.concat([]);
+
+        let position = Vec2.clone(this.position);
+
+        for (const aVelocity of newVelocity) {
+            position = Vec2.add(position, Vec2.mul(aVelocity.vector, this.game.dt))
+
+            aVelocity.vector = Vec2.mul(aVelocity.vector, aVelocity.downing);
+
+            const index = newVelocity.indexOf(aVelocity);
+            if (Vec2.length(aVelocity.vector) < 1 && index != 0) {
+                newVelocity.splice(index, 1);
+            }
+        }
+
+        this.velocity = newVelocity;
+        this.position = position;
+
+        this.effects.tick()
+    }
 
     init(): void {
         // + 3 for entity id (2 bytes) and entity type (1 byte)
@@ -82,6 +107,7 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
         this.serializeFull();
         this.hasInited = true;
     }
+
 
     serializePartial(): void {
         this.partialStream.index = 0;
@@ -134,20 +160,34 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
         this.game.grid.updateEntity(this);
     }
 
-    collideWith(collision: CollisionResponse, entity: damageableEntity): void{
+    addVelocity(vec: Vector, downing: number = 0.7): void {
+        this.velocity.push({
+            vector: vec,
+            downing: downing
+        });
+    }
+
+    setAcceleration(vec: Vector, downing: number = 0.7): void {
+        this.velocity[0] = {
+            vector: vec,
+            downing: downing
+        };
+    }
+
+    collideWith(collision: CollisionResponse, entity: collideableEntity): void{
         if (entity.id === this.id) return;
         if (collision) {
-            if (entity.type === this.type) {
-                this.position = Vec2.sub(
-                    this.position,
-                    Vec2.mul(collision.dir, collision.pen)
-                );
-            } else {
-                this.position = Vec2.sub(
-                    this.position,
-                    Vec2.mul(collision.dir, collision.pen * entity.elasticity / this.weight)
-                );
-            }
+            this.addVelocity(
+                Vec2.mul(
+                    collision.dir,
+                    (collision.pen * 2 + this.knockback)
+                    * entity.weight
+                    *(-1)
+                    / (this.weight + entity.weight)
+                    / this.game.dt
+                ),
+                this.elasticity
+            )
         }
     }
 

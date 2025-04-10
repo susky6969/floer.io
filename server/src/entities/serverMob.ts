@@ -39,8 +39,6 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     }
 
     aggroTarget?: ServerPlayer;
-    weight: number;
-    elasticity: number;
 
     _direction: Vector = Vec2.new(0, 0);
 
@@ -68,8 +66,8 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         this.hitbox = new CircleHitbox(definition.hitboxRadius);
         this.damage = definition.damage;
         this.health = definition.health;
-        this.weight = definition.hitboxRadius;
-        this.elasticity = this.weight * 2.5;
+
+        this.weight = definition.hitboxRadius * 10;
 
         this.game.grid.addEntity(this);
         this.position = position;
@@ -87,28 +85,25 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     }
 
     tick(): void{
+        super.tick()
+
         if (this.aggroTarget) {
             if (this.aggroTarget.destroyed) {
                 this.changeAggroTo();
             } else {
                 this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
-                this.position = Vec2.add(
-                    this.position, Vec2.mul(
-                        this.direction, this.definition.speed * this.game.dt
-                    )
-                );
+                this.setAcceleration(Vec2.mul(
+                    this.direction, this.definition.speed
+                ));
             }
         }else {
             if (this.definition.category !== MobCategory.Fixed) {
                 this.walkingReload += this.game.dt;
                 if (this.walkingReload >= GameConstants.mob.walkingReload) {
                     if (this.walkingTime === 0) this.direction = Random.vector(-1, 1, -1, 1)
-
-                    this.position = Vec2.add(
-                        this.position, Vec2.mul(
-                            this.direction, this.definition.speed * this.game.dt / GameConstants.mob.walkingTime
-                        )
-                    );
+                    this.setAcceleration(Vec2.mul(
+                        this.direction, this.definition.speed * GameConstants.mob.walkingTime
+                    ))
 
                     this.walkingTime += this.game.dt;
 
@@ -119,8 +114,6 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                 }
             }
         }
-
-        this.effects.tick()
     }
 
     dealDamageTo(to: damageableEntity): void{

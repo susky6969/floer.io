@@ -87,13 +87,12 @@ export class Game {
 
         const activeEntities = new Set<ServerEntity>();
 
+        const collisionTasks = new Set<CollisionTask>();
+
         // update entities
         for (const entity of this.grid.entities.values()) {
             if (entity.isActive()) activeEntities.add(entity);
-            entity.tick();
         }
-
-        const collisionTasks = new Set<CollisionTask>();
 
         for (const entity of activeEntities) {
             const collidedEntities =
@@ -105,6 +104,7 @@ export class Game {
 
                 const collision =
                     entity.hitbox.getIntersection(collidedEntity.hitbox);
+
                 if (collision) {
                     if (isDamageableEntity(entity) && isDamageableEntity(collidedEntity)) {
                         entity.dealDamageTo(collidedEntity);
@@ -116,14 +116,6 @@ export class Game {
                         collision
                     }
 
-                    const reversedTask: CollisionTask = {
-                        source: collidedEntity,
-                        target: entity,
-                        collision
-                    }
-
-                    if (collisionTasks.has(task) || collisionTasks.has(reversedTask)) continue;
-
                     collisionTasks.add(task)
                 }
             }
@@ -132,14 +124,12 @@ export class Game {
         for (const collisionTask of collisionTasks) {
             const { source, target, collision } = collisionTask;
             if (collision && isCollideableEntity(source) && isCollideableEntity(target)) {
-                const reversedCollision = {
-                    dir: collision.dir,
-                    pen: collision.pen * -1
-                }
-
                 source.collideWith(collision, target);
-                target.collideWith(reversedCollision, source);
             }
+        }
+
+        for (const entity of this.grid.entities.values()) {
+            entity.tick();
         }
 
         // Cache entity serializations

@@ -44,7 +44,8 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     readonly damage?: number;
     health?: number;
 
-    elasticity = 0.1;
+    knockback: number = 0;
+    weight = 0.02;
 
     get canUse(): boolean {
         if (this.definition.usable)

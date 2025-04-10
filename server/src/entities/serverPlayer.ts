@@ -100,8 +100,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             )
     }
 
-    weight = 2;
-
     modifiers: PlayerModifiers = GameConstants.player.defaultModifiers();
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
@@ -131,15 +129,12 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     tick(): void {
-        let position = Vec2.clone(this.position);
+        super.tick();
 
-        const speed = Vec2.mul(
+        this.setAcceleration(Vec2.mul(
             this.direction,
             MathNumeric.remap(this.mouseDistance, 0, 150, 0, GameConstants.player.maxSpeed)
-        );
-        position = Vec2.add(position, Vec2.mul(speed, this.game.dt));
-
-        this.position = position;
+        ));
 
         this.inventory.range = GameConstants.player.defaultPetalDistance;
 
@@ -156,8 +151,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         if (this.health < this.modifiers.maxHealth)
             this.sendEvent<AttributeEvents.HEALING>(AttributeEvents.HEALING, undefined)
-
-        this.effects.tick();
     }
 
     dealDamageTo(to: damageableEntity): void{

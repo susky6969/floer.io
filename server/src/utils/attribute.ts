@@ -47,9 +47,8 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                     if (data) {
                         const direction =
                             MathGraphics.directionBetweenPoints(petal.owner.position, petal.position);
-                        petal.owner.position = Vec2.add(
-                            petal.owner.position,
-                            Vec2.mul(direction, data)
+                        petal.owner.addVelocity(
+                            Vec2.mul(direction, data * 10)
                         )
                     }
                 }
