@@ -45,8 +45,8 @@ export class ClientPetal extends ClientEntity {
             this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8)
         }
 
-        if (this.definition && !this.definition.isDuplicate) {
-            this.angle += this.definition.selfRotation;
+        if (this.definition && this.definition.images?.selfGameRotation) {
+            this.angle += this.definition.images.selfGameRotation;
             this.images.body.setAngle(this.angle);
         }
     }

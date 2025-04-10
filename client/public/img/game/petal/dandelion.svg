@@ -45,15 +45,15 @@
        id="rect1"
        width="30.344772"
        height="11.528276"
-       x="101.83769"
-       y="-6.1382022"
-       transform="matrix(0.71184708,0.70233449,-0.67805705,0.73500928,0,0)" />
+       x="59.053997"
+       y="85.989616"
+       transform="matrix(0.99995109,0.00989035,0.02366301,0.99971999,0,0)" />
     <ellipse
        style="fill:#ffffff;fill-opacity:1;stroke:#cfcfcf;stroke-width:6.0507;stroke-dasharray:none;stroke-opacity:1"
        id="path1"
-       cx="142.13803"
-       cy="-1.2637101"
-       transform="matrix(0.71184708,0.70233449,-0.67805705,0.73500928,0,0)"
+       cx="99.354347"
+       cy="90.864105"
+       transform="matrix(0.99995109,0.00989035,0.02366301,0.99971999,0,0)"
        rx="16.842892"
        ry="16.869511" />
   </g>

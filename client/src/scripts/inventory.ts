@@ -1,7 +1,7 @@
 import { Game } from "@/scripts/game.ts";
 import $ from "jquery";
 import { Vec2 } from "@common/utils/vector.ts";
-import { P2, MathGraphics } from "@common/utils/math.ts";
+import { P2, MathGraphics, MathNumeric } from "@common/utils/math.ts";
 import { PetalDefinition, Petals, SavedPetalDefinitionData } from "@common/definitions/petal.ts";
 import { UI } from "@/ui.ts";
 import { RarityDefinitions } from "@common/definitions/rarity.ts";
@@ -31,6 +31,7 @@ export function renderPetalPiece(
     const sizePercent = displaySize;
     const size = sizePercent / 100 * defaultBoxSize / 2;
     const center = Vec2.sub(defaultCenter, Vec2.new(size, size));
+    const rotatedDegree = MathGraphics.radiansToDegrees(petal.images?.slotRotation ?? 0);
 
     const piece = $(`<img alt='' class='piece-petal' src=
         '/img/game/petal/${getGameAssetsFile(petal)}'>`
@@ -41,6 +42,7 @@ export function renderPetalPiece(
 
     piece.css("top", `${ (y + yOffset) / defaultBoxSize * 100 }%`);
     piece.css("left", `${ (x + xOffset) / defaultBoxSize * 100 }%`);
+    piece.css("transform", `rotate(${rotatedDegree}deg)`)
 
     return piece;
 }
@@ -51,6 +53,7 @@ export function renderPetal(petal: PetalDefinition) {
     );
 
     const rarity = RarityDefinitions.fromString(petal.rarity);
+    const displaySize = petal.images?.slotDisplaySize ?? 25;
 
     petal_box.css("background", rarity.color);
     petal_box.css("border-color", rarity.border);
@@ -62,14 +65,14 @@ export function renderPetal(petal: PetalDefinition) {
         for (let i = 0; i < count; i++) {
             const { x, y } = MathGraphics.getPositionOnCircle(radiansNow, defaultRadius)
             petal_box.append(
-                renderPetalPiece(x, y,25, petal)
+                renderPetalPiece(x, y, displaySize, petal)
             );
 
             radiansNow += P2 / count;
         }
     } else {
         petal_box.append(
-            renderPetalPiece(0, 0,petal.displaySize, petal)
+            renderPetalPiece(0, 0, displaySize, petal)
         );
     }
 

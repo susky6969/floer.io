@@ -15,13 +15,17 @@ export type PetalDefinition = ObjectDefinition & {
     readonly attributes?: AttributeData
     readonly modifiers?: Partial<PlayerModifiers>
     readonly undroppable?: boolean
+    readonly images?: {
+        readonly slotDisplaySize?: number
+        readonly slotRotation?: number
+        readonly slotRevolution?: number
+        readonly selfGameRotation?: number
+    }
 } & PetalPieceType & PetalUsageType;
 
 type PetalPieceType = {
     readonly isDuplicate: false
     readonly pieceAmount: 1
-    readonly displaySize: number
-    readonly selfRotation: number
 } | {
     readonly isDuplicate: true
     // Only allowed to use duplicateDisplay when have more than one
@@ -83,9 +87,11 @@ export const Petals = new Definitions<PetalDefinition>([
         health: 8,
         extendable: true,
         reloadTime: 4,
-        selfRotation: 0.1,
+        images: {
+            selfGameRotation: 0.1,
+            slotDisplaySize: 25,
+        },
         usable: false,
-        displaySize: 25,
         hitboxRadius: 0.3,
         isDuplicate: false,
         pieceAmount: 1,
@@ -111,15 +117,16 @@ export const Petals = new Definitions<PetalDefinition>([
         damage: 3,
         health: 3,
         extendable: false,
-        selfRotation: 0,
         usable: true,
         useTime: 1.5,
+        images: {
+            slotDisplaySize: 35,
+        },
         attributes: {
             absorbing_heal: 10
         },
         reloadTime: 3.5,
         hitboxRadius: 0.5,
-        displaySize: 35,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: Rarities.unusual
@@ -148,15 +155,16 @@ export const Petals = new Definitions<PetalDefinition>([
         damage: 0,
         health: 1,
         extendable: false,
-        selfRotation: 0,
         usable: true,
         useTime: 0,
+        images: {
+            slotDisplaySize: 45,
+        },
         attributes: {
             boost: 10
         },
         reloadTime: 3.5,
-        hitboxRadius: 0.6,
-        displaySize: 45,
+        hitboxRadius: 0.5,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: Rarities.rare
@@ -186,11 +194,12 @@ export const Petals = new Definitions<PetalDefinition>([
         damage: 10,
         health: 10,
         extendable: true,
-        selfRotation: 0,
         usable: false,
+        images: {
+            slotDisplaySize: 45,
+        },
         reloadTime: 2.5,
         hitboxRadius: 0.5,
-        displaySize: 45,
         isDuplicate: false,
         pieceAmount: 1,
         undroppable: true,
@@ -202,7 +211,11 @@ export const Petals = new Definitions<PetalDefinition>([
         damage: 5,
         health: 5,
         extendable: true,
-        selfRotation: 0.02,
+        images: {
+            selfGameRotation: 0.02,
+            slotDisplaySize: 45,
+            slotRotation: 0.8
+        },
         usable: false,
         attributes: {
             healing_debuff: {
@@ -212,7 +225,6 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         reloadTime: 2,
         hitboxRadius: 0.5,
-        displaySize: 45,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: Rarities.rare,
@@ -222,7 +234,6 @@ export const Petals = new Definitions<PetalDefinition>([
         damage: 5,
         health: 5,
         extendable: true,
-        selfRotation: 0,
         usable: false,
         attributes: {
             poison: {
@@ -232,7 +243,6 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         reloadTime: 6,
         hitboxRadius: 0.4,
-        displaySize: 25,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: Rarities.unusual,
@@ -242,14 +252,15 @@ export const Petals = new Definitions<PetalDefinition>([
         damage: 5,
         health: 15,
         extendable: true,
-        selfRotation: 0,
         usable: false,
+        images: {
+            slotDisplaySize: 52,
+        },
         modifiers: {
             maxHealth: 20
         },
         reloadTime: 1,
         hitboxRadius: 0.6,
-        displaySize: 52,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: Rarities.rare,
@@ -259,7 +270,9 @@ export const Petals = new Definitions<PetalDefinition>([
         damage: 5,
         health: 15,
         extendable: true,
-        selfRotation: 0,
+        images: {
+            slotDisplaySize: 52,
+        },
         usable: false,
         attributes: {
             poison: {
@@ -276,7 +289,6 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         reloadTime: 1,
         hitboxRadius: 0.6,
-        displaySize: 52,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: Rarities.epic,
@@ -303,13 +315,14 @@ export const Petals = new Definitions<PetalDefinition>([
         damage: 10,
         health: 10,
         extendable: true,
-        selfRotation: 0,
+        images: {
+            slotDisplaySize: 40,
+        },
         usable: false,
         attributes:{
             damage_reflection: 0.25
         },
         reloadTime: 2.5,
-        displaySize: 40,
         hitboxRadius: 0.6,
         isDuplicate: false,
         pieceAmount: 1,
