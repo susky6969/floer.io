@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   width="206.075"
+   height="165.24553"
+   viewBox="0 0 206.07499 165.24553"
+   id="svg4"
+   sodipodi:docname="幼蚁.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.6501869"
+     inkscape:cx="-73.628025"
+     inkscape:cy="132.40925"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <g
+     transform="matrix(-1.5153539,1.4142315,-1.4142315,-1.5153539,782.38017,-98.248603)"
+     id="g4">
+    <g
+       data-paper-data="{&quot;isPaintingLayer&quot;:true}"
+       fill-rule="nonzero"
+       stroke-width="16"
+       stroke-linejoin="miter"
+       stroke-miterlimit="10"
+       stroke-dasharray="none"
+       stroke-dashoffset="0"
+       style="mix-blend-mode:normal"
+       id="g3">
+      <path
+         d="m 273.46229,158.55768 c 0,0 -4.12213,-5.35479 -5.93722,-8.60378 -1.94383,-3.47944 -5.36604,-11.6289 -5.36604,-11.6289"
+         fill="none"
+         stroke="#292929"
+         stroke-linecap="round"
+         id="path1" />
+      <path
+         d="m 278.36962,122.22111 c 0,0 6.54848,1.66829 9.98204,3.10396 3.6771,1.5375 11.40003,5.83651 11.40003,5.83651"
+         data-paper-data="{&quot;index&quot;:null}"
+         fill="none"
+         stroke="#292929"
+         stroke-linecap="round"
+         id="path2" />
+      <path
+         d="m 274.4361,166.54489 c 0,-17.624 14.28708,-31.91107 31.91107,-31.91107 17.62399,0 31.91107,14.28708 31.91107,31.91107 0,17.624 -14.28708,31.91107 -31.91107,31.91107 -17.62399,0 -31.91107,-14.28707 -31.91107,-31.91107 z"
+         fill="#555555"
+         stroke="#454545"
+         stroke-linecap="butt"
+         id="path3" />
+    </g>
+  </g>
+</svg>
