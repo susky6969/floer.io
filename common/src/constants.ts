@@ -21,14 +21,15 @@ export const GameConstants = {
         spawnMaxY: 50,
         revolutionSpeed: 2,
         defaultSlot: 8,
-        defaultEquippedPetals: ["dandelion","basic","basic","basic","basic","basic","basic","basic"],
+        defaultEquippedPetals: ["triplet","leaf","tri_leaf","dual_stinger","epic_rose","fast","triplet","basic"],
         defaultPreparationPetals: ["","","","","","","",""],
         defaultPetalDistance: 3.8,
         defaultPetalAttackingDistance: 6.5,
         defaultPetalDefendingDistance: 2.5,
         defaultModifiers: (): PlayerModifiers => ({
             healing: 1,
-            maxHealth: 150
+            maxHealth: 150,
+            healPerSecond: 0.1
         })
     },
     petal: {
@@ -36,7 +37,21 @@ export const GameConstants = {
     },
     game: {
         width: 2048,
-        height: 50
+        height: 50,
+        spawningMob: {
+            "ladybug": 10,
+            "shiny_ladybug": 0.1,
+            "dark_ladybug": 10,
+            "beetle": 10,
+            "spider": 10,
+            "rock": 20,
+            "cactus": 25,
+            "massive_ladybug": 1,
+            "bee": 10,
+            "worker_ant": 10,
+            "baby_ant": 10,
+            "soldier_ant": 10,
+        }
     },
     loot: {
         radius: 0.5,

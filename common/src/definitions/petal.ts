@@ -20,6 +20,8 @@ export type PetalDefinition = ObjectDefinition & {
         readonly slotRotation?: number
         readonly slotRevolution?: number
         readonly selfGameRotation?: number
+        readonly centerXOffset?: number
+        readonly centerYOffset?: number
     }
 } & PetalPieceType & PetalUsageType;
 
@@ -67,8 +69,22 @@ export function getDisplayedPieces(petal: PetalDefinition): number {
 
 export const Petals = new Definitions<PetalDefinition>([
     {
-        idString: "light",
-        displayName: "Light",
+        idString: "fast",
+        displayName: "Fast",
+        damage: 8,
+        health: 5,
+        extendable: true,
+        reloadTime: 0.5,
+        usable: false,
+        hitboxRadius: 0.3,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: Rarities.common,
+        usingAssets: "light"
+    },
+    {
+        idString: "twin",
+        displayName: "Twin",
         damage: 8,
         health: 5,
         extendable: true,
@@ -78,7 +94,64 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: true,
         pieceAmount: 2,
         isShowedInOne: false,
-        rarity: Rarities.unusual
+        rarity: Rarities.unusual,
+        usingAssets: "light"
+    },
+    {
+        idString: "triplet",
+        displayName: "Triplet",
+        damage: 8,
+        health: 5,
+        extendable: true,
+        reloadTime: 0.5,
+        usable: false,
+        hitboxRadius: 0.3,
+        isDuplicate: true,
+        pieceAmount: 3,
+        isShowedInOne: false,
+        rarity: Rarities.epic,
+        usingAssets: "light"
+    },
+    {
+        idString: "leaf",
+        displayName: "Leaf",
+        damage: 8,
+        health: 10,
+        extendable: true,
+        images: {
+            slotDisplaySize: 52,
+            slotRotation: -0.1
+        },
+        modifiers: {
+            healPerSecond: 1
+        },
+        reloadTime: 1,
+        usable: false,
+        hitboxRadius: 0.6,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: Rarities.unusual,
+    },{
+        idString: "tri_leaf",
+        displayName: "Leaves",
+        damage: 8,
+        health: 10,
+        extendable: true,
+        images: {
+            slotDisplaySize: 40,
+            slotRotation: -0.1
+        },
+        modifiers: {
+            healPerSecond: 2
+        },
+        reloadTime: 1,
+        usable: false,
+        hitboxRadius: 0.6,
+        isDuplicate: true,
+        isShowedInOne: true,
+        pieceAmount: 3,
+        rarity: Rarities.epic,
+        usingAssets: "leaf"
     },
     {
         idString: "stinger",
@@ -148,6 +221,40 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 3,
         rarity: Rarities.rare,
         usingAssets: "rose"
+    },{
+        idString: "epic_rose",
+        displayName: "Rose",
+        damage: 5,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 1,
+        images: {
+            slotDisplaySize: 40
+        },
+        attributes: {
+            absorbing_heal: 22
+        },
+        reloadTime: 3.5,
+        hitboxRadius: 0.4,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: Rarities.epic,
+        usingAssets: "rose"
+    },{
+        idString: "dual_stinger",
+        displayName: "Stinger",
+        damage: 35,
+        health: 8,
+        extendable: true,
+        usable: false,
+        reloadTime: 4,
+        hitboxRadius: 0.4,
+        isDuplicate: true,
+        isShowedInOne: true,
+        pieceAmount: 2,
+        rarity: Rarities.rare,
+        usingAssets: "stinger"
     },
     {
         idString: "bubble",
@@ -214,7 +321,9 @@ export const Petals = new Definitions<PetalDefinition>([
         images: {
             selfGameRotation: 0.02,
             slotDisplaySize: 45,
-            slotRotation: 0.8
+            slotRotation: 0.8,
+            centerXOffset: -1,
+            centerYOffset: -1
         },
         usable: false,
         attributes: {
@@ -299,6 +408,9 @@ export const Petals = new Definitions<PetalDefinition>([
         health: 15,
         extendable: true,
         usable: false,
+        images: {
+            slotDisplaySize: 52
+        },
         modifiers: {
             maxHealth: 20
         },

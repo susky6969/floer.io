@@ -35,7 +35,7 @@ export class PetalBunch {
             for (let i = 0; i < this.totalPieces; i++) {
                 const petal = new ServerPetal(player, definition);
                 this.petals.push(petal);
-                petal.join()
+                if (player.joined) petal.join()
 
                 inventory.eventManager.loadPetal(petal);
             }

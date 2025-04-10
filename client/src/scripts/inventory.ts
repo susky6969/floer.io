@@ -31,7 +31,8 @@ export function renderPetalPiece(
     const sizePercent = displaySize;
     const size = sizePercent / 100 * defaultBoxSize / 2;
     const center = Vec2.sub(defaultCenter, Vec2.new(size, size));
-    const rotatedDegree = MathGraphics.radiansToDegrees(petal.images?.slotRotation ?? 0);
+    const rotatedDegree =
+        MathGraphics.radiansToDegrees(petal.images?.slotRotation ?? 0);
 
     const piece = $(`<img alt='' class='piece-petal' src=
         '/img/game/petal/${getGameAssetsFile(petal)}'>`
@@ -54,6 +55,8 @@ export function renderPetal(petal: PetalDefinition) {
 
     const rarity = RarityDefinitions.fromString(petal.rarity);
     const displaySize = petal.images?.slotDisplaySize ?? 25;
+    const offsetX = petal.images?.centerXOffset ?? 0;
+    const offsetY = petal.images?.centerYOffset ?? 0;
 
     petal_box.css("background", rarity.color);
     petal_box.css("border-color", rarity.border);
@@ -65,14 +68,14 @@ export function renderPetal(petal: PetalDefinition) {
         for (let i = 0; i < count; i++) {
             const { x, y } = MathGraphics.getPositionOnCircle(radiansNow, defaultRadius)
             petal_box.append(
-                renderPetalPiece(x, y, displaySize, petal)
+                renderPetalPiece(x + offsetX, y + offsetY, displaySize, petal)
             );
 
             radiansNow += P2 / count;
         }
     } else {
         petal_box.append(
-            renderPetalPiece(0, 0, displaySize, petal)
+            renderPetalPiece(offsetX, offsetY, displaySize, petal)
         );
     }
 

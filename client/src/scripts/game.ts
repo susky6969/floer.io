@@ -213,7 +213,7 @@ export class Game {
             ctx.clear();
             this.camera.addObject(ctx);
 
-            const gridSize = 1.4 * Camera.scale;
+            const gridSize = 2.5 * Camera.scale;
             const gridWidth = packet.map.width * Camera.scale;
             const gridHeight = packet.map.height * Camera.scale;
             for (let x = 0; x <= gridWidth; x += gridSize) {

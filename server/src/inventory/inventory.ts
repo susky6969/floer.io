@@ -33,7 +33,9 @@ export class Inventory {
         this.game = player.game;
         this.player = player;
         this.position = player.position;
+    }
 
+    init(): void{
         for (let i = 0; i < GameConstants.player.defaultSlot; i++) {
             this.equipped_petals.push(
                 Petals.fromStringData(GameConstants.player.defaultEquippedPetals[i])

@@ -43,6 +43,7 @@ export class ClientMob extends ClientEntity {
     render(): void {
         this.container.position =
             Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
+
         this.images.body.rotation =
             Vec2.directionToRadians(Vec2.targetEasing(Vec2.radiansToDirection(this.images.body.rotation), this.direction, 8));
     }

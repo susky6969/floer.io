@@ -74,7 +74,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     }
 
     changeAggroTo(entity?: ServerEntity): void {
-        if (this.definition.category === MobCategory.Fixed) return;
+        if (![MobCategory.Enemy, MobCategory.Passive].includes(this.definition.category)) return;
 
         if (this.aggroTarget && !entity) {
             this.aggroTarget = undefined;
@@ -110,6 +110,22 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                     if (this.walkingTime >= GameConstants.mob.walkingTime) {
                         this.walkingReload = 0;
                         this.walkingTime = 0;
+                    }
+                }
+
+                if (this.definition.category === MobCategory.Enemy && !this.aggroTarget) {
+                    const aggro = new CircleHitbox(
+                        this.definition.aggroRadius, this.position
+                    );
+
+                    const entities =
+                        this.game.grid.intersectsHitbox(aggro);
+
+                    for (const entity of entities) {
+                        if (!(entity instanceof ServerPlayer)) continue;
+                        if (aggro.collidesWith(entity.hitbox)) {
+                            this.changeAggroTo(entity);
+                        }
                     }
                 }
             }
@@ -151,10 +167,12 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
         let loots: PetalDefinition[] = []
 
+        const randomMax = 10000;
+
         for (const lootsKey in lootTable) {
             if (!Petals.hasString(lootsKey)) continue;
-            const random = Random.int(0, 1000);
-            if (random <= lootTable[lootsKey]){
+            const random = Random.int(0, randomMax);
+            if (random <= lootTable[lootsKey] * randomMax){
                 loots.push(Petals.fromString(lootsKey));
             }
         }

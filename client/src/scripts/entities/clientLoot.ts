@@ -33,22 +33,25 @@ function drawPetalPiece(
 
 function drawPetal(petal_box: Container, petal: PetalDefinition) {
     const displaySize = petal.images?.slotDisplaySize ?? 25;
+    const offsetX = petal.images?.centerXOffset ?? 0;
+    const offsetY = petal.images?.centerYOffset ?? 0;
 
     if (petal.isDuplicate) {
         let radiansNow = 0;
         const count = petal.pieceAmount;
 
         for (let i = 0; i < count; i++) {
-            const { x, y } = MathGraphics.getPositionOnCircle(radiansNow, defaultRadius)
+            const { x, y } =
+                MathGraphics.getPositionOnCircle(radiansNow, defaultRadius)
             petal_box.addChild(
-                drawPetalPiece(x, y,displaySize, petal)
+                drawPetalPiece(x + offsetX, y + offsetY,displaySize, petal)
             );
 
             radiansNow += P2 / count;
         }
     } else {
         petal_box.addChild(
-            drawPetalPiece(0, 0, displaySize, petal)
+            drawPetalPiece(offsetX, offsetY, displaySize, petal)
         );
     }
 

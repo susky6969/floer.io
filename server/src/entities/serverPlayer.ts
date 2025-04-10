@@ -35,6 +35,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     inventory: Inventory;
 
+    joined: boolean = false;
+
     damage: number = GameConstants.player.defaultBodyDamage;
 
     private _health = GameConstants.player.defaultHealth;
@@ -151,6 +153,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         if (this.health < this.modifiers.maxHealth)
             this.sendEvent<AttributeEvents.HEALING>(AttributeEvents.HEALING, undefined)
+
+        this.heal(this.modifiers.healPerSecond * this.game.dt);
     }
 
     dealDamageTo(to: damageableEntity): void{
@@ -300,7 +304,13 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.game.players.add(this);
         this.game.grid.addEntity(this);
 
+        this.joined = true;
+        this.petalEntities.map(e => e.join());
+
         console.log(`"${this.name}" joined the game`);
+
+        this.inventory.init();
+        this.updateModifiers()
     }
 
     processInput(packet: InputPacket): void {
@@ -338,6 +348,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     private _calcModifiers(now: PlayerModifiers, extra: Partial<PlayerModifiers>): PlayerModifiers {
         now.healing *= extra.healing ?? 1;
         now.maxHealth += extra.maxHealth ?? 0;
+        now.healPerSecond += extra.healPerSecond ?? 0;
 
         return now;
     }

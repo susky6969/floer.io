@@ -163,15 +163,14 @@ export class Game {
         this.deletedPlayers.length = 0;
         this.mapDirty = false;
 
-        if (this.grid.byCategory[EntityType.Mob].size <= 150) {
+        if (this.grid.byCategory[EntityType.Mob].size <= 250) {
             const position = Random.vector(0, this.width, 0, this.height);
-            if (Random.int(0, 100) <= 92) {
-                new ServerMob(this, position,
-                    Mobs.fromString("ladybug"));
-            }else {
-                new ServerMob(this, position,
-                    Mobs.fromString("mega_ladybug"));
-            }
+            const definitionIdString = Random.weightedRandom(
+                Object.keys(GameConstants.game.spawningMob),
+                Object.values(GameConstants.game.spawningMob)
+            )
+
+            new ServerMob(this, position, Mobs.fromString(definitionIdString))
         }
     }
 }
