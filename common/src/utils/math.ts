@@ -70,6 +70,10 @@ export const MathNumeric = {
      */
     clamp(a: number, min: number, max: number): number {
         return Math.min(Math.max(a, min), max);
+    },
+
+    targetEasing(from: number, to: number, n: number = 4): number {
+        return from + (to - from) / n
     }
 };
 

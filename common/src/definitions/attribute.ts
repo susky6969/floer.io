@@ -26,6 +26,10 @@ const AttributeDefinitions = [
     {
         idString: "damage_reflection",
         displayName: "Damage Reflection"
+    },
+    {
+        idString: "shoot",
+        displayName: "Shoot"
     }
 ] as const;
 

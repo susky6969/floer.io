@@ -19,12 +19,14 @@ import { ClientMob } from "@/scripts/entities/clientMob.ts";
 import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
 import { Tween } from '@tweenjs/tween.js';
 import { ClientLoot } from "@/scripts/entities/clientLoot.ts";
+import { ClientProjectile } from "@/scripts/entities/clientProjectile.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
     [EntityType.Petal]: ClientPetal,
     [EntityType.Mob]: ClientMob,
-    [EntityType.Loot]: ClientLoot
+    [EntityType.Loot]: ClientLoot,
+    [EntityType.Projectile]: ClientProjectile
 }
 
 

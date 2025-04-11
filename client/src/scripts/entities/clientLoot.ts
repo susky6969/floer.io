@@ -8,7 +8,7 @@ import { PetalDefinition } from "@common/definitions/petal.ts";
 import { Graphics, Text, Container } from "pixi.js";
 import { Vec2 } from "@common/utils/vector.ts";
 import { MathGraphics, P2 } from "@common/utils/math.ts";
-import { RarityDefinitions } from "@common/definitions/rarity.ts";
+import { Rarity } from "@common/definitions/rarity.ts";
 
 const defaultCenter = Vec2.new(0, -4);
 
@@ -87,7 +87,7 @@ export class ClientLoot extends ClientEntity {
     }
 
     init(): void{
-        const rarity = RarityDefinitions.fromString(this.definition.rarity);
+        const rarity = Rarity.fromString(this.definition.rarity);
 
         this.background.clear()
             .rect(-25, -25, 50, 50)

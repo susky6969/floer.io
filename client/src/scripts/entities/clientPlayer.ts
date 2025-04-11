@@ -1,6 +1,6 @@
 import { ClientEntity } from "./clientEntity";
 import { EntityType, GameConstants } from "@common/constants";
-import { GameSprite } from "@/scripts/utils/pixi";
+import { GameSprite, getGameAssetsPath } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
 import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
@@ -12,7 +12,7 @@ export class ClientPlayer extends ClientEntity {
     type = EntityType.Player;
 
     images = {
-        body: new GameSprite("flower_body.svg")
+        body: new GameSprite(getGameAssetsPath("flower","body"))
             .setScaleByUnitRadius(GameConstants.player.radius)
     };
 
@@ -81,6 +81,14 @@ export class ClientPlayer extends ClientEntity {
 
         if (isNew){
             this.container.position = Camera.vecToScreen(this.position);
+        }
+
+        if (data.state.poisoned) {
+            this.images.body.setFrame(getGameAssetsPath("flower","poisoned_body"))
+        } else if (data.state.danded) {
+            this.images.body.setFrame(getGameAssetsPath("flower","danded_body"))
+        } else {
+            this.images.body.setFrame(getGameAssetsPath("flower","body"))
         }
 
         if (data.full) {

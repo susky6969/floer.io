@@ -12,6 +12,7 @@ export type EventFunctionArguments = {
         entity: ServerEntity
         damage: number
     }
+    [AttributeEvents.PROJECTILE_DEAL_DAMAGE]?: ServerEntity
 }
 
 type EventFunction<T extends AttributeEvents = AttributeEvents> =

@@ -31,6 +31,9 @@ export class UI {
 
     readonly deletePetal = $<HTMLDivElement>("<div id='delete-petal'></div>");
 
+    readonly petalInformation =
+        $<HTMLDivElement>("<div id='petal-information'></div>");
+
     constructor(app: ClientApplication) {
         this.app = app;
 

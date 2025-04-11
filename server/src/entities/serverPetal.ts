@@ -1,8 +1,8 @@
-import { damageableEntity, ServerEntity } from "./serverEntity";
+import { damageableEntity, damageSource, ServerEntity } from "./serverEntity";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType } from "../../../common/src/constants";
-import { AttributeData, PetalDefinition } from "../../../common/src/definitions/petal";
+import { AttributeParameters, PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
 import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
@@ -63,6 +63,8 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             case EntityType.Petal:
                 return source != this
                     && source.owner != this.owner
+            case EntityType.Projectile:
+                return source.source != this.owner
         }
     }
 
@@ -123,7 +125,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     dealDamageTo(to: damageableEntity): void{
         if (this.damage && to.canReceiveDamageFrom(this)) {
             to.receiveDamage(this.damage, this.owner);
-            this.owner.sendEvent<AttributeEvents.PETAL_DEAL_DAMAGE>(
+            this.owner.sendEvent(
                 AttributeEvents.PETAL_DEAL_DAMAGE,
                 to,
                 this
@@ -131,7 +133,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         }
     }
 
-    receiveDamage(amount: number, source: ServerPlayer | ServerMob) {
+    receiveDamage(amount: number, source: damageSource) {
         if (!this.health) return;
         if (!this.isActive()) return;
 
@@ -149,6 +151,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             position: this.position,
             definition: this.definition,
             isReloading: this.isReloading,
+            ownerId: this.owner.id,
             full: {
 
             }

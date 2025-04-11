@@ -1,6 +1,6 @@
 import { Definitions, ObjectDefinition } from "../utils/definitions";
 
-export enum Rarities {
+export enum RarityName {
     common = "common",
     unusual = "unusual",
     rare = "rare",
@@ -10,45 +10,45 @@ export enum Rarities {
 }
 
 type RarityDefinition = ObjectDefinition & {
-    idString: Rarities
+    idString: RarityName
 } & {
     color: string;
     border: string;
 };
 
-export const RarityDefinitions = new Definitions<RarityDefinition>([
+export const Rarity = new Definitions<RarityDefinition>([
     {
-        idString: Rarities.common,
+        idString: RarityName.common,
         displayName: "Common",
         color: "#7eef6d",
         border: "#66c258",
     },
     {
-        idString: Rarities.unusual,
+        idString: RarityName.unusual,
         displayName: "Unusual",
         color: "#ffe65d",
         border: "#cfba4b",
     },
     {
-        idString: Rarities.rare,
+        idString: RarityName.rare,
         displayName: "Rare",
         color: "#4d52e3",
         border: "#3e42b8",
     },
     {
-        idString: Rarities.epic,
+        idString: RarityName.epic,
         displayName: "Epic",
         color: "#861fde",
         border: "#6d19b4",
     },
     {
-        idString: Rarities.legendary,
+        idString: RarityName.legendary,
         displayName: "Legendary",
         color: "#de1f1f",
         border: "#b41919",
     },
     {
-        idString: Rarities.super,
+        idString: RarityName.super,
         displayName: "Super",
         color: "#2bffa3",
         border: "#23cf84",

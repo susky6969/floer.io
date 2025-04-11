@@ -1,4 +1,4 @@
-import { damageableEntity, isDamageableEntity, ServerEntity } from "./serverEntity";
+import { damageableEntity, damageSource, isDamageableEntity, ServerEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
@@ -13,6 +13,7 @@ import { ServerLoot } from "./serverLoot";
 import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { Effect } from "../utils/effects";
+import { ServerProjectile } from "./serverProjectile";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
@@ -55,8 +56,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
     walkingReload: number = 0;
     walkingTime: number = 0;
+    shootReload: number = 0;
 
     canReceiveDamageFrom(entity: ServerEntity): boolean {
+        if (entity instanceof ServerProjectile)
+            return entity.source.type != this.type;
         return !(entity instanceof ServerMob);
     }
 
@@ -87,47 +91,63 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     tick(): void{
         super.tick()
 
-        if (this.aggroTarget) {
-            if (this.aggroTarget.destroyed) {
-                this.changeAggroTo();
-            } else {
-                this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
-                this.setAcceleration(Vec2.mul(
-                    this.direction, this.definition.speed
-                ));
-            }
-        }else {
-            if (this.definition.category !== MobCategory.Fixed) {
-                this.walkingReload += this.game.dt;
-                if (this.walkingReload >= GameConstants.mob.walkingReload) {
-                    if (this.walkingTime === 0) this.direction = Random.vector(-1, 1, -1, 1)
-                    this.setAcceleration(Vec2.mul(
-                        this.direction, this.definition.speed * GameConstants.mob.walkingTime
-                    ))
+        if (this.definition.category !== MobCategory.Fixed) {
+            if (this.aggroTarget) {
+                if (this.aggroTarget.destroyed) {
+                    this.changeAggroTo();
+                } else {
+                    this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
 
-                    this.walkingTime += this.game.dt;
-
-                    if (this.walkingTime >= GameConstants.mob.walkingTime) {
-                        this.walkingReload = 0;
-                        this.walkingTime = 0;
+                    if (this.definition.shootable) {
+                        this.shootReload += this.game.dt;
+                        if (this.shootReload >= this.definition.shootSpeed) {
+                            new ServerProjectile(this,
+                                Vec2.add(this.position,Vec2.mul(this.direction, this.hitbox.radius)),
+                                this.direction, this.definition.shoot);
+                            this.shootReload = 0;
+                        }
+                        if (Vec2.distance(this.position, this.aggroTarget.position) > 15){
+                            this.setAcceleration(Vec2.mul(
+                                this.direction, this.definition.speed
+                            ));
+                        }
+                    }else {
+                        this.setAcceleration(Vec2.mul(
+                            this.direction, this.definition.speed
+                        ));
                     }
                 }
+            }else {
+                    this.walkingReload += this.game.dt;
+                    if (this.walkingReload >= GameConstants.mob.walkingReload) {
+                        if (this.walkingTime === 0) this.direction = Random.vector(-1, 1, -1, 1)
+                        this.setAcceleration(Vec2.mul(
+                            this.direction, this.definition.speed * GameConstants.mob.walkingTime
+                        ))
 
-                if (this.definition.category === MobCategory.Enemy && !this.aggroTarget) {
-                    const aggro = new CircleHitbox(
-                        this.definition.aggroRadius, this.position
-                    );
+                        this.walkingTime += this.game.dt;
 
-                    const entities =
-                        this.game.grid.intersectsHitbox(aggro);
-
-                    for (const entity of entities) {
-                        if (!(entity instanceof ServerPlayer)) continue;
-                        if (aggro.collidesWith(entity.hitbox)) {
-                            this.changeAggroTo(entity);
+                        if (this.walkingTime >= GameConstants.mob.walkingTime) {
+                            this.walkingReload = 0;
+                            this.walkingTime = 0;
                         }
                     }
-                }
+
+                    if (this.definition.category === MobCategory.Enemy && !this.aggroTarget) {
+                        const aggro = new CircleHitbox(
+                            this.definition.aggroRadius, this.position
+                        );
+
+                        const entities =
+                            this.game.grid.intersectsHitbox(aggro);
+
+                        for (const entity of entities) {
+                            if (!(entity instanceof ServerPlayer)) continue;
+                            if (aggro.collidesWith(entity.hitbox)) {
+                                this.changeAggroTo(entity);
+                            }
+                        }
+                    }
             }
         }
     }
@@ -137,7 +157,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
             to.receiveDamage(this.damage, this);
     }
 
-    receiveDamage(amount: number, source: ServerPlayer | ServerMob, disableEvent?: boolean): void {
+    receiveDamage(amount: number, source: damageSource, disableEvent?: boolean): void {
         if (!this.isActive()) return;
 
         this.changeAggroTo(source)

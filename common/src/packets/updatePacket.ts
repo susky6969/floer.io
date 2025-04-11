@@ -3,11 +3,16 @@ import { type GameBitStream, type Packet } from "../net";
 import { type Vector } from "../utils/vector";
 import { PetalDefinition, Petals, SavedPetalDefinitionData } from "../definitions/petal";
 import { MobDefinition, Mobs } from "../definitions/mob";
+import { Projectile, ProjectileDefinition } from "../definitions/projectile";
 
 export interface EntitiesNetData {
     [EntityType.Player]: {
         position: Vector
         direction: Vector
+        state: {
+            poisoned: boolean
+            danded: boolean
+        }
 
         full?: {
             healthPercent: number
@@ -17,6 +22,7 @@ export interface EntitiesNetData {
         position: Vector
         definition: PetalDefinition
         isReloading: boolean
+        ownerId: number
 
         full?: {
 
@@ -39,6 +45,15 @@ export interface EntitiesNetData {
 
         }
     }
+    [EntityType.Projectile]: {
+        position: Vector
+        definition: ProjectileDefinition
+        direction: Vector
+
+        full?: {
+
+        }
+    }
 }
 
 interface EntitySerialization<T extends EntityType> {
@@ -53,11 +68,13 @@ interface EntitySerialization<T extends EntityType> {
 
 export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> } = {
     [EntityType.Player]: {
-        partialSize: 8,
+        partialSize: 9,
         fullSize: 2,
         serializePartial(stream, data): void {
             stream.writePosition(data.position);
             stream.writeUnit(data.direction, 16);
+            stream.writeBoolean(data.state.poisoned);
+            stream.writeBoolean(data.state.danded)
         },
         serializeFull(stream, data): void {
             stream.writeFloat(data.healthPercent, 0.0, 1.0, 16);
@@ -65,7 +82,11 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         deserializePartial(stream) {
             return {
                 position: stream.readPosition(),
-                direction: stream.readUnit(16)
+                direction: stream.readUnit(16),
+                state: {
+                    poisoned: stream.readBoolean(),
+                    danded: stream.readBoolean()
+                }
             };
         },
         deserializeFull(stream) {
@@ -81,6 +102,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             Petals.writeToStream(stream, data.definition);
             stream.writePosition(data.position);
             stream.writeBoolean(data.isReloading)
+            stream.writeUint16(data.ownerId);
         },
         serializeFull(stream, data): void {
 
@@ -89,7 +111,8 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             return {
                 definition: Petals.readFromStream(stream),
                 position: stream.readPosition(),
-                isReloading: stream.readBoolean()
+                isReloading: stream.readBoolean(),
+                ownerId: stream.readUint16()
             };
         },
         deserializeFull(stream) {
@@ -140,6 +163,28 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             return {};
         }
     },
+    [EntityType.Projectile]: {
+        partialSize: 10,
+        fullSize: 0,
+        serializePartial(stream, data): void {
+            Projectile.writeToStream(stream, data.definition);
+            stream.writePosition(data.position);
+            stream.writeUnit(data.direction, 8);
+        },
+        serializeFull(stream, data): void {
+
+        },
+        deserializePartial(stream) {
+            return {
+                definition: Projectile.readFromStream(stream),
+                position: stream.readPosition(),
+                direction: stream.readUnit(8)
+            };
+        },
+        deserializeFull(stream) {
+            return {};
+        }
+    }
 };
 
 interface Entity {

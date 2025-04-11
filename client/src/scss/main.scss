@@ -271,3 +271,27 @@ img {
     background: #b7816d;
     border: #9a7661 4px solid;
 }
+
+#petal-information {
+    position: absolute;
+    padding: 7px;
+    transform: translate(0, -100%);
+    background: rgba(0, 0, 0, 0.6);
+    height: max-content;
+    width: max-content;
+    border-radius: 5px;
+    color: white;
+}
+
+#petal-information > div {
+    margin: 0.1em 0;
+}
+
+#petal-information > div > p {
+    margin: 0;
+}
+
+#petal-information > p {
+    margin: 0;
+}
+

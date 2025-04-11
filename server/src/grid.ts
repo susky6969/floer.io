@@ -7,6 +7,7 @@ import { type ServerPlayer } from "./entities/serverPlayer";
 import { ServerPetal } from "./entities/serverPetal";
 import { ServerMob } from "./entities/serverMob";
 import { ServerLoot } from "./entities/serverLoot";
+import { ServerProjectile } from "./entities/serverProjectile";
 
 /**
  * A Grid to filter collision detection of game entities
@@ -30,7 +31,8 @@ export class Grid {
         [EntityType.Player]: new Set<ServerPlayer>(),
         [EntityType.Petal]: new Set<ServerPetal>(),
         [EntityType.Mob]: new Set<ServerMob>(),
-        [EntityType.Loot]: new Set<ServerLoot>()
+        [EntityType.Loot]: new Set<ServerLoot>(),
+        [EntityType.Projectile]: new Set<ServerProjectile>()
     };
 
     constructor(width: number, height: number) {

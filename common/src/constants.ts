@@ -4,24 +4,24 @@ export enum EntityType {
     Player,
     Petal,
     Mob,
-    Loot
-
+    Loot,
+    Projectile
 }
 
 export const GameConstants = {
-    maxPosition: 2048,
+    maxPosition: 3036,
     player: {
         radius: 1.5,
         defaultBodyDamage: 20,
-        defaultHealth: 150,
-        maxSpeed: 8,
+        defaultHealth: 125,
+        maxSpeed: 3.5,
         defaultName: "Player",
         maxNameLength: 20,
         spawnMaxX: 100,
         spawnMaxY: 50,
         revolutionSpeed: 2,
         defaultSlot: 8,
-        defaultEquippedPetals: ["basic","basic","basic","basic","basic","basic","basic","basic"],
+        defaultEquippedPetals: ["tri_leaf","tri_cactus","iris","rice","poison_cactus","bubble","dandelion","leg_bubble"],
         defaultPreparationPetals: ["","","","","","","",""],
         defaultPetalDistance: 3.8,
         defaultPetalAttackingDistance: 6.5,
@@ -36,21 +36,22 @@ export const GameConstants = {
         rotationRadius: 0.5
     },
     game: {
-        width: 2048,
-        height: 50,
+        width: 3036,
+        height: 80,
         spawningMob: {
             "ladybug": 10,
             "shiny_ladybug": 0.1,
-            "dark_ladybug": 10,
-            "beetle": 10,
-            "spider": 10,
+            "dark_ladybug": 20,
+            "hornet": 20,
+            "spider": 15,
+            "beetle": 15,
             "rock": 20,
             "cactus": 25,
-            "massive_ladybug": 1,
+            "massive_ladybug": 0.1,
             "bee": 10,
             "worker_ant": 10,
-            "baby_ant": 10,
-            "soldier_ant": 10,
+            "baby_ant": 20,
+            "soldier_ant": 20,
         }
     },
     loot: {

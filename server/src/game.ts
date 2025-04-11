@@ -163,7 +163,7 @@ export class Game {
         this.deletedPlayers.length = 0;
         this.mapDirty = false;
 
-        if (this.grid.byCategory[EntityType.Mob].size <= 250) {
+        if (this.grid.byCategory[EntityType.Mob].size <= 450) {
             const position = Random.vector(0, this.width, 0, this.height);
             const definitionIdString = Random.weightedRandom(
                 Object.keys(GameConstants.game.spawningMob),

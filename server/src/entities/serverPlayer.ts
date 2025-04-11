@@ -1,5 +1,5 @@
 import { type WebSocket } from "ws";
-import { damageableEntity, ServerEntity } from "./serverEntity";
+import { damageableEntity, damageSource, ServerEntity } from "./serverEntity";
 import { Vec2 } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
@@ -13,12 +13,10 @@ import { EntityType, GameConstants } from "../../../common/src/constants";
 import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
 import { ServerPetal } from "./serverPetal";
-import { ServerMob } from "./serverMob";
 import { PetalDefinition, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { AttributeEvents } from "../utils/attribute";
 import { PlayerModifiers } from "../../../common/src/typings";
-import { Effect } from "../utils/effects";
 import { EventFunctionArguments } from "../utils/eventManager";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
@@ -112,6 +110,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
                 return true
             case EntityType.Petal:
                 return source.owner != this
+            case EntityType.Projectile:
+                return source.source != this
         }
     }
 
@@ -141,18 +141,19 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.range = GameConstants.player.defaultPetalDistance;
 
         if (this.isDefending) {
-            this.sendEvent<AttributeEvents.DEFEND>(AttributeEvents.DEFEND, undefined)
+            this.sendEvent(AttributeEvents.DEFEND, undefined)
             this.inventory.range = GameConstants.player.defaultPetalDefendingDistance;
         }
 
         if (this.isAttacking) {
+            this.sendEvent(AttributeEvents.ATTACK, undefined)
             this.inventory.range = GameConstants.player.defaultPetalAttackingDistance;
         }
 
         this.inventory.tick();
 
         if (this.health < this.modifiers.maxHealth)
-            this.sendEvent<AttributeEvents.HEALING>(AttributeEvents.HEALING, undefined)
+            this.sendEvent(AttributeEvents.HEALING, undefined)
 
         this.heal(this.modifiers.healPerSecond * this.game.dt);
     }
@@ -160,18 +161,18 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     dealDamageTo(to: damageableEntity): void{
         if (to.canReceiveDamageFrom(this)) {
             to.receiveDamage(this.damage, this);
-            this.sendEvent<AttributeEvents.FLOWER_DEAL_DAMAGE>(
+            this.sendEvent(
                 AttributeEvents.FLOWER_DEAL_DAMAGE, to
             )
         }
     }
 
-    receiveDamage(amount: number, source: ServerPlayer | ServerMob, disableEvent?: boolean) {
+    receiveDamage(amount: number, source: damageSource, disableEvent?: boolean) {
         if (!this.isActive()) return;
         this.health -= amount;
 
         if (!disableEvent) {
-            this.sendEvent<AttributeEvents.FLOWER_GET_DAMAGE>(
+            this.sendEvent(
                 AttributeEvents.FLOWER_GET_DAMAGE, {
                     entity: source,
                     damage: amount,
@@ -339,6 +340,10 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         return {
             position: this.position,
             direction: this.direction,
+            state: {
+                poisoned: !!this.state.poison,
+                danded: this.modifiers.healing < 1
+            },
             full: {
                 healthPercent: this.health / this.maxHealth
             }

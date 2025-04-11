@@ -1,10 +1,12 @@
-import { ServerEntity } from "../entities/serverEntity";
+import { damageSource, isDamageableEntity, isDamageSourceEntity, ServerEntity } from "../entities/serverEntity";
 import { EntityType } from "../../../common/src/constants";
 import { PlayerModifiers } from "../../../common/src/typings";
 import { ServerPlayer } from "../entities/serverPlayer";
+import { ServerMob } from "../entities/serverMob";
 
 export interface EffectData{
     readonly effectedTarget: ServerEntity
+    readonly source: damageSource
     readonly workingType?: EntityType[]
     readonly duration: number
     readonly func?: (dt: number, effected: ServerEntity) => void
@@ -17,6 +19,7 @@ export class Effect {
     hasStarted: boolean = false;
 
     effectedTarget: ServerEntity;
+    source: damageSource;
     workingType?: EntityType[];
     duration: number;
     func?: EffectData["func"];
@@ -24,6 +27,7 @@ export class Effect {
 
     constructor(data: EffectData) {
         this.effectedTarget = data.effectedTarget;
+        this.source = data.source;
         this.workingType = data.workingType;
         this.duration = data.duration;
         this.func = data.func;
@@ -31,7 +35,8 @@ export class Effect {
     }
 
     start() {
-        if (this.workingType && !this.workingType.includes(this.effectedTarget.type)) return;
+        if (this.workingType && !this.workingType.includes(this.effectedTarget.type))
+            return;
         this.effectedTarget.effects.addEffect(this);
         this.hasStarted = true;
     }
@@ -46,6 +51,38 @@ export class Effect {
         this.effectedTarget.effects.removeEffect(this);
     }
 }
+
+export interface PoisonEffectData {
+    readonly effectedTarget: ServerEntity;
+    readonly source: damageSource
+    readonly duration: number
+    readonly damagePerSecond: number
+}
+
+export class PoisonEffect extends Effect {
+    constructor(data: PoisonEffectData) {
+        super({
+            effectedTarget: data.effectedTarget,
+            source: data.source,
+            duration: data.duration,
+            func: (dt, effected) => {
+                if (!data) return;
+                if (isDamageableEntity(effected)) {
+                    if (!effected.canReceiveDamageFrom(this.source)) return
+                    effected.receiveDamage(dt * data.damagePerSecond, this.source);
+                }
+            },
+            workingType: [EntityType.Mob, EntityType.Player]
+        });
+    }
+
+    destroy() {
+        super.destroy();
+        if (this.effectedTarget.state.poison === this)
+            this.effectedTarget.state.poison = undefined;
+    }
+}
+
 
 export class EffectManager {
     effects= new Set<Effect>();

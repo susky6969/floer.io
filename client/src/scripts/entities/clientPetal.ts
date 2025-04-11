@@ -7,7 +7,7 @@ import { Camera } from "@/scripts/render/camera.ts";
 import { Vec2 } from "@common/utils/vector.ts";
 import { Tween } from '@tweenjs/tween.js';
 import { PetalDefinition } from "@common/definitions/petal.ts";
-import { EasingFunctions } from "@common/utils/math.ts";
+import { EasingFunctions, MathGraphics } from "@common/utils/math.ts";
 
 export class ClientPetal extends ClientEntity {
     type = EntityType.Petal;
@@ -17,6 +17,7 @@ export class ClientPetal extends ClientEntity {
     };
 
     angle: number = 0;
+    ownerId: number = -1;
 
     definition!: PetalDefinition;
 
@@ -45,9 +46,21 @@ export class ClientPetal extends ClientEntity {
             this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8)
         }
 
-        if (this.definition && this.definition.images?.selfGameRotation) {
-            this.angle += this.definition.images.selfGameRotation;
-            this.images.body.setAngle(this.angle);
+        if (this.definition) {
+            const owner = this.game.entityPool.get(this.ownerId);
+
+            if (this.definition.images?.facingOut) {
+                if (owner) {
+                    this.images.body.setRotation(
+                        Vec2.directionToRadians(
+                            MathGraphics.directionBetweenPoints(this.position, owner.position)
+                        )
+                    )
+                }
+            } else if (this.definition.images?.selfGameRotation) {
+                this.angle += this.definition.images.selfGameRotation;
+                this.images.body.setAngle(this.angle);
+            }
         }
     }
 
@@ -60,7 +73,7 @@ export class ClientPetal extends ClientEntity {
                 this.images.body.setScaleByUnitRadius(this.definition.hitboxRadius)
             } else {
                 this.reloadAnimation = new Tween({ alpha: 1, scale: this.definition.hitboxRadius })
-                    .to({ alpha: 0, scale: this.definition.hitboxRadius * 4 }, 100)
+                    .to({ alpha: 0, scale: this.definition.hitboxRadius * 4 }, Math.min(100, this.definition.reloadTime ? this.definition.reloadTime * 1000 : 100))
                     .easing(EasingFunctions.sineOut)
                     .onUpdate((obj) => {
                         this.images.body.alpha = obj.alpha;
@@ -89,6 +102,8 @@ export class ClientPetal extends ClientEntity {
 
             this.images.body.setVisible(!data.isReloading);
         }
+
+        this.ownerId = data.ownerId;
 
         this.changeVisibleTo(!data.isReloading);
     }
