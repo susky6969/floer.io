@@ -21,7 +21,7 @@ export const GameConstants = {
         spawnMaxY: 50,
         revolutionSpeed: 2,
         defaultSlot: 8,
-        defaultEquippedPetals: ["tri_leaf","tri_cactus","iris","rice","poison_cactus","bubble","dandelion","leg_bubble"],
+        defaultEquippedPetals: ["basic","basic","basic","basic","basic","basic","basic","basic"],
         defaultPreparationPetals: ["","","","","","","",""],
         defaultPetalDistance: 3.8,
         defaultPetalAttackingDistance: 6.5,
