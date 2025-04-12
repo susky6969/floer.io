@@ -348,7 +348,7 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: true,
         attributes: {
             healing_debuff: {
-                healing: 0.8,
+                healing: 0,
                 duration: 10,
             },
             shoot: Projectile.fromString("dandelion")
