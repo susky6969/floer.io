@@ -75,6 +75,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "fast",
         displayName: "Fast",
+        description: "Weaker than most petals, but recharges very quickly",
         damage: 8,
         health: 5,
         extendable: true,
@@ -89,6 +90,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "twin",
         displayName: "Twin",
+        description: "Why stop at one? Why not TWO?!",
         damage: 8,
         health: 5,
         extendable: true,
@@ -104,6 +106,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "triplet",
         displayName: "Triplet",
+        description: "How about THREE?!",
         damage: 8,
         health: 5,
         extendable: true,
@@ -119,6 +122,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "leaf",
         displayName: "Leaf",
+        description: "Gathers energy from the sun to heal your flower passively",
         damage: 8,
         health: 10,
         extendable: true,
@@ -138,6 +142,7 @@ export const Petals = new Definitions<PetalDefinition>([
     },{
         idString: "tri_leaf",
         displayName: "Leaf",
+        description: "Gathers energy from the sun to heal your flower passively",
         damage: 8,
         health: 10,
         extendable: true,
@@ -160,6 +165,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "stinger",
         displayName: "Stinger",
+        description: "It really hurts, but it's very fragile",
         damage: 35,
         health: 8,
         extendable: true,
@@ -177,6 +183,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "sand",
         displayName: "Sand",
+        description: "A bunch of sand particles",
         damage: 4,
         health: 5,
         reloadTime: 1.4,
@@ -191,6 +198,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "rose",
         displayName: "Rose",
+        description: "Its healing properties are amazing. Not so good at combat though",
         damage: 3,
         health: 3,
         extendable: false,
@@ -210,6 +218,7 @@ export const Petals = new Definitions<PetalDefinition>([
     },{
         idString: "tri_rose",
         displayName: "Rose",
+        description: "Its healing properties are amazing. Not so good at combat though",
         damage: 5,
         health: 5,
         extendable: false,
@@ -228,6 +237,7 @@ export const Petals = new Definitions<PetalDefinition>([
     },{
         idString: "epic_rose",
         displayName: "Rose",
+        description: "健胃消食片？",
         damage: 5,
         health: 5,
         extendable: false,
@@ -248,6 +258,7 @@ export const Petals = new Definitions<PetalDefinition>([
     },{
         idString: "dual_stinger",
         displayName: "Stinger",
+        description: "It really hurts, but it's very fragile",
         damage: 35,
         health: 8,
         extendable: true,
@@ -263,6 +274,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "bubble",
         displayName: "Bubble",
+        description: "Physics are for the weak",
         damage: 0,
         health: 1,
         extendable: false,
@@ -283,6 +295,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "unstoppable_bubble",
         displayName: "UNBubble",
+        description: "Physics are for the weak",
         damage: 0,
         health: 1,
         extendable: false,
@@ -302,6 +315,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "basic",
         displayName: "Basic",
+        description: "A nice petal, not too strong but not too weak",
         damage: 10,
         health: 10,
         extendable: true,
@@ -319,6 +333,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "dandelion",
         displayName: "Dandelion",
+        description: "It's interesting properties prevent healing effects on affected units",
         damage: 5,
         health: 5,
         extendable: true,
@@ -347,6 +362,7 @@ export const Petals = new Definitions<PetalDefinition>([
     }, {
         idString: "iris",
         displayName: "Iris",
+        description: "Very poisonous, but takes a little while to do its work",
         damage: 5,
         health: 5,
         extendable: true,
@@ -365,6 +381,7 @@ export const Petals = new Definitions<PetalDefinition>([
     }, {
         idString: "cactus",
         displayName: "Cactus",
+        description: "Not very strong, but somehow increases your maximum health",
         damage: 5,
         health: 15,
         extendable: true,
@@ -383,6 +400,7 @@ export const Petals = new Definitions<PetalDefinition>([
     }, {
         idString: "poison_cactus",
         displayName: "Cactus",
+        description: "Increases your maximum health and makes your flower toxic. Enemies hit by your flower will get poisoned",
         damage: 5,
         health: 15,
         extendable: true,
@@ -411,6 +429,7 @@ export const Petals = new Definitions<PetalDefinition>([
     }, {
         idString: "tri_cactus",
         displayName: "Cactus",
+        description: "Not very strong, but somehow increases your maximum health",
         damage: 5,
         health: 15,
         extendable: true,
@@ -431,6 +450,7 @@ export const Petals = new Definitions<PetalDefinition>([
     },{
         idString: "salt",
         displayName: "Salt",
+        description: "Reflects some of the damage you take back to the enemy that dealt it",
         damage: 10,
         health: 10,
         extendable: true,
@@ -450,6 +470,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "tri_stinger",
         displayName: "Stinger",
+        description: "It really hurts, but it's very fragile",
         damage: 35,
         health: 8,
         extendable: true,
@@ -465,6 +486,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "rice",
         displayName: "Rice",
+        description: "Spawns instantly, but not very strong",
         damage: 9,
         health: 1,
         extendable: true,
@@ -481,6 +503,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "leg_bubble",
         displayName: "Bubble",
+        description: "Physics are for the weak",
         damage: 0,
         health: 1,
         extendable: false,
