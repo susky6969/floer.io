@@ -5,42 +5,14 @@ import { type EntitiesNetData, EntitySerializations } from "../../../common/src/
 import { CircleHitbox, type Hitbox } from "../../../common/src/utils/hitbox";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type Game } from "../game";
-import { ServerPlayer } from "./serverPlayer";
-import { ServerPetal } from "./serverPetal";
-import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { EffectManager, PoisonEffect } from "../utils/effects";
-import { ServerProjectile } from "./serverProjectile";
+import { Modifiers } from "../../../common/src/typings";
+import { collideableEntity, damageSource } from "../typings";
 
 export interface Velocity {
     vector: Vector;
     downing: number;
-}
-
-export type collideableEntity = ServerPetal | ServerPlayer | ServerMob;
-
-export type damageSource = ServerPlayer | ServerMob;
-
-export type damageableEntity = ServerPetal | ServerPlayer | ServerMob | ServerProjectile;
-
-export function isCollideableEntity(entity: ServerEntity): entity is collideableEntity {
-    return entity.type === EntityType.Petal
-        || entity.type === EntityType.Player
-        || entity.type === EntityType.Mob
-        || entity.type === EntityType.Projectile;
-}
-
-export function isDamageSourceEntity(entity: ServerEntity): entity is damageSource {
-    return entity.type === EntityType.Player
-        || entity.type === EntityType.Mob;
-}
-
-
-export function isDamageableEntity(entity: ServerEntity): entity is damageableEntity {
-    return entity.type === EntityType.Petal
-        ||  entity.type === EntityType.Player
-        || entity.type === EntityType.Mob
-        || entity.type === EntityType.Projectile;
 }
 
 
@@ -236,6 +208,16 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
             duration
         })
         this.state.poison.start();
+    }
+
+    calcModifiers(now: Modifiers, extra: Partial<Modifiers>): Modifiers {
+        now.healing *= extra.healing ?? 1;
+        now.maxHealth += extra.maxHealth ?? 0;
+        now.healPerSecond += extra.healPerSecond ?? 0;
+        now.speed *= extra.speed ?? 1;
+        now.revolutionSpeed += extra.revolutionSpeed ?? 0;
+
+        return now;
     }
 
     abstract get data(): Required<EntitiesNetData[EntityType]>;

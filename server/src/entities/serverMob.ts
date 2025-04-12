@@ -1,4 +1,4 @@
-import { damageableEntity, damageSource, isDamageableEntity, ServerEntity } from "./serverEntity";
+import { ServerEntity } from "./serverEntity";
 import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
@@ -8,18 +8,18 @@ import { MobCategory, MobDefinition } from "../../../common/src/definitions/mob"
 import { MathGraphics, MathNumeric } from "../../../common/src/utils/math";
 import { ServerPlayer } from "./serverPlayer";
 import { Random } from "../../../common/src/utils/random";
-import { CollisionResponse } from "../../../common/src/utils/collision";
-import { ServerLoot } from "./serverLoot";
 import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
-import { Effect } from "../utils/effects";
 import { ServerProjectile } from "./serverProjectile";
+import { Modifiers } from "../../../common/src/typings";
+import { damageableEntity, damageSource } from "../typings";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
 
     hitbox: CircleHitbox;
     definition: MobDefinition;
+    private modifiers: Modifiers = GameConstants.mob.defaultModifiers();
 
     get name(): string {
         return this.definition.displayName
@@ -52,6 +52,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         this._direction = value;
 
         this.setDirty();
+    }
+
+    get speed(): number {
+        if (this.definition.category !== MobCategory.Fixed) return this.definition.speed * this.modifiers.speed;
+        return 0;
     }
 
     walkingReload: number = 0;
@@ -101,19 +106,22 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                     if (this.definition.shootable) {
                         this.shootReload += this.game.dt;
                         if (this.shootReload >= this.definition.shootSpeed) {
+                            // Vec2.add(this.position,Vec2.mul(this.direction, this.hitbox.radius))
                             new ServerProjectile(this,
-                                Vec2.add(this.position,Vec2.mul(this.direction, this.hitbox.radius)),
+                                this.position,
                                 this.direction, this.definition.shoot);
                             this.shootReload = 0;
                         }
+                    }
+                    if (this.definition.reachingAway) {
                         if (Vec2.distance(this.position, this.aggroTarget.position) > 15){
                             this.setAcceleration(Vec2.mul(
-                                this.direction, this.definition.speed
+                                this.direction, this.speed
                             ));
                         }
-                    }else {
+                    } else {
                         this.setAcceleration(Vec2.mul(
-                            this.direction, this.definition.speed
+                            this.direction, this.speed
                         ));
                     }
                 }
@@ -122,7 +130,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                     if (this.walkingReload >= GameConstants.mob.walkingReload) {
                         if (this.walkingTime === 0) this.direction = Random.vector(-1, 1, -1, 1)
                         this.setAcceleration(Vec2.mul(
-                            this.direction, this.definition.speed * GameConstants.mob.walkingTime
+                            this.direction, this.speed * GameConstants.mob.walkingTime
                         ))
 
                         this.walkingTime += this.game.dt;
@@ -150,6 +158,8 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                     }
             }
         }
+
+        this.updateModifiers();
     }
 
     dealDamageTo(to: damageableEntity): void{
@@ -166,7 +176,23 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
         if (this.health <= 0) {
             this.destroy();
+
+            if (source instanceof ServerPlayer){
+                source.addExp(this.definition.exp)
+            }
         }
+    }
+
+    updateModifiers(): void {
+        let modifiersNow = GameConstants.mob.defaultModifiers();
+
+        this.effects.effects.forEach(effect => {
+            if (effect.modifier) {
+                modifiersNow = this.calcModifiers(modifiersNow, effect.modifier);
+            }
+        })
+
+        this.modifiers = modifiersNow;
     }
 
     get data(): Required<EntitiesNetData[EntityType]>{

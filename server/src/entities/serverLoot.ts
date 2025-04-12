@@ -1,5 +1,5 @@
 import { ServerEntity } from "./serverEntity";
-import {  Vector } from "../../../common/src/utils/vector";
+import { Vector } from "../../../common/src/utils/vector";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType, GameConstants } from "../../../common/src/constants";

@@ -1,4 +1,4 @@
-import { damageableEntity, damageSource, ServerEntity } from "./serverEntity";
+import { ServerEntity } from "./serverEntity";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType } from "../../../common/src/constants";
@@ -7,6 +7,7 @@ import { ServerPlayer } from "./serverPlayer";
 import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { AttributeEvents, PetalUsingAnimations, } from "../utils/attribute";
+import { damageableEntity, damageSource } from "../typings";
 
 export class ServerPetal extends ServerEntity<EntityType.Petal> {
     type: EntityType.Petal = EntityType.Petal;
@@ -29,7 +30,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             this.reloadTime = 0;
         } else {
             this.health = this.definition.health;
-            this.firstReloading = false;
+            this.isLoadingFirstTime = false;
             this.useReload = 0;
         }
         this.setDirty();
@@ -39,7 +40,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     reloadTime: number = 0;
     useReload: number = 0;
 
-    firstReloading: boolean = true;
+    isLoadingFirstTime: boolean = true;
 
     readonly damage?: number;
     health?: number;
@@ -110,12 +111,13 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         }
     }
 
-    startUsing(animation: PetalUsingAnimations): void{
+    startUsing(animation: PetalUsingAnimations, func?: Function): void{
         this.isUsing = animation;
 
         setTimeout(() => {
             if (!this.isReloading) {
                 this.isReloading = true;
+                if(func) func()
             }
             this.isUsing = undefined;
             this.useReload = 0;

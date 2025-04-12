@@ -1,5 +1,5 @@
 import { type WebSocket } from "ws";
-import { damageableEntity, damageSource, ServerEntity } from "./serverEntity";
+import { ServerEntity } from "./serverEntity";
 import { Vec2 } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
@@ -16,8 +16,10 @@ import { ServerPetal } from "./serverPetal";
 import { PetalDefinition, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { AttributeEvents } from "../utils/attribute";
-import { PlayerModifiers } from "../../../common/src/typings";
+import { Modifiers } from "../../../common/src/typings";
 import { EventFunctionArguments } from "../utils/eventManager";
+import { getLevelInformation } from "../../../common/src/utils/levels";
+import { damageableEntity, damageSource } from "../typings";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
@@ -76,7 +78,9 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     readonly dirty = {
         id: true,
         zoom: true,
-        inventory: false
+        inventory: false,
+        slot: false,
+        exp: false
     };
 
     private _zoom = 45;
@@ -100,7 +104,10 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             )
     }
 
-    modifiers: PlayerModifiers = GameConstants.player.defaultModifiers();
+    modifiers: Modifiers = GameConstants.player.defaultModifiers();
+
+    exp: number = 0;
+    level: number = 1;
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
         switch (source.type) {
@@ -135,7 +142,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         this.setAcceleration(Vec2.mul(
             this.direction,
-            MathNumeric.remap(this.mouseDistance, 0, 150, 0, GameConstants.player.maxSpeed)
+            MathNumeric.remap(this.mouseDistance, 0, 150, 0, GameConstants.player.maxSpeed) * this.modifiers.speed
         ));
 
         this.inventory.range = GameConstants.player.defaultPetalDistance;
@@ -156,6 +163,14 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             this.sendEvent(AttributeEvents.HEALING, undefined)
 
         this.heal(this.modifiers.healPerSecond * this.game.dt);
+
+        this.updateModifiers();
+    }
+
+    addExp(exp: number) {
+        this.exp += exp;
+        this.dirty.exp = true;
+        this.level = getLevelInformation(this.exp).level;
     }
 
     dealDamageTo(to: damageableEntity): void{
@@ -182,6 +197,10 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         if (this.health <= 0) {
             this.destroy();
+
+            if (source instanceof ServerPlayer){
+                source.addExp(this.exp / 2)
+            }
 
             if (source instanceof ServerPlayer) source.kills++;
 
@@ -239,10 +258,12 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         updatePacket.playerData.id = this.id;
         updatePacket.playerData.inventory = ([] as SavedPetalDefinitionData[])
             .concat(this.inventory.inventory);
+        updatePacket.playerData.slot = this.inventory.slot;
+        updatePacket.playerData.exp = this.exp;
 
         updatePacket.playerDataDirty = this.dirty;
 
-        updatePacket.newPlayers = [...this.game.players];
+        updatePacket.newPlayers = [...this.game.activePlayers];
         updatePacket.deletedPlayers = this.game.deletedPlayers;
 
         updatePacket.map.width = this.game.width;
@@ -310,11 +331,13 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         console.log(`"${this.name}" joined the game`);
 
-        this.inventory.init();
+        this.inventory.defaultConfig();
         this.updateModifiers()
     }
 
     processInput(packet: InputPacket): void {
+        if (!this.isActive()) return;
+
         // if the direction changed set to dirty
         if (!Vec2.equals(this.direction, packet.direction)) {
             this.setDirty();
@@ -350,26 +373,23 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         };
     }
 
-    private _calcModifiers(now: PlayerModifiers, extra: Partial<PlayerModifiers>): PlayerModifiers {
-        now.healing *= extra.healing ?? 1;
-        now.maxHealth += extra.maxHealth ?? 0;
-        now.healPerSecond += extra.healPerSecond ?? 0;
-
-        return now;
-    }
-
     updateModifiers(): void {
         let modifiersNow = GameConstants.player.defaultModifiers();
 
+        let effectedPetals: PetalDefinition[] = []
+
         for (const petal of this.petalEntities) {
             const modifier = petal.definition.modifiers;
-            if (modifier)
-                modifiersNow = this._calcModifiers(modifiersNow, modifier);
+            if (modifier && !petal.isLoadingFirstTime) {
+                if (petal.definition.unstackable && effectedPetals.includes(petal.definition)) return;
+                modifiersNow = this.calcModifiers(modifiersNow, modifier);
+                effectedPetals.push(petal.definition)
+            }
         }
 
         this.effects.effects.forEach(effect => {
             if (effect.modifier) {
-                modifiersNow = this._calcModifiers(modifiersNow, effect.modifier);
+                modifiersNow = this.calcModifiers(modifiersNow, effect.modifier);
             }
         })
 
@@ -390,5 +410,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
                 .filter(e => e != null && !e.undroppable) as PetalDefinition[],
             this.position
         )
+        this.game.activePlayers.delete(this);
+        this.game.deletedPlayers.push(this.id);
     }
 }
