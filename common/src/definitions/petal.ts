@@ -715,10 +715,10 @@ export const Petals = new Definitions<PetalDefinition>([
                 speed: 0,
                 damage: 0,
                 health: 10,
-                hitboxRadius: 5,
+                hitboxRadius: 3,
                 despawnTime: 5,
                 modifiers: {
-                    speed: 0.7
+                    speed: 0.6
                 }
             }
         },
