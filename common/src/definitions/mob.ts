@@ -357,7 +357,7 @@ export const Mobs = new Definitions<MobDefinition>([
             speed: 0,
             definition: Projectile.fromString("web"),
             modifiers: {
-                speed: 0.5
+                speed: 0.6
             }
         },
         shootSpeed: 0.7,
