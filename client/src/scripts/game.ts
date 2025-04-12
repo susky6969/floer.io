@@ -354,6 +354,10 @@ export class Game {
 
         this.leaderboard.render();
 
+        this.sendInput();
+    }
+
+    sendInput() {
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0");
         inputPacket.isDefending = this.input.isInputDown("Mouse2");

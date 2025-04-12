@@ -304,6 +304,14 @@ export class Inventory{
         this.keyboardSelectingPetal.ui_slot?.addClass("selecting-petal");
     }
 
+    transformSlot() {
+        for (let i = 0; i < this.equippedPetals.length; i++) {
+            this.switchedPetalIndex = i;
+            this.switchedToPetalIndex = i + this.equippedPetals.length;
+            this.game.sendInput();
+        }
+    }
+
     setSlotAmount(slot: number, prepare: number){
         this.equippedPetals = [];
         this.preparationPetals = [];

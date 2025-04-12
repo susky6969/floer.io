@@ -91,6 +91,11 @@ export class Input {
             this.game.inventory.deletePetal();
         }
 
+        if(event.key === "x") {
+            this.game.inventory.transformSlot();
+        }
+
+
         this._inputsDown[key] = down;
     }
 
