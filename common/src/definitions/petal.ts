@@ -128,7 +128,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "tri_wing",
         displayName: "Wing",
         description: "They come and go.",
-        damage: 15,
+        damage: 10,
         health: 15,
         moreExtendDistance: 2,
         images:{
@@ -140,7 +140,7 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: false,
         hitboxRadius: 0.5,
         isDuplicate: true,
-        pieceAmount: 2,
+        pieceAmount: 3,
         isShowedInOne: true,
         rarity: RarityName.legendary,
         usingAssets: "wing"
