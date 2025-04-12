@@ -27,7 +27,7 @@ export class ClientPlayer extends ClientEntity {
         this.container.zIndex = 0;
 
         this.name = new Text({
-            text: this.game.playerNames.get(id),
+            text: this.game.playerData.get(id)?.name,
             style: {
                 fontFamily: 'Ubuntu',
                 fontSize: 14,
@@ -50,7 +50,7 @@ export class ClientPlayer extends ClientEntity {
     }
 
     render(): void {
-        const name = this.game.playerNames.get(this.id)
+        const name = this.game.playerData.get(this.id)?.name;
 
         if( name ) this.name.text = name;
 

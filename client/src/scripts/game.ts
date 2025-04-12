@@ -5,7 +5,7 @@ import { ClientPlayer } from "@/scripts/entities/clientPlayer.ts";
 import { loadAssets } from "@/scripts/utils/pixi";
 import { Camera } from "@/scripts/render/camera";
 import { ClientEntity } from "@/scripts/entities/clientEntity.ts";
-import { EntityType, GameConstants } from "@common/constants.ts";
+import { EntityType, GameConstants, Zones } from "@common/constants.ts";
 import { Inventory, PetalContainer } from "@/scripts/inventory.ts";
 import { ClientApplication } from "../main.ts";
 import { JoinPacket } from "@common/packets/joinPacket.ts";
@@ -20,6 +20,8 @@ import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
 import { Tween } from '@tweenjs/tween.js';
 import { ClientLoot } from "@/scripts/entities/clientLoot.ts";
 import { ClientProjectile } from "@/scripts/entities/clientProjectile.ts";
+import { ExpUI } from "@/scripts/render/expUI.ts";
+import { Leaderboard } from "@/scripts/render/leaderboard.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -50,13 +52,16 @@ export class Game {
     }
 
     readonly entityPool = new EntityPool<ClientEntity>();
-    readonly playerNames = new Map<number, string>();
+    readonly playerData = new Map<number,
+        { name: string, exp: number, id: number }>();
 
     readonly camera = new Camera(this);
 
     readonly input = new Input(this);
 
     readonly miniMap = new Minimap(this);
+    readonly exp = new ExpUI(this);
+    readonly leaderboard = new Leaderboard(this);
 
     constructor(app: ClientApplication) {
         this.app = app;
@@ -89,8 +94,12 @@ export class Game {
 
         this.camera.init();
 
-        this.inventory.init(GameConstants.player.defaultSlot);
-        this.inventory.load(
+        this.exp.init();
+
+        this.leaderboard.init();
+
+        this.inventory.setSlotAmount(GameConstants.player.defaultSlot, GameConstants.player.defaultPrepareSlot);
+        this.inventory.loadArrays(
             GameConstants.player.defaultEquippedPetals,
             GameConstants.player.defaultPreparationPetals,
         )
@@ -123,19 +132,21 @@ export class Game {
         this.camera.clear();
         this.entityPool.clear();
         this.activePlayerID = -1;
-        this.playerNames.clear();
+        this.playerData.clear();
 
         this.ui.inGameScreen.css("display", "none");
         this.ui.outGameScreen.css("display", "block");
 
         this.ui.gameOverScreen.css("display", "none");
 
-        this.inventory.init(GameConstants.player.defaultSlot);
-        this.inventory.load(
+        this.inventory.setSlotAmount(GameConstants.player.defaultSlot, GameConstants.player.defaultPrepareSlot);
+        this.inventory.loadArrays(
             GameConstants.player.defaultEquippedPetals,
             GameConstants.player.defaultPreparationPetals,
-        )
+        );
+
         this.inventory.updatePetalRows();
+        this.inventory.keyboardSelectingPetal = undefined;
     }
 
     onMessage(data: ArrayBuffer): void {
@@ -167,8 +178,16 @@ export class Game {
             this.camera.zoom = packet.playerData.zoom;
         }
 
+        if (packet.playerDataDirty.slot)  {
+            this.inventory.setSlotAmount(packet.playerData.slot, GameConstants.player.defaultPrepareSlot);
+        }
+
         if (packet.playerDataDirty.inventory) {
-            this.inventory.loadInventory(packet.playerData.inventory);
+            this.inventory.loadInventoryData(packet.playerData.inventory);
+        }
+
+        if (packet.playerDataDirty.exp) {
+            this.exp.exp = packet.playerData.exp;
         }
 
         for (const id of packet.deletedEntities) {
@@ -176,11 +195,13 @@ export class Game {
             this.entityPool.deleteByID(id);
         }
 
+        this.playerData.clear();
         for (const newPlayer of packet.newPlayers) {
-            this.playerNames.set(newPlayer.id, newPlayer.name);
-        }
-        for (const id of packet.deletedPlayers) {
-            this.playerNames.delete(id);
+            this.playerData.set(newPlayer.id, {
+                name: newPlayer.name,
+                exp: newPlayer.exp,
+                id: newPlayer.id
+            })
         }
 
         for (const entityData of packet.fullEntities) {
@@ -214,6 +235,48 @@ export class Game {
             const ctx = this.mapGraphics;
             ctx.clear();
             this.camera.addObject(ctx);
+
+            const values = Object.values(Zones);
+
+            const borderDistance = 999;
+
+            ctx.rect(
+                Camera.unitToScreen(-borderDistance),
+                Camera.unitToScreen(-borderDistance),
+                Camera.unitToScreen(borderDistance),
+                Camera.unitToScreen(this.height + borderDistance * 2)
+            ).fill(values[0].borderColor);
+
+            ctx.rect(
+                Camera.unitToScreen(this.width),
+                Camera.unitToScreen(-borderDistance),
+                Camera.unitToScreen(borderDistance),
+                Camera.unitToScreen(this.height + borderDistance * 2)
+            ).fill(values[values.length - 1].borderColor);
+
+            for (const zonesKey in Zones) {
+                const data = Zones[zonesKey];
+                ctx.rect(
+                    Camera.unitToScreen(data.x),
+                    0,
+                    Camera.unitToScreen(data.width),
+                    Camera.unitToScreen(this.height)
+                ).fill(data.backgroundColor);
+
+                ctx.rect(
+                    Camera.unitToScreen(data.x),
+                    Camera.unitToScreen(-borderDistance),
+                    Camera.unitToScreen(data.width),
+                    Camera.unitToScreen(borderDistance)
+                ).fill(data.borderColor);
+
+                ctx.rect(
+                    Camera.unitToScreen(data.x),
+                    Camera.unitToScreen(this.height),
+                    Camera.unitToScreen(data.width),
+                    Camera.unitToScreen(borderDistance)
+                ).fill(data.borderColor);
+            }
 
             const gridSize = 2.5 * Camera.scale;
             const gridWidth = packet.map.width * Camera.scale;
@@ -287,6 +350,10 @@ export class Game {
 
         this.miniMap.render();
 
+        this.exp.render();
+
+        this.leaderboard.render();
+
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0");
         inputPacket.isDefending = this.input.isInputDown("Mouse2");
@@ -307,5 +374,7 @@ export class Game {
     resize() {
         this.camera.resize();
         this.miniMap.resize();
+        this.exp.resize();
+        this.leaderboard.resize();
     }
 }
