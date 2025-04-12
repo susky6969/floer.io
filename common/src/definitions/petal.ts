@@ -140,7 +140,7 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: false,
         hitboxRadius: 0.5,
         isDuplicate: true,
-        pieceAmount: 3,
+        pieceAmount: 2,
         isShowedInOne: true,
         rarity: RarityName.legendary,
         usingAssets: "wing"
@@ -228,7 +228,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotRotation: -0.1
         },
         modifiers: {
-            healPerSecond: 0.7
+            healPerSecond: 1
         },
         reloadTime: 1,
         usable: false,
