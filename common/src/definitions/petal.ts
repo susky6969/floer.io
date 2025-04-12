@@ -1,8 +1,8 @@
 import { Definitions, ObjectDefinition } from "../utils/definitions";
 import { AttributeName } from "./attribute";
 import { RarityName } from "./rarity";
-import { PlayerModifiers } from "../typings";
-import { Projectile, ProjectileDefinition } from "./projectile";
+import { Modifiers } from "../typings";
+import { Projectile, ProjectileDefinition, ProjectileParameters } from "./projectile";
 
 export type SavedPetalDefinitionData = PetalDefinition | null
 
@@ -13,10 +13,12 @@ export type PetalDefinition = ObjectDefinition & {
     readonly reloadTime?: number
     readonly hitboxRadius: number
     readonly extendable: boolean
+    readonly moreExtendDistance?: number
     readonly rarity: RarityName
     readonly attributes?: AttributeParameters
-    readonly modifiers?: Partial<PlayerModifiers>
+    readonly modifiers?: Partial<Modifiers>
     readonly undroppable?: boolean
+    readonly unstackable?: boolean
     readonly images?: {
         readonly slotDisplaySize?: number
         readonly slotRotation?: number
@@ -63,7 +65,7 @@ export type AttributeParameters = {
         duration: number
     }
     damage_reflection?: number
-    shoot?: ProjectileDefinition
+    shoot?: ProjectileParameters
 })
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
@@ -104,6 +106,46 @@ export const Petals = new Definitions<PetalDefinition>([
         usingAssets: "light"
     },
     {
+        idString: "wing",
+        displayName: "Wing",
+        description: "It comes and goes.",
+        damage: 15,
+        health: 15,
+        moreExtendDistance: 2,
+        images:{
+            slotDisplaySize: 45,
+            selfGameRotation: 2
+        },
+        extendable: true,
+        reloadTime: 1.25,
+        usable: false,
+        hitboxRadius: 0.5,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.rare
+    },
+    {
+        idString: "tri_wing",
+        displayName: "Wing",
+        description: "They come and go.",
+        damage: 15,
+        health: 15,
+        moreExtendDistance: 2,
+        images:{
+            slotDisplaySize: 45,
+            selfGameRotation: 2
+        },
+        extendable: true,
+        reloadTime: 1.25,
+        usable: false,
+        hitboxRadius: 0.5,
+        isDuplicate: true,
+        pieceAmount: 3,
+        isShowedInOne: true,
+        rarity: RarityName.legendary,
+        usingAssets: "wing"
+    },
+    {
         idString: "triplet",
         displayName: "Triplet",
         description: "How about THREE?!",
@@ -117,6 +159,41 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 3,
         isShowedInOne: false,
         rarity: RarityName.epic,
+        usingAssets: "light"
+    },{
+        idString: "faster",
+        displayName: "Faster",
+        description: "Quickly.",
+        damage: 8,
+        health: 5,
+        extendable: true,
+        reloadTime: 0.5,
+        modifiers: {
+            revolutionSpeed: 0.8
+        },
+        usable: false,
+        hitboxRadius: 0.3,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.rare,
+        usingAssets: "light"
+    },{
+        idString: "dual_faster",
+        displayName: "Faster",
+        description: "Quickly.",
+        damage: 8,
+        health: 5,
+        extendable: true,
+        reloadTime: 0.5,
+        modifiers: {
+            revolutionSpeed: 0.8
+        },
+        usable: false,
+        hitboxRadius: 0.3,
+        isDuplicate: true,
+        pieceAmount: 2,
+        isShowedInOne: false,
+        rarity: RarityName.legendary,
         usingAssets: "light"
     },
     {
@@ -225,7 +302,7 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: true,
         useTime: 1,
         attributes: {
-            absorbing_heal: 10.5
+            absorbing_heal: 3.5
         },
         reloadTime: 3.5,
         hitboxRadius: 0.4,
@@ -250,11 +327,10 @@ export const Petals = new Definitions<PetalDefinition>([
             absorbing_heal: 22
         },
         reloadTime: 3.5,
-        hitboxRadius: 0.4,
+        hitboxRadius: 0.5,
         isDuplicate: false,
         pieceAmount: 1,
-        rarity: RarityName.epic,
-        usingAssets: "rose"
+        rarity: RarityName.epic
     },{
         idString: "dual_stinger",
         displayName: "Stinger",
@@ -295,7 +371,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "unstoppable_bubble",
         displayName: "UNBubble",
-        description: "Physics are for the weak",
+        description: "Powers are for the DEV",
         damage: 0,
         health: 1,
         extendable: false,
@@ -303,6 +379,10 @@ export const Petals = new Definitions<PetalDefinition>([
         useTime: 0,
         attributes: {
             boost: 10
+        },
+        modifiers: {
+            maxHealth: 666,
+            healPerSecond: 30
         },
         reloadTime: 0,
         hitboxRadius: 0.6,
@@ -351,7 +431,14 @@ export const Petals = new Definitions<PetalDefinition>([
                 healing: 0,
                 duration: 10,
             },
-            shoot: Projectile.fromString("dandelion")
+            shoot: {
+                hitboxRadius: 0.6,
+                damage: 10,
+                health: 10,
+                despawnTime: 3,
+                speed: 3,
+                definition: Projectile.fromString("dandelion")
+            }
         },
         useTime: 0.2,
         reloadTime: 2,
@@ -359,6 +446,73 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.rare,
+    },
+    {
+        idString: "missile",
+        displayName: "Missile",
+        description: "You can actually shoot this one",
+        damage: 10,
+        health: 10,
+        extendable: true,
+        images: {
+            selfGameRotation: 0.02,
+            slotDisplaySize: 45,
+            slotRotation: 0.8,
+            centerXOffset: -1,
+            centerYOffset: -1,
+            facingOut: true
+        },
+        usable: true,
+        attributes: {
+            shoot: {
+                hitboxRadius: 0.6,
+                damage: 10,
+                health: 10,
+                despawnTime: 3,
+                speed: 5,
+                definition: Projectile.fromString("missile")
+            }
+        },
+        useTime: 0.2,
+        reloadTime: 2,
+        hitboxRadius: 0.6,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.rare,
+    },
+    {
+        idString: "big_missile",
+        displayName: "Missile",
+        description: "You can actually shoot this bigger one",
+        damage: 20,
+        health: 20,
+        extendable: true,
+        images: {
+            selfGameRotation: 0.02,
+            slotDisplaySize: 45,
+            slotRotation: 0.8,
+            centerXOffset: -1,
+            centerYOffset: -1,
+            facingOut: true
+        },
+        usable: true,
+        attributes: {
+            shoot: {
+                hitboxRadius: 1,
+                damage: 20,
+                health: 20,
+                despawnTime: 3,
+                speed: 5,
+                definition: Projectile.fromString("missile")
+            }
+        },
+        useTime: 0.2,
+        reloadTime: 2,
+        hitboxRadius: 1,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.epic,
+        usingAssets: "missile"
     }, {
         idString: "iris",
         displayName: "Iris",
@@ -513,13 +667,98 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 45,
         },
         attributes: {
-            boost: 4
+            boost: 5
+        },
+        reloadTime: 1.5,
+        hitboxRadius: 0.5,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.legendary,
+        usingAssets: "bubble"
+    },
+    {
+        idString: "powder",
+        displayName: "Powder",
+        description: "Very quickly",
+        damage: 0,
+        health: 1,
+        extendable: false,
+        usable: false,
+        images: {
+            slotDisplaySize: 35,
+        },
+        modifiers: {
+            speed: 1.098
         },
         reloadTime: 2,
         hitboxRadius: 0.5,
         isDuplicate: false,
         pieceAmount: 1,
-        rarity: RarityName.epic,
-        usingAssets: "bubble"
+        unstackable: true,
+        rarity: RarityName.legendary
+    },
+    {
+        idString: "web",
+        displayName: "Web",
+        description: "Sticky.",
+        damage: 8,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.2,
+        images: {
+            slotDisplaySize: 45,
+        },
+        attributes: {
+            shoot: {
+                definition: Projectile.fromString("web"),
+                speed: 0,
+                damage: 0,
+                health: 10,
+                hitboxRadius: 5,
+                despawnTime: 5,
+                modifiers: {
+                    speed: 0.25
+                }
+            }
+        },
+        reloadTime: 2,
+        hitboxRadius: 0.5,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.rare
+    },
+    {
+        idString: "tri_web",
+        displayName: "Web",
+        description: "It's so fucking sticky.",
+        damage: 8,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.2,
+        images: {
+            slotDisplaySize: 45,
+        },
+        attributes: {
+            shoot: {
+                definition: Projectile.fromString("web"),
+                speed: 0,
+                damage: 0,
+                health: 10,
+                hitboxRadius: 5,
+                despawnTime: 5,
+                modifiers: {
+                    speed: 0.25
+                }
+            }
+        },
+        reloadTime: 2,
+        hitboxRadius: 0.5,
+        isDuplicate: true,
+        pieceAmount: 3,
+        isShowedInOne: true,
+        rarity: RarityName.legendary,
+        usingAssets: "web",
     }
 ] satisfies PetalDefinition[]);
