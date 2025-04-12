@@ -476,6 +476,15 @@ export class Inventory{
 
         addBr();
 
+        if (definition.description) {
+            addLine({
+                value: definition.description,
+                fontSize: 12
+            })
+        }
+
+        addBr();
+
         for (const definitionKey in definition) {
             if (showingConfig.hasOwnProperty(definitionKey)) {
                 const showing =
