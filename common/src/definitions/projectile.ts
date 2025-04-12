@@ -1,29 +1,31 @@
 import { Definitions, ObjectDefinition } from "../utils/definitions";
+import { Modifiers } from "../typings";
 
 export type ProjectileDefinition = ObjectDefinition & {
-    readonly despawnTime: number;
-    readonly speed: number;
-    readonly damage: number;
-    readonly health: number;
-    readonly hitboxRadius: number;
+    readonly onGround?: boolean;
 };
 
 export const Projectile = new Definitions<ProjectileDefinition>([
     {
         idString: "dandelion",
         displayName: "Dandelion",
-        despawnTime: 3,
-        speed: 5,
-        damage: 5,
-        health: 5,
-        hitboxRadius: 0.6
     },{
         idString: "missile",
         displayName: "Missile",
-        despawnTime: 3,
-        speed: 6,
-        damage: 10,
-        health: 10,
-        hitboxRadius: 0.6
+    },{
+        idString: "web",
+        displayName: "Web",
+        onGround: true
     },
 ] as ProjectileDefinition[]);
+
+
+export interface ProjectileParameters {
+    definition: ProjectileDefinition;
+    despawnTime: number
+    speed: number
+    damage: number
+    health: number
+    hitboxRadius: number
+    modifiers?: Partial<Modifiers>
+}
