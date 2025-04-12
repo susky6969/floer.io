@@ -234,6 +234,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "tri_stinger": 0.0012,
             "wing": 0.006,
             "tri_wing": 0.0012,
+            "powder": 0.008
         },
         rarity: RarityName.epic,
         exp: 5
@@ -252,6 +253,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "wing": 0.31,
             "triplet": 0.02,
             "tri_stinger": 0.0006,
+            "powder": 0.016
         },
         rarity: RarityName.legendary,
         exp: 50,
@@ -345,7 +347,7 @@ export const Mobs = new Definitions<MobDefinition>([
         health: 250,
         category: MobCategory.Enemy,
         aggroRadius: 20,
-        hitboxRadius: 3.5,
+        hitboxRadius: 4,
         shootable: true,
         shoot: {
             hitboxRadius: 4,

@@ -718,7 +718,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 hitboxRadius: 5,
                 despawnTime: 5,
                 modifiers: {
-                    speed: 0.25
+                    speed: 0.7
                 }
             }
         },
@@ -749,7 +749,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 hitboxRadius: 5,
                 despawnTime: 5,
                 modifiers: {
-                    speed: 0.25
+                    speed: 0.7
                 }
             }
         },
