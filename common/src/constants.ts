@@ -103,7 +103,7 @@ export const Zones:
             "shiny_ladybug": 0.1,
             "beetle": 5,
             "cactus": 35,
-            "mega_cactus": 1,
+            "mega_cactus": 15,
             "mega_beetle": 0.1,
             "bee": 10,
             "worker_ant": 5,

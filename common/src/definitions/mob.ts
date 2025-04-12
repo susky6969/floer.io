@@ -162,7 +162,6 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Fixed,
         hitboxRadius: 2,
         lootTable: {
-            "stinger": 0.1,
             "dual_stinger": 0.02,
             "missile": 0.12,
             "big_missile": 0.01,
@@ -186,7 +185,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "big_missile": 0.01,
             "cactus": 0.12,
             "poison_cactus": 0.04,
-            "tri_cactus": 0.002
+            "tri_cactus": 0.009
         },
         rarity: RarityName.legendary,
         usingAssets: "cactus",
@@ -246,7 +245,7 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Enemy,
         aggroRadius: 20,
         hitboxRadius: 3,
-        speed: 4,
+        speed: 3,
         lootTable: {
             "iris": 1,
             "salt": 0.6,
