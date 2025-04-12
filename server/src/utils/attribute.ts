@@ -2,13 +2,14 @@ import { ServerPetal } from "../entities/serverPetal";
 import { MathGraphics } from "../../../common/src/utils/math";
 import { Vec2 } from "../../../common/src/utils/vector";
 import { AttributeName } from "../../../common/src/definitions/attribute";
-import { AttributeParameters } from "../../../common/src/definitions/petal";
+import { AttributeParameters, Petals } from "../../../common/src/definitions/petal";
 import { EventInitializer } from "./eventManager";
 import { Effect } from "./effects";
 import { EntityType } from "../../../common/src/constants";
 import { ServerPlayer } from "../entities/serverPlayer";
 import { ServerMob } from "../entities/serverMob";
 import { ServerProjectile } from "../entities/serverProjectile";
+import { Projectile } from "../../../common/src/definitions/projectile";
 
 export enum AttributeEvents {
     HEALING = "HEALING",
@@ -130,7 +131,6 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
     },
 
     damage_reflection: {
-        unstackable: true,
         callback: (on, petal, data) => {
             on<AttributeEvents.FLOWER_GET_DAMAGE>(AttributeEvents.FLOWER_GET_DAMAGE,
                 (arg) => {
@@ -155,8 +155,10 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 if (!data) return;
                 const direction =
                     MathGraphics.directionBetweenPoints(petal.position, petal.owner.position);
-                new ServerProjectile(petal.owner, petal.position, direction, data, petal);
+                const projectile = new ServerProjectile(
+                    petal.owner, petal.position, direction, data, petal);
+                if(data.definition.onGround) projectile.addVelocity(Vec2.mul(direction, 60))
             }, PetalUsingAnimations.NORMAL)
         }
-    }
+    },
 } as const;

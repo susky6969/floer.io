@@ -8,6 +8,7 @@ import { Text, Graphics } from "pixi.js";
 import { EasingFunctions, MathGraphics, MathNumeric } from "@common/utils/math.ts";
 import { MobDefinition } from "@common/definitions/mob.ts";
 import { Vec2, Vector } from "@common/utils/vector.ts";
+import { Rarity } from "@common/definitions/rarity.ts";
 
 export class ClientMob extends ClientEntity {
     type = EntityType.Mob;
@@ -18,6 +19,8 @@ export class ClientMob extends ClientEntity {
 
     healthPercent = 1;
     healthBar = new Graphics();
+    name: Text;
+    rarity: Text;
 
     direction: Vector = Vec2.new(0, 0);
 
@@ -34,13 +37,44 @@ export class ClientMob extends ClientEntity {
 
         this.game.camera.addObject(this.container);
 
+        this.name = new Text({
+            text: "",
+            style: {
+                fontFamily: 'Ubuntu',
+                fontSize: 11,
+                fill: "#fff",
+                stroke: {color: "#000", width: 2}
+            }
+        });
+
+        this.rarity = new Text({
+            text: "",
+            style: {
+                fontFamily: 'Ubuntu',
+                fontSize: 11,
+                fill: "#fff",
+                stroke: {color: "#000", width: 2}
+            }
+        });
+
+        this.name.anchor.y = 0.5;
+        this.rarity.anchor.x = 1;
+
+
         this.container.addChild(
             this.images.body,
-            this.healthBar
+            this.healthBar,
+            this.name,
+            this.rarity
         );
     }
 
     render(): void {
+        this.name.text = this.definition.displayName;
+        const rarity = Rarity.fromString(this.definition.rarity);
+        this.rarity.text = rarity.displayName;
+        this.rarity.style.fill = rarity.color;
+
         this.container.position =
             Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
 
@@ -70,6 +104,8 @@ export class ClientMob extends ClientEntity {
 
             const healthBarY = Camera.unitToScreen(this.definition.hitboxRadius + 5 / 20);
             this.healthBar.position.set(0, healthBarY);
+            this.name.position.y = healthBarY - 7;
+            this.rarity.position.y = healthBarY + 7;
         }
 
 
@@ -83,7 +119,7 @@ export class ClientMob extends ClientEntity {
         const healthbarWidth = width;
         const fillWidth = healthbarWidth * this.healthPercent;
 
-        this.healthBar.visible = this.healthPercent < 0.999;
+
         this.healthBar.clear()
             .roundRect(-healthbarWidth / 2, 0, healthbarWidth, 10)
             .fill({
@@ -94,5 +130,8 @@ export class ClientMob extends ClientEntity {
             .fill({
                 color: 0x87e63e
             });
+
+        this.name.position.x = -healthbarWidth / 2;
+        this.rarity.position.x = healthbarWidth / 2;
     }
 }
