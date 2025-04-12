@@ -249,8 +249,13 @@ export class Inventory{
     }
 
     moveSelectSlot(offset: number) {
-        const firstSlot = this.preparationPetals.find((v) => v.petalDefinition);
+
+        const allActiveSlot = this.preparationPetals.filter((v) => v.petalDefinition);
+        const lastestSlot = allActiveSlot[allActiveSlot.length - 1];
+
+        const firstSlot = allActiveSlot[0];
         if (!firstSlot) return this.keyboardSelectingPetal = undefined;
+
 
         let index: number = -1;
         if (!this.keyboardSelectingPetal) {
@@ -261,6 +266,7 @@ export class Inventory{
             this.keyboardSelectingPetal.ui_slot?.removeClass("selecting-petal");
             index += offset;
         }
+
         if (index >= this.preparationPetals.length) {
             index = 0;
         }
@@ -269,17 +275,32 @@ export class Inventory{
 
         if (index < 0) {
             this.keyboardSelectingPetal =
-                this.preparationPetals[this.preparationPetals.length + index];
+                this.preparationPetals[this.preparationPetals.length + index - 1];
         }
 
+        console.log(index);
+
         if (!this.keyboardSelectingPetal.petalDefinition) {
-            const finding = this.preparationPetals.find((v, i) => i > index && v.petalDefinition);
-            if (!finding) {
-                this.keyboardSelectingPetal = firstSlot;
-            } else {
-                this.keyboardSelectingPetal = finding;
+            if (offset > 0) {
+                const finding = this.preparationPetals.find((v, i) => i > index && v.petalDefinition);
+                if (!finding) {
+                    this.keyboardSelectingPetal = firstSlot;
+                } else {
+                    this.keyboardSelectingPetal = finding;
+                }
+            } else if (offset < 0){
+                const finding =
+                    this.preparationPetals.filter((v, i) => i < index && v.petalDefinition);
+                if (finding.length === 0) {
+                    this.keyboardSelectingPetal = lastestSlot;
+                } else {
+                    this.keyboardSelectingPetal = finding[finding.length - 1];
+                }
             }
         }
+
+        console.log(this.preparationPetals.indexOf(this.keyboardSelectingPetal));
+
         this.keyboardSelectingPetal.ui_slot?.addClass("selecting-petal");
     }
 
