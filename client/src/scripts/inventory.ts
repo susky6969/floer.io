@@ -6,7 +6,7 @@ import { AttributeParameters, PetalDefinition, Petals, SavedPetalDefinitionData 
 import { UI } from "@/ui.ts";
 import { RarityName, Rarity } from "@common/definitions/rarity.ts";
 import { getGameAssetsFile } from "@/scripts/utils/pixi.ts";
-import { PlayerModifiers } from "@common/typings.ts";
+import { Modifiers } from "@common/typings.ts";
 import { AttributeName } from "@common/definitions/attribute.ts";
 
 const defaultCenter = Vec2.new(25, 21);
@@ -30,6 +30,7 @@ interface showingConfig {
     startsWith?: string
     endsWith?: string
     noValue?: boolean
+    percent?: boolean
 }
 
 type AttributeShowingFunction<K extends AttributeName> = (data: Required<AttributeParameters>[K]) => (showingConfig & { value: string })[];
@@ -41,9 +42,9 @@ let draggingData: DraggingData = {
 const defaultRadius = 8;
 const defaultBoxSize = 50;
 
-let selectingPetal: PetalContainer | undefined = undefined;
+let mouseSelectingPetal: PetalContainer | undefined = undefined;
 
-let deletingPetal: boolean = false;
+let mouseDeletingPetal: boolean = false;
 
 const showingConfig: { [key: string] : showingConfig } =
     {
@@ -57,9 +58,7 @@ const showingConfig: { [key: string] : showingConfig } =
         },
         healing: {
             displayName: "Healing",
-            color: "#58fd48",
-            startsWith: "+",
-            endsWith: "%"
+            color: "#58fd48"
         },
         maxHealth: {
             displayName: "Flower Max Health",
@@ -71,8 +70,24 @@ const showingConfig: { [key: string] : showingConfig } =
             color: "#58fd48",
             endsWith: "/s"
         },
+        revolutionSpeed: {
+            displayName: "Rotation",
+            color: "#58fd48",
+            startsWith: "+",
+            endsWith: "rad/s"
+        },
+        speed: {
+            displayName: "Speed",
+            color: "#58fd48",
+            percent: true
+        },
         undroppable: {
             displayName: "Undroppable",
+            color: "#656548",
+            noValue: true
+        },
+        unstackable: {
+            displayName: "Unstackable",
             color: "#656548",
             noValue: true
         }
@@ -184,6 +199,10 @@ export class Inventory{
     equippedPetals: PetalContainer[] = [];
     preparationPetals: PetalContainer[] = [];
 
+    slot: number = 0;
+
+    keyboardSelectingPetal?: PetalContainer;
+
     readonly ui: UI;
 
     get inventory(): PetalContainer[] {
@@ -209,37 +228,81 @@ export class Inventory{
                 draggingData.item.remove();
                 draggingData.item = null;
 
-                if (selectingPetal) {
-                    const trans = selectingPetal.petalDefinition;
-                    selectingPetal.petalDefinition = draggingData.container.petalDefinition;
+                if (mouseSelectingPetal) {
+                    const trans = mouseSelectingPetal.petalDefinition;
+                    mouseSelectingPetal.petalDefinition = draggingData.container.petalDefinition;
                     draggingData.container.petalDefinition = trans;
                     this.switchedPetalIndex = this.inventory.indexOf(draggingData.container);
-                    this.switchedToPetalIndex = this.inventory.indexOf(selectingPetal);
+                    this.switchedToPetalIndex = this.inventory.indexOf(mouseSelectingPetal);
                 }
 
-                if (deletingPetal) {
+                if (mouseDeletingPetal) {
                     draggingData.container.petalDefinition = null;
                     this.deletedPetalIndex = this.inventory.indexOf(draggingData.container);
                 }
 
-                this.updatePetalRows()
+                this.keyboardSelectingPetal = undefined;
+                this.updatePetalRows();
+
             }
         })
     }
 
-    init(slot: number){
+    moveSelectSlot(offset: number) {
+        const firstSlot = this.preparationPetals.find((v) => v.petalDefinition);
+        if (!firstSlot) return this.keyboardSelectingPetal = undefined;
+
+        let index: number = -1;
+        if (!this.keyboardSelectingPetal) {
+            if (offset == 0) return;
+            index = 0;
+        } else {
+            index = this.preparationPetals.indexOf(this.keyboardSelectingPetal);
+            this.keyboardSelectingPetal.ui_slot?.removeClass("selecting-petal");
+            index += offset;
+        }
+        if (index >= this.preparationPetals.length) {
+            index = 0;
+        }
+
+        this.keyboardSelectingPetal = this.preparationPetals[index];
+
+        if (index < 0) {
+            this.keyboardSelectingPetal =
+                this.preparationPetals[this.preparationPetals.length + index];
+        }
+
+        if (!this.keyboardSelectingPetal.petalDefinition) {
+            const finding = this.preparationPetals.find((v, i) => i > index && v.petalDefinition);
+            if (!finding) {
+                this.keyboardSelectingPetal = firstSlot;
+            } else {
+                this.keyboardSelectingPetal = finding;
+            }
+        }
+        this.keyboardSelectingPetal.ui_slot?.addClass("selecting-petal");
+    }
+
+    setSlotAmount(slot: number, prepare: number){
         this.equippedPetals = [];
         this.preparationPetals = [];
         for (let i = 0; i < slot; i++) {
             this.equippedPetals.push(new PetalContainer())
+        }
+
+        for (let i = 0; i < prepare; i++) {
             this.preparationPetals.push(new PetalContainer())
         }
+
+        this.slot = slot;
+
+        this.updatePetalRows();
     }
 
-    static loadLoadout(petals: PetalContainer[], loadout: string[] | number[]){
+    static loadContainers(petals: PetalContainer[], loadout: string[] | number[]){
         let index = 0;
         for (const equip of loadout) {
-            if (index > petals.length) break;
+            if (index >= petals.length) break;
             if (typeof equip === 'number'){
                 petals[index].loadFromId(equip);
             } else {
@@ -249,12 +312,12 @@ export class Inventory{
         }
     }
 
-    load(equips: string[] | number[], prepares: string[] | number[]) {
-        Inventory.loadLoadout(this.equippedPetals, equips);
-        Inventory.loadLoadout(this.preparationPetals, prepares);
+    loadArrays(equips: string[] | number[], prepares: string[] | number[]) {
+        Inventory.loadContainers(this.equippedPetals, equips);
+        Inventory.loadContainers(this.preparationPetals, prepares);
     }
 
-    loadInventory(inventory: SavedPetalDefinitionData[]) {
+    loadInventoryData(inventory: SavedPetalDefinitionData[]) {
         let index = 0;
         for (const equip of inventory) {
             if (index >= this.equippedPetals.length) {
@@ -284,7 +347,7 @@ export class Inventory{
     }
 
     updatePetalRows() {
-        selectingPetal = undefined;
+        mouseSelectingPetal = undefined;
 
         this.renderPetalRow(this.equippedPetals, this.ui.equippedPetalRow);
         this.renderPetalRow(this.preparationPetals, this.ui.preparationPetalRow);
@@ -294,12 +357,13 @@ export class Inventory{
             this.ui.preparationPetalRow.append(this.ui.deletePetal);
 
             this.ui.deletePetal.on("mouseover",() => {
-                deletingPetal = true;
+                mouseDeletingPetal = true;
             });
 
             this.ui.deletePetal.on("mouseout",() => {
-                deletingPetal = false;
+                mouseDeletingPetal = false;
             });
+            this.moveSelectSlot(0);
 
         } else {
             this.ui.main.append(this.ui.petalColumn);
@@ -315,11 +379,11 @@ export class Inventory{
             petalContainer.ui_slot = petal_slot;
 
             petal_slot.on("mouseover",() => {
-                selectingPetal = petalContainer;
+                mouseSelectingPetal = petalContainer;
             })
 
             petal_slot.on("mouseout",() => {
-                selectingPetal = undefined;
+                mouseSelectingPetal = undefined;
             })
 
             row.append(petal_slot);
@@ -332,6 +396,7 @@ export class Inventory{
                 petal_slot.append(petal);
 
                 petal.on("mousedown", (ev) => {
+                    if (!this.game.running) return;
                     if (draggingData.item) return;
 
                     const dragging = $(`<div class="dragging-petal"></div>`);
@@ -374,10 +439,25 @@ export class Inventory{
         )
     }
 
+
     switchSlot(slot: number) {
-        if (slot - 1 >= this.equippedPetals.length) return;
+        if (slot < 0 || slot - 1 >= this.equippedPetals.length) return;
+        if (this.keyboardSelectingPetal) {
+            this.switchedPetalIndex = this.inventory.indexOf(this.keyboardSelectingPetal);
+            this.switchedToPetalIndex = slot - 1;
+            return;
+        }
+        if (!this.preparationPetals[slot - 1].petalDefinition) return;
         this.switchedPetalIndex = slot - 1;
         this.switchedToPetalIndex = slot + this.equippedPetals.length - 1;
+        this.keyboardSelectingPetal = this.preparationPetals[slot - 1];
+        this.moveSelectSlot(0);
+    }
+
+    deletePetal() {
+        if (!this.keyboardSelectingPetal) return;
+        this.deletedPetalIndex = this.inventory.indexOf(this.keyboardSelectingPetal);
+        this.moveSelectSlot(1);
     }
 
     showInformation(container: PetalContainer) {
@@ -450,6 +530,7 @@ export class Inventory{
 
                 return;
             }
+
             addLine({
                 startsWith: config.displayName
                     + `: `,
@@ -500,11 +581,26 @@ export class Inventory{
             for (const modifiersDefinitionKey in definition.modifiers) {
                 const showing =
                     showingConfig[modifiersDefinitionKey];
-                addAttribute(showing,
-                    (definition.modifiers
-                            [modifiersDefinitionKey as keyof PlayerModifiers]
-                        ?? "").toString()
-                );
+                let original = (definition.modifiers
+                    [modifiersDefinitionKey as keyof Modifiers]);
+                if (!original) {
+                    addAttribute(showing,
+                        ""
+                    );
+                }else {
+                    let value = original;
+                    let startsWith = "";
+                    let endsWith = "";
+                    if (showing.percent) {
+                        value = original * 100 - 100;
+                        if (value > 0) startsWith = "+"
+                        endsWith = "%";
+                    }
+
+                    addAttribute(showing,
+                        startsWith + value.toFixed(2) + endsWith
+                    );
+                }
             }
         }
 
