@@ -117,8 +117,8 @@ export class AttributeEventManager {
     applyEvent<T extends AttributeEvents>(
         e: EventData, data: EventFunctionArguments[T]
     ){
-        if (e.petal.firstReloading || e.use && (!e.petal.canUse || !e.petal.isActive())) return;
-        e.func(data);
-        if (e.use) e.petal.startUsing(e.use);
+        if (e.petal.isLoadingFirstTime || e.use && (!e.petal.canUse || !e.petal.isActive())) return;
+        if (e.use){ e.petal.startUsing(e.use, () => e.func(data)); }
+        else {e.func(data)}
     }
 }
