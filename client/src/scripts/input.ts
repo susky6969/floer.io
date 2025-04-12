@@ -72,10 +72,23 @@ export class Input {
     }
 
     handleKeyboardEvent(down: boolean, event: KeyboardEvent): void {
+        if (!this.game.running) return;
         const key = this.getKeyFromInputEvent(event);
 
         if(["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(event.key)){
             this.game.inventory.switchSlot(+event.key);
+        }
+
+        if(event.key === "q") {
+            this.game.inventory.moveSelectSlot(-1);
+        }
+
+        if(event.key === "e") {
+            this.game.inventory.moveSelectSlot(1);
+        }
+
+        if(event.key === "t") {
+            this.game.inventory.deletePetal();
         }
 
         this._inputsDown[key] = down;
