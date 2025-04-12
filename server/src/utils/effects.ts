@@ -1,8 +1,9 @@
-import { damageSource, isDamageableEntity, isDamageSourceEntity, ServerEntity } from "../entities/serverEntity";
+import { ServerEntity } from "../entities/serverEntity";
 import { EntityType } from "../../../common/src/constants";
-import { PlayerModifiers } from "../../../common/src/typings";
+import { Modifiers } from "../../../common/src/typings";
 import { ServerPlayer } from "../entities/serverPlayer";
 import { ServerMob } from "../entities/serverMob";
+import { damageSource, isDamageableEntity, isDamageSourceEntity } from "../typings";
 
 export interface EffectData{
     readonly effectedTarget: ServerEntity
@@ -10,7 +11,7 @@ export interface EffectData{
     readonly workingType?: EntityType[]
     readonly duration: number
     readonly func?: (dt: number, effected: ServerEntity) => void
-    readonly modifier?: Partial<PlayerModifiers>
+    readonly modifier?: Partial<Modifiers>
 }
 
 export class Effect {
@@ -23,7 +24,7 @@ export class Effect {
     workingType?: EntityType[];
     duration: number;
     func?: EffectData["func"];
-    modifier?: Partial<PlayerModifiers>;
+    modifier?: Partial<Modifiers>;
 
     constructor(data: EffectData) {
         this.effectedTarget = data.effectedTarget;
@@ -98,12 +99,10 @@ export class EffectManager {
     addEffect(effect: Effect) {
         if (effect.effectedTarget != this.owner) return;
         this.effects.add(effect);
-        if(this.owner instanceof ServerPlayer) this.owner.updateModifiers();
     }
 
     removeEffect(effect: Effect) {
         if (effect.effectedTarget != this.owner) return;
         this.effects.delete(effect);
-        if(this.owner instanceof ServerPlayer) this.owner.updateModifiers();
     }
 }
