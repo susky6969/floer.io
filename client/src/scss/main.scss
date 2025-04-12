@@ -295,3 +295,34 @@ img {
     margin: 0;
 }
 
+.preparation-petals-row > .selecting-petal > .petal {
+    z-index: 2;
+    width: 130%;
+    height: 130%;
+    top: -8px;
+    left: -8px;
+    --x: 12px;
+    animation: shaking 1.6s infinite;
+}
+
+@keyframes shaking {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    20% {
+        transform: rotate(10deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    75% {
+        transform: rotate(-10deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
