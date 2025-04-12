@@ -45,9 +45,10 @@ export class PetalBunch {
     tick(radius: number, revolutionRadians: number, singleOccupiedRadians: number): void {
         if (!this.definition) return;
 
-        if (!this.definition.extendable
-            && radius >= GameConstants.player.defaultPetalDistance
-        ) radius = GameConstants.player.defaultPetalDistance;
+        if (radius > GameConstants.player.defaultPetalDistance){
+            if (!this.definition.extendable) radius = GameConstants.player.defaultPetalDistance;
+            if (this.definition.moreExtendDistance) radius += this.definition.moreExtendDistance;
+        }
 
         this.position = this.inventory.position;
 
