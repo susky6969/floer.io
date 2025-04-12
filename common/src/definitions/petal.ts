@@ -436,7 +436,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 10,
                 health: 10,
                 despawnTime: 3,
-                speed: 3,
+                speed: 6,
                 definition: Projectile.fromString("dandelion")
             }
         },
