@@ -274,10 +274,10 @@ export const Mobs = new Definitions<MobDefinition>([
             speed: 6,
             definition: Projectile.fromString("missile")
         },
-        shootSpeed: 2,
+        shootSpeed: 1.5,
         aggroRadius: 30,
         hitboxRadius: 2,
-        speed: 3,
+        speed: 4,
         lootTable: {
             "dandelion": 0.28,
             "bubble": 0.1,
@@ -305,10 +305,10 @@ export const Mobs = new Definitions<MobDefinition>([
             speed: 6,
             definition: Projectile.fromString("missile")
         },
-        shootSpeed: 2,
+        shootSpeed: 1.5,
         aggroRadius: 30,
         hitboxRadius: 2 / 0.6,
-        speed: 3,
+        speed: 4,
         lootTable: {
             "dandelion": 0.14,
             "bubble": 0.05,
