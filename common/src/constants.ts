@@ -44,7 +44,7 @@ export const GameConstants = {
     loot: {
         radius: 0.5,
         spawnRadius: 3,
-        despawnTime: 20
+        despawnTime: 50
     },
     mob: {
         maxHealth: 100000,
