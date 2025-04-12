@@ -36,12 +36,11 @@ export class ClientProjectile extends ClientEntity {
     }
 
     render(): void {
-        this.container.position = Camera.vecToScreen(this.position);
+        this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8)
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Projectile], _isNew: boolean): void {
         this.position = data.position;
-
         this.render();
 
         if (_isNew){
@@ -50,8 +49,12 @@ export class ClientProjectile extends ClientEntity {
             this.container.position = Camera.vecToScreen(this.position);
 
             this.images.body
-                .setFrame(getGameAssetsPath("petal", this.definition))
-                .setScaleByUnitRadius(data.definition.hitboxRadius)
+                .setFrame(getGameAssetsPath("projectile", this.definition))
+                .setScaleByUnitRadius(data.hitboxRadius)
+
+            if (data.definition.onGround) {
+                this.container.zIndex = -1;
+            }
 
             this.images.body.setRotation(Vec2.directionToRadians(data.direction));
         }

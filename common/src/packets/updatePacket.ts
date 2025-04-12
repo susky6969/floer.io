@@ -47,6 +47,7 @@ export interface EntitiesNetData {
     }
     [EntityType.Projectile]: {
         position: Vector
+        hitboxRadius: number
         definition: ProjectileDefinition
         direction: Vector
 
@@ -164,10 +165,11 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         }
     },
     [EntityType.Projectile]: {
-        partialSize: 10,
+        partialSize: 12,
         fullSize: 0,
         serializePartial(stream, data): void {
             Projectile.writeToStream(stream, data.definition);
+            stream.writeFloat(data.hitboxRadius, 0, 10, 8);
             stream.writePosition(data.position);
             stream.writeUnit(data.direction, 8);
         },
@@ -177,6 +179,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         deserializePartial(stream) {
             return {
                 definition: Projectile.readFromStream(stream),
+                hitboxRadius: stream.readFloat(0, 10, 8),
                 position: stream.readPosition(),
                 direction: stream.readUnit(8)
             };
@@ -216,6 +219,7 @@ export class UpdatePacket implements Packet {
     newPlayers: Array<{
         name: string
         id: number
+        exp: number
     }> = [];
 
     deletedPlayers: number[] = [];
@@ -223,15 +227,19 @@ export class UpdatePacket implements Packet {
     playerDataDirty = {
         id: false,
         zoom: false,
-        inventory: false
+        inventory: false,
+        slot: false,
+        exp: false,
     };
 
     playerData: {
-        id: number, zoom: number, inventory: SavedPetalDefinitionData[]
+        id: number, zoom: number, inventory: SavedPetalDefinitionData[], slot: number, exp: number
     } = {
         id: 0,
         zoom: 0,
-        inventory: []
+        inventory: [],
+        slot: 0,
+        exp: 0
     };
 
     mapDirty = false;
@@ -285,6 +293,7 @@ export class UpdatePacket implements Packet {
             stream.writeArray(this.newPlayers, 8, player => {
                 stream.writeUint16(player.id);
                 stream.writeASCIIString(player.name, GameConstants.player.maxNameLength);
+                stream.writeUint16(player.exp)
             });
 
             flags |= UpdateFlags.NewPlayers;
@@ -316,6 +325,17 @@ export class UpdatePacket implements Packet {
                     if (item) Petals.writeToStream(stream, item);
                 })
             }
+
+            stream.writeBoolean(this.playerDataDirty.slot);
+            if (this.playerDataDirty.slot) {
+                stream.writeUint8(this.playerData.slot);
+            }
+
+            stream.writeBoolean(this.playerDataDirty.exp);
+            if (this.playerDataDirty.exp) {
+                stream.writeUint32(this.playerData.exp);
+            }
+
             stream.writeAlignToNextByte();
 
             flags |= UpdateFlags.PlayerData;
@@ -378,7 +398,8 @@ export class UpdatePacket implements Packet {
             stream.readArray(this.newPlayers, 8, () => {
                 return {
                     id: stream.readUint16(),
-                    name: stream.readASCIIString(GameConstants.player.maxNameLength)
+                    name: stream.readASCIIString(GameConstants.player.maxNameLength),
+                    exp: stream.readUint16()
                 };
             });
         }
@@ -407,6 +428,16 @@ export class UpdatePacket implements Packet {
                     if(!isEmpty) return Petals.readFromStream(stream);
                     return null;
                 })
+            }
+
+            if (stream.readBoolean()) {
+                this.playerDataDirty.slot = true;
+                this.playerData.slot = stream.readUint8();
+            }
+
+            if (stream.readBoolean()) {
+                this.playerDataDirty.exp = true;
+                this.playerData.exp = stream.readUint32();
             }
 
             stream.readAlignToNextByte();
