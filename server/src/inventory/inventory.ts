@@ -10,6 +10,7 @@ import { P2 } from "../../../common/src/utils/math";
 import { Vector } from "../../../common/src/utils/vector";
 import { GameConstants } from "../../../common/src/constants";
 import { AttributeEventManager } from "../utils/eventManager";
+import { Rarity } from "../../../common/src/definitions/rarity";
 
 export class Inventory {
     position: Vector;
@@ -21,6 +22,9 @@ export class Inventory {
 
     equipped_petals: SavedPetalDefinitionData[] = [];
     inventory: SavedPetalDefinitionData[] = [];
+
+    slot: number = GameConstants.player.defaultSlot;
+    prepareSlot: number = GameConstants.player.defaultPrepareSlot;
 
     private totalDisplayedPetals = 0;
 
@@ -35,8 +39,8 @@ export class Inventory {
         this.position = player.position;
     }
 
-    init(): void{
-        for (let i = 0; i < GameConstants.player.defaultSlot; i++) {
+    defaultConfig(): void{
+        for (let i = 0; i < this.slot; i++) {
             this.equipped_petals.push(
                 Petals.fromStringData(GameConstants.player.defaultEquippedPetals[i])
             );
@@ -46,11 +50,37 @@ export class Inventory {
             );
         }
 
-        for (let i = 0; i < GameConstants.player.defaultSlot; i++) {
+        for (let i = 0; i < this.prepareSlot; i++) {
             this.inventory.push(
                 Petals.fromStringData(GameConstants.player.defaultPreparationPetals[i])
             );
         }
+    }
+
+    changeSlotAmountTo(slot: number): void {
+        if (this.slot > slot) {
+            const offset = this.slot - slot;
+            this.equipped_petals.splice(-offset, offset);
+            this.petalBunches.splice(-offset, offset).forEach((petal) => {
+                petal.destroy();
+            });
+            this.inventory.splice(this.slot - offset, offset);
+        }else {
+            const equipOffset = slot - this.slot;
+            const prepare =
+                this.inventory.splice(-this.prepareSlot, this.prepareSlot);
+            for (let i = 0; i < equipOffset; i++) {
+                this.equipped_petals.push(Petals.fromStringData(""));
+                this.petalBunches.push(new PetalBunch(this, null));
+                this.inventory.push(Petals.fromStringData(""));
+            }
+
+            this.inventory = this.inventory.concat(prepare);
+        }
+
+        this.slot = slot
+        this.player.dirty.slot = true;
+        this.player.dirty.inventory = true;
     }
 
     switchPetal(index1: number, index2: number) {
@@ -65,7 +95,11 @@ export class Inventory {
     }
 
     delete(petalIndex: number) {
-        if (petalIndex < 0 || petalIndex > this.inventory.length) return
+        if (petalIndex < 0 || petalIndex > this.inventory.length) return;
+        const definition = this.inventory[petalIndex];
+        if(definition) {
+            this.player.addExp(Rarity.fromString(definition.rarity).expWhenAbsorb)
+        }
         this.updateInventory(petalIndex, null);
     }
 
@@ -113,7 +147,7 @@ export class Inventory {
 
         const radius = this.range;
 
-        this.revolutionRadians += GameConstants.player.revolutionSpeed * this.game.dt;
+        this.revolutionRadians += this.player.modifiers.revolutionSpeed * this.game.dt;
 
         let revolutionRadians = this.revolutionRadians;
         const singleOccupiedRadians = P2 / this.totalDisplayedPetals;
