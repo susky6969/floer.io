@@ -1,13 +1,11 @@
 import { type WebSocket } from "ws";
 import { ServerPlayer } from "./entities/serverPlayer";
 import {
-    isCollideableEntity,
-    isDamageableEntity,
     ServerEntity
 } from "./entities/serverEntity";
 import { Grid } from "./grid";
 import { EntityPool } from "../../common/src/utils/entityPool";
-import { EntityType, GameConstants } from "../../common/src/constants";
+import { GameConstants, Zones } from "../../common/src/constants";
 import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";
 import { IDAllocator } from "./idAllocator";
@@ -16,9 +14,12 @@ import { ServerMob } from "./entities/serverMob";
 import { Mobs } from "../../common/src/definitions/mob";
 import { CollisionResponse } from "../../common/src/utils/collision";
 import { Random } from "../../common/src/utils/random";
+import { RectHitbox } from "../../common/src/utils/hitbox";
+import { isCollideableEntity, isDamageableEntity } from "./typings";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
+    activePlayers = new EntityPool<ServerPlayer>();
 
     newPlayers: ServerPlayer[] = [];
     deletedPlayers: number[] = [];
@@ -66,6 +67,7 @@ export class Game {
     addPlayer(socket: WebSocket): ServerPlayer {
         const player = new ServerPlayer(this, socket);
         this.newPlayers.push(player);
+        this.activePlayers.add(player);
 
         return player;
     }
@@ -73,7 +75,6 @@ export class Game {
     removePlayer(player: ServerPlayer): void {
         this.players.delete(player);
         player.destroy();
-        this.deletedPlayers.push(player.id);
         console.log(`"${player.name}" left the game.`);
     }
 
@@ -163,14 +164,21 @@ export class Game {
         this.deletedPlayers.length = 0;
         this.mapDirty = false;
 
-        if (this.grid.byCategory[EntityType.Mob].size <= 450) {
-            const position = Random.vector(0, this.width, 0, this.height);
+        for (const zonesKey in Zones) {
+            const data = Zones[zonesKey];
+            const position = Random.vector(data.x, data.x + data.width, 0, this.height);
             const definitionIdString = Random.weightedRandom(
-                Object.keys(GameConstants.game.spawningMob),
-                Object.values(GameConstants.game.spawningMob)
+                Object.keys(data.spawning),
+                Object.values(data.spawning)
             )
 
-            new ServerMob(this, position, Mobs.fromString(definitionIdString))
+            const mobCount = this.grid.intersectsHitbox(new RectHitbox(
+                Vec2.new(data.x, 0), Vec2.new(data.x + data.width, this.height)
+            )).size;
+
+            if (mobCount < data.density / 15 * data.width * this.height / 20){
+                new ServerMob(this, position, Mobs.fromString(definitionIdString));
+            }
         }
     }
 }
