@@ -7,6 +7,7 @@ import { Projectile, ProjectileDefinition } from "./projectile";
 export type SavedPetalDefinitionData = PetalDefinition | null
 
 export type PetalDefinition = ObjectDefinition & {
+    readonly description?: string
     readonly damage?: number
     readonly health?: number
     readonly reloadTime?: number
