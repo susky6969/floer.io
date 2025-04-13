@@ -369,15 +369,15 @@ export const Mobs = new Definitions<MobDefinition>([
     },{
         idString: "mantis",
         displayName: "Mantis",
-        damage: 50,
+        damage: 30,
         health: 35,
         category: MobCategory.Enemy,
         reachingAway: true,
         shootable: true,
         shoot: {
             hitboxRadius: 0.7,
-            damage: 30,
-            health: 30,
+            damage: 10,
+            health: 10,
             despawnTime: 3,
             speed: 7,
             definition: Projectile.fromString("peas")
@@ -401,15 +401,15 @@ export const Mobs = new Definitions<MobDefinition>([
     },{
         idString: "mega_mantis",
         displayName: "Mantis",
-        damage: 50,
-        health: 150,
+        damage: 30,
+        health: 100,
         category: MobCategory.Enemy,
         reachingAway: true,
         shootable: true,
         shoot: {
             hitboxRadius: 1.4,
-            damage: 30,
-            health: 30,
+            damage: 15,
+            health: 15,
             despawnTime: 3,
             speed: 7,
             definition: Projectile.fromString("peas")
