@@ -84,7 +84,7 @@ export const Petals = new Definitions<PetalDefinition>([
         extendable: true,
         reloadTime: 0.5,
         usable: false,
-        hitboxRadius: 0.3,
+        hitboxRadius: 0.45,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.common,
@@ -99,7 +99,7 @@ export const Petals = new Definitions<PetalDefinition>([
         extendable: true,
         reloadTime: 0.5,
         usable: false,
-        hitboxRadius: 0.3,
+        hitboxRadius: 0.45,
         isDuplicate: true,
         pieceAmount: 2,
         isShowedInOne: false,
@@ -110,12 +110,12 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "penta",
         displayName: "Penta",
         description: "FIVE.",
-        damage: 11,
+        damage: 13,
         health: 5,
         extendable: true,
         reloadTime: 0.5,
         usable: false,
-        hitboxRadius: 0.3,
+        hitboxRadius: 0.45,
         isDuplicate: true,
         pieceAmount: 5,
         isShowedInOne: false,
@@ -157,21 +157,21 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: false,
         hitboxRadius: 0.5,
         isDuplicate: true,
-        pieceAmount: 2,
+        pieceAmount: 3,
         isShowedInOne: false,
-        rarity: RarityName.legendary,
+        rarity: RarityName.mythic,
         usingAssets: "wing"
     },
     {
         idString: "triplet",
         displayName: "Triplet",
         description: "How about THREE?!",
-        damage: 8,
+        damage: 11,
         health: 5,
         extendable: true,
         reloadTime: 0.5,
         usable: false,
-        hitboxRadius: 0.3,
+        hitboxRadius: 0.45,
         isDuplicate: true,
         pieceAmount: 3,
         isShowedInOne: false,
@@ -268,7 +268,7 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: false,
         hitboxRadius: 0.6,
         isDuplicate: true,
-        isShowedInOne: true,
+        isShowedInOne: false,
         pieceAmount: 3,
         rarity: RarityName.legendary,
         usingAssets: "leaf"
@@ -295,14 +295,14 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "sand",
         displayName: "Sand",
         description: "A bunch of sand particles.",
-        damage: 3,
+        damage: 5,
         health: 2,
         reloadTime: 1.5,
         extendable: true,
         usable: false,
         hitboxRadius: 0.3,
         isDuplicate: true,
-        pieceAmount: 6,
+        pieceAmount: 4,
         isShowedInOne: true,
         rarity: RarityName.unusual
     },
@@ -391,11 +391,11 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "dual_stinger",
         displayName: "Stinger",
         description: "It really hurts, but it's very fragile",
-        damage: 35,
+        damage: 25,
         health: 8,
         extendable: true,
         usable: false,
-        reloadTime: 6,
+        reloadTime: 4,
         hitboxRadius: 0.3,
         isDuplicate: true,
         isShowedInOne: true,
@@ -492,7 +492,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 10,
                 health: 10,
                 despawnTime: 3,
-                speed: 6,
+                speed: 6.25,
                 definition: Projectile.fromString("dandelion")
             }
         },
@@ -507,7 +507,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "missile",
         displayName: "Missile",
         description: "You can actually shoot this one",
-        damage: 10,
+        damage: 30,
         health: 10,
         extendable: true,
         images: {
@@ -522,10 +522,10 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             shoot: {
                 hitboxRadius: 0.6,
-                damage: 10,
+                damage: 40,
                 health: 10,
                 despawnTime: 3,
-                speed: 5,
+                speed: 5.25,
                 definition: Projectile.fromString("missile")
             }
         },
@@ -540,7 +540,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "big_missile",
         displayName: "Missile",
         description: "You can actually shoot this bigger one",
-        damage: 20,
+        damage: 40,
         health: 20,
         extendable: true,
         images: {
@@ -555,10 +555,10 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             shoot: {
                 hitboxRadius: 1,
-                damage: 20,
+                damage: 40,
                 health: 20,
                 despawnTime: 3,
-                speed: 5,
+                speed: 5.25,
                 definition: Projectile.fromString("missile")
             }
         },
@@ -574,7 +574,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "myt_big_missile",
         displayName: "Missile",
         description: "You can actually shoot this quickly bigger one",
-        damage: 20,
+        damage: 50,
         health: 20,
         extendable: true,
         images: {
@@ -589,10 +589,10 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             shoot: {
                 hitboxRadius: 1,
-                damage: 20,
+                damage: 50,
                 health: 20,
                 despawnTime: 3,
-                speed: 5,
+                speed: 5.25,
                 definition: Projectile.fromString("missile")
             }
         },
@@ -682,7 +682,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 52
         },
         modifiers: {
-            maxHealth: 20
+            maxHealth: 13.44444444
         },
         reloadTime: 1,
         hitboxRadius: 0.6,
@@ -1022,7 +1022,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 despawnTime: 5
             },
             poison: {
-                damagePerSecond: 10,
+                damagePerSecond: 12,
                 duration: 2
             }
         },
