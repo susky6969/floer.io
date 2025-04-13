@@ -87,10 +87,10 @@ if (Cluster.isPrimary) {
         ws.handleUpgrade(req, socket, req.headers, wssocket => {
             wssocket.binaryType = "arraybuffer";
 
-            const player = game.addPlayer(wssocket);
+            let player = game.addPlayer(wssocket);
 
             wssocket.on("message", (msg: ArrayBuffer) => {
-                game.handleMessage(msg, player);
+                player = game.handleMessage(msg, player, wssocket);
             })
 
             wssocket.on("close", () => {

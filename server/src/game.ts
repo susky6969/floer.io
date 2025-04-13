@@ -14,15 +14,18 @@ import { ServerMob } from "./entities/serverMob";
 import { Mobs } from "../../common/src/definitions/mob";
 import { CollisionResponse } from "../../common/src/utils/collision";
 import { Random } from "../../common/src/utils/random";
-import { RectHitbox } from "../../common/src/utils/hitbox";
+import { type Hitbox, RectHitbox } from "../../common/src/utils/hitbox";
 import { isCollideableEntity, isDamageableEntity } from "./typings";
+import { PacketStream } from "../../common/src/net";
+import { JoinPacket } from "../../common/src/packets/joinPacket";
+import { InputPacket } from "../../common/src/packets/inputPacket";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
+
     activePlayers = new EntityPool<ServerPlayer>();
 
-    newPlayers: ServerPlayer[] = [];
-    deletedPlayers: number[] = [];
+
 
     partialDirtyEntities = new Set<ServerEntity>();
     fullDirtyEntities = new Set<ServerEntity>();
@@ -66,8 +69,7 @@ export class Game {
 
     addPlayer(socket: WebSocket): ServerPlayer {
         const player = new ServerPlayer(this, socket);
-        this.newPlayers.push(player);
-        this.activePlayers.add(player);
+        this.players.add(player);
 
         return player;
     }
@@ -78,8 +80,46 @@ export class Game {
         console.log(`"${player.name}" left the game.`);
     }
 
-    handleMessage(data: ArrayBuffer, player: ServerPlayer) {
-        player.processMessage(data);
+    handleMessage(data: ArrayBuffer, player: ServerPlayer, wssocket: WebSocket): ServerPlayer {
+        const packetStream = new PacketStream(data);
+
+        const packet = packetStream.deserializeClientPacket();
+
+        if (packet === undefined) return player;
+
+        switch (true) {
+            case packet instanceof JoinPacket: {
+                const inventory = player.inventory.inventory;
+                const exp = player.exp;
+
+                this.removePlayer(player);
+                player = this.addPlayer(wssocket);
+
+                player.inventory.inventory = inventory;
+                player.addExp(exp);
+
+                const spawnZones =
+                    Object.values(Zones).filter(e => player.level >= e.levelAtLowest)
+
+                const spawnZone = spawnZones[spawnZones.length - 1];
+
+                if (spawnZones.length) {
+                    player.position = Random.vector(
+                        spawnZone.x, spawnZone.x + spawnZone.width,
+                        0, this.height
+                    )
+                }
+
+                player.processMessage(data);
+                break;
+            }
+            case packet instanceof InputPacket: {
+                player.processMessage(data);
+                break;
+            }
+        }
+
+        return player;
     }
 
     tick(): void {
@@ -160,8 +200,6 @@ export class Game {
 
         this.partialDirtyEntities.clear();
         this.fullDirtyEntities.clear();
-        this.newPlayers.length = 0;
-        this.deletedPlayers.length = 0;
         this.mapDirty = false;
 
         for (const zonesKey in Zones) {
@@ -180,6 +218,22 @@ export class Game {
                 new ServerMob(this, position, Mobs.fromString(definitionIdString));
             }
         }
+    }
+
+    inWhichZone(entity: ServerEntity): typeof Zones[string]{
+        for (const zonesKey in Zones) {
+            const data = Zones[zonesKey];
+            const zoneHitbox = new RectHitbox(
+                Vec2.new(data.x, 0), Vec2.new(data.x + data.width, this.height)
+            );
+            const collided = this.grid.intersectsHitbox(zoneHitbox);
+            if (collided.has(entity)) {
+                const collision = entity.hitbox.collidesWith(zoneHitbox);
+                if(collision) return data;
+            }
+        }
+
+        return Object.values(Zones)[0];
     }
 }
 
