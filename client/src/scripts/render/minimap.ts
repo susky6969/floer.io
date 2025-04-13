@@ -13,7 +13,7 @@ export class Minimap {
     });
 
     playerPosition = new Graphics({
-        zIndex: 2
+        zIndex: 9
     })
 
     container = new Container();

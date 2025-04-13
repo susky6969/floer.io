@@ -1033,5 +1033,22 @@ export const Petals = new Definitions<PetalDefinition>([
         isShowedInOne: true,
         rarity: RarityName.mythic,
         usingAssets: "poison_peas",
+    },
+    {
+        idString: "corn",
+        displayName: "Corn",
+        description: "You can actually eat it.",
+        damage: 12,
+        health: 200,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 45,
+        },
+        reloadTime: 8,
+        hitboxRadius: 0.6,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.epic
     }
 ] satisfies PetalDefinition[]);

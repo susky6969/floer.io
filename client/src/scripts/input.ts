@@ -95,7 +95,6 @@ export class Input {
             this.game.inventory.transformSlot();
         }
 
-
         this._inputsDown[key] = down;
     }
 
