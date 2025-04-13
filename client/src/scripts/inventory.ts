@@ -275,10 +275,8 @@ export class Inventory{
 
         if (index < 0) {
             this.keyboardSelectingPetal =
-                this.preparationPetals[this.preparationPetals.length + index - 1];
+                this.preparationPetals[this.preparationPetals.length + index];
         }
-
-        console.log(index);
 
         if (!this.keyboardSelectingPetal.petalDefinition) {
             if (offset > 0) {
@@ -290,7 +288,8 @@ export class Inventory{
                 }
             } else if (offset < 0){
                 const finding =
-                    this.preparationPetals.filter((v, i) => i < index && v.petalDefinition);
+                    this.preparationPetals.filter((v, i) =>
+                        i < index && v.petalDefinition);
                 if (finding.length === 0) {
                     this.keyboardSelectingPetal = lastestSlot;
                 } else {
@@ -298,8 +297,6 @@ export class Inventory{
                 }
             }
         }
-
-        console.log(this.preparationPetals.indexOf(this.keyboardSelectingPetal));
 
         this.keyboardSelectingPetal.ui_slot?.addClass("selecting-petal");
     }

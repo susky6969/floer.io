@@ -39,7 +39,27 @@ export class Inventory {
         this.position = player.position;
     }
 
-    defaultConfig(): void{
+    loadConfig(config: SavedPetalDefinitionData[]): void{
+        this.equipped_petals = []
+        this.petalBunches = []
+        this.inventory = []
+
+        for (let i = 0; i < this.slot; i++) {
+            this.equipped_petals.push(config[i]);
+            this.petalBunches.push(new PetalBunch(this, config[i]));
+            this.inventory.push(config[i]);
+        }
+
+        for (let i = 0; i < this.prepareSlot; i++) {
+            this.inventory.push(config[i + this.slot]);
+        }
+    }
+
+    loadDefaultConfig(): void {
+        this.equipped_petals = []
+        this.petalBunches = []
+        this.inventory = []
+
         for (let i = 0; i < this.slot; i++) {
             this.equipped_petals.push(
                 Petals.fromStringData(GameConstants.player.defaultEquippedPetals[i])
@@ -135,6 +155,20 @@ export class Inventory {
         }
 
         return false;
+    }
+
+    drop(amount: number): PetalDefinition[] {
+        const droppable =
+            this.inventory.filter(e => e && !e.undroppable) as PetalDefinition[];
+        const dropped = droppable.sort((a, b) => {
+            return Rarity.fromString(b.rarity).level - Rarity.fromString(a.rarity).level
+        }).splice(0, amount);
+
+        dropped.forEach(e => {
+            this.inventory[this.inventory.indexOf(e)] = null;
+        })
+
+        return dropped;
     }
 
     tick(): void {

@@ -25,3 +25,17 @@ export function getLevelInformation(exp: number): LevelInformation {
         toNextLevelExp: levelExpCost
     };
 }
+
+export function getLevelExpCost(level: number): number {
+    let levelNow: number = 0;
+
+    let levelExpCost: number = 0;
+
+    while (level >= levelNow) {
+        levelExpCost += 3 + Math.abs(levelNow * 1.06 ** (levelNow - 1));
+
+        levelNow += 1;
+    }
+
+    return levelExpCost;
+}
