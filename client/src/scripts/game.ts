@@ -125,6 +125,15 @@ export class Game {
 
         this.pixi.stop();
 
+        for (const entity of this.entityPool) {
+            entity.destroy();
+        }
+
+        this.camera.clear();
+        this.entityPool.clear();
+        this.activePlayerID = -1;
+        this.playerData.clear();
+
         this.ui.inGameScreen.css("display", "none");
         this.ui.outGameScreen.css("display", "block");
 
@@ -215,7 +224,6 @@ export class Game {
             const entity = this.entityPool.get(entityPartialData.id);
 
             if (!entity) {
-                console.warn(`Unknown partial dirty entity with ID ${entityPartialData.id}`);
                 continue;
             }
             entity.updateFromData(entityPartialData.data, false);

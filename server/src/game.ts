@@ -93,6 +93,7 @@ export class Game {
                 const exp = player.exp;
 
                 this.removePlayer(player);
+
                 player = this.addPlayer(wssocket);
 
                 player.inventory.inventory = inventory;
