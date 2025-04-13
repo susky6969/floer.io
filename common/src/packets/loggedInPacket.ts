@@ -1,17 +1,19 @@
 import { type GameBitStream, type Packet } from "../net";
-import { PetalDefinition, Petals } from "../definitions/petal";
+import { SavedPetalDefinitionData, Petals } from "../definitions/petal";
 
 export class LoggedInPacket implements Packet {
-    equiped_petals: PetalDefinition[] = [];
+    inventory: SavedPetalDefinitionData[] = [];
 
     serialize(stream: GameBitStream): void {
-        stream.writeArray(this.equiped_petals, 8, (def) => {
-            Petals.writeToStream(stream, def);
+        stream.writeArray(this.inventory, 8, (def) => {
+            stream.writeBoolean(def == null);
+            if (def) Petals.writeToStream(stream, def);
         })
     }
 
     deserialize(stream: GameBitStream): void {
-        stream.readArray(this.equiped_petals, 8, () => {
+        stream.readArray(this.inventory, 8, () => {
+            if (stream.readBoolean()) return null;
             return Petals.readFromStream(stream);
         })
     }
