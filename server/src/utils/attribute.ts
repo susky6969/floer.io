@@ -131,6 +131,7 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
     },
 
     damage_reflection: {
+        unstackable: true,
         callback: (on, petal, data) => {
             on<AttributeEvents.FLOWER_GET_DAMAGE>(AttributeEvents.FLOWER_GET_DAMAGE,
                 (arg) => {
@@ -155,9 +156,10 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 if (!data) return;
                 const direction =
                     MathGraphics.directionBetweenPoints(petal.position, petal.owner.position);
+                const position = data.definition.onGround ? petal.position : petal.owner.position;
                 const projectile = new ServerProjectile(
-                    petal.owner, petal.position, direction, data, petal);
-                if(data.definition.onGround) projectile.addVelocity(Vec2.mul(direction, 60))
+                    petal.owner, position, direction, data, petal);
+                projectile.addVelocity(Vec2.mul(direction, 12 * data.speed))
             }, PetalUsingAnimations.NORMAL)
         }
     },
