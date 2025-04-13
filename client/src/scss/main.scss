@@ -326,3 +326,18 @@ img {
         transform: rotate(0deg);
     }
 }
+
+#move-right{
+    position: absolute;
+    background: rgba(#000, 0.5);
+    top: 40%;
+    left: 60%;
+    width: 260px;
+    height: 90px;
+    border-radius: 6px;
+    z-index: 6;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}

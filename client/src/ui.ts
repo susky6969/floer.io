@@ -29,6 +29,10 @@ export class UI {
 
     readonly continueButton = $<HTMLDivElement>("#btn-continue");
 
+    readonly moveRight = $<HTMLDivElement>("#move-right");
+
+    readonly moveRightTime = $<HTMLDivElement>("#move-right-time");
+
     readonly deletePetal = $<HTMLDivElement>("<div id='delete-petal'></div>");
 
     readonly petalInformation =
@@ -38,11 +42,11 @@ export class UI {
         this.app = app;
 
         this.readyButton.on("click", (e: Event) => {
-            app.game.connect(Config.address);
+            this.app.game.sendJoin();
         });
 
         this.continueButton.on("click", (e: Event) => {
-            app.game.socket?.close();
+            this.app.game.endGame();
         });
 
         this.gameOverScreen.css("display", "none");
@@ -56,5 +60,18 @@ export class UI {
         const kills = `You killed ${packet.kills} flower${packet.kills > 1 ? "s" : ""} this run.`
         this.gameOverKills.attr("textStroke", kills);
         this.gameOverKills.text(kills);
+    }
+
+    showOverleveled(time?: number) {
+        if (!time && time !== 0) {
+            this.moveRight.css("display", "none");
+            return;
+        }
+
+        let content = `${time}s`;
+        if (time <= 0) content = "MOVE RIGHT NOW";
+        this.moveRight.css("display", "block");
+        this.moveRightTime.attr("textStroke", content);
+        this.moveRightTime.text(content);
     }
 }

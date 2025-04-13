@@ -206,7 +206,6 @@ enum UpdateFlags {
     FullEntities = 1 << 1,
     PartialEntities = 1 << 2,
     NewPlayers = 1 << 3,
-    DeletedPlayers = 1 << 4,
     PlayerData = 1 << 5,
     Map = 1 << 8
 }
@@ -216,13 +215,11 @@ export class UpdatePacket implements Packet {
     partialEntities: Entity[] = [];
     fullEntities: Array<Entity & { data: Required<EntitiesNetData[Entity["type"]]> }> = [];
 
-    newPlayers: Array<{
+    players: Array<{
         name: string
         id: number
         exp: number
     }> = [];
-
-    deletedPlayers: number[] = [];
 
     playerDataDirty = {
         id: false,
@@ -230,16 +227,23 @@ export class UpdatePacket implements Packet {
         inventory: false,
         slot: false,
         exp: false,
+        overleveled: false,
     };
 
     playerData: {
-        id: number, zoom: number, inventory: SavedPetalDefinitionData[], slot: number, exp: number
+        id: number,
+        zoom: number,
+        inventory: SavedPetalDefinitionData[],
+        slot: number,
+        exp: number,
+        overleveled: number
     } = {
         id: 0,
         zoom: 0,
         inventory: [],
         slot: 0,
-        exp: 0
+        exp: 0,
+        overleveled: 0
     };
 
     mapDirty = false;
@@ -289,22 +293,14 @@ export class UpdatePacket implements Packet {
             flags |= UpdateFlags.PartialEntities;
         }
 
-        if (this.newPlayers.length) {
-            stream.writeArray(this.newPlayers, 8, player => {
+        if (this.players.length) {
+            stream.writeArray(this.players, 8, player => {
                 stream.writeUint16(player.id);
                 stream.writeASCIIString(player.name, GameConstants.player.maxNameLength);
                 stream.writeUint16(player.exp)
             });
 
             flags |= UpdateFlags.NewPlayers;
-        }
-
-        if (this.deletedPlayers.length) {
-            stream.writeArray(this.deletedPlayers, 8, id => {
-                stream.writeUint16(id);
-            });
-
-            flags |= UpdateFlags.DeletedPlayers;
         }
 
         if (Object.values(this.playerDataDirty).includes(true)) {
@@ -335,6 +331,13 @@ export class UpdatePacket implements Packet {
             if (this.playerDataDirty.exp) {
                 stream.writeUint32(this.playerData.exp);
             }
+
+            stream.writeBoolean(this.playerDataDirty.overleveled);
+            if (this.playerDataDirty.overleveled) {
+                if (this.playerData.overleveled <= 0) stream.writeUint16(0);
+                else stream.writeUint16(this.playerData.overleveled);
+            }
+
 
             stream.writeAlignToNextByte();
 
@@ -395,18 +398,12 @@ export class UpdatePacket implements Packet {
         }
 
         if (flags & UpdateFlags.NewPlayers) {
-            stream.readArray(this.newPlayers, 8, () => {
+            stream.readArray(this.players, 8, () => {
                 return {
                     id: stream.readUint16(),
                     name: stream.readASCIIString(GameConstants.player.maxNameLength),
                     exp: stream.readUint16()
                 };
-            });
-        }
-
-        if (flags & UpdateFlags.DeletedPlayers) {
-            stream.readArray(this.deletedPlayers, 8, () => {
-                return stream.readUint16();
             });
         }
 
@@ -438,6 +435,11 @@ export class UpdatePacket implements Packet {
             if (stream.readBoolean()) {
                 this.playerDataDirty.exp = true;
                 this.playerData.exp = stream.readUint32();
+            }
+
+            if (stream.readBoolean()) {
+                this.playerDataDirty.overleveled = true;
+                this.playerData.overleveled = stream.readUint16();
             }
 
             stream.readAlignToNextByte();
