@@ -126,6 +126,15 @@ export class Game {
     endGame() {
         this.running = false;
 
+        for (const entity of this.entityPool) {
+            entity.destroy();
+        }
+
+        this.camera.clear();
+        this.entityPool.clear();
+        this.activePlayerID = -1;
+        this.playerData.clear();
+
         this.pixi.stop();
 
         this.ui.inGameScreen.css("display", "none");
@@ -161,6 +170,8 @@ export class Game {
     }
 
     updateFromPacket(packet: UpdatePacket): void {
+        if (!this.running) return;
+
         if (packet.playerDataDirty.id) {
             this.activePlayerID = packet.playerData.id;
         }
@@ -340,15 +351,6 @@ export class Game {
     }
 
     sendJoin(): void {
-        for (const entity of this.entityPool) {
-            entity.destroy();
-        }
-
-        this.camera.clear();
-        this.entityPool.clear();
-        this.activePlayerID = -1;
-        this.playerData.clear();
-
         const joinPacket = new JoinPacket();
         const name = this.ui.nameInput.val();
         joinPacket.name = name ? name : GameConstants.player.defaultName;

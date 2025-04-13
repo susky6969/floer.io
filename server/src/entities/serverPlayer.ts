@@ -225,7 +225,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             const gameOverPacket = new GameOverPacket();
             gameOverPacket.kills = this.kills;
             gameOverPacket.murderer = source.name;
-            this.sendPacket(gameOverPacket);
+            this.addPacketToSend(gameOverPacket);
         }
     }
 
@@ -292,8 +292,26 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         this.firstPacket = false;
 
+        // this.packetStream.stream.index = 0;
+        // this.packetStream.serializeServerPacket(updatePacket);
+        //
+        // for (const packet of this.packetsToSend) {
+        //     this.packetStream.serializeServerPacket(packet);
+        // }
+        //
+        // this.packetsToSend.length = 0;
+        // const buffer = this.packetStream.getBuffer();
+        // this.sendData(buffer);
+        this.addPacketToSend(updatePacket);
+        this.send();
+    }
+
+    packetStream = new PacketStream(GameBitStream.create(1 << 16));
+
+    readonly packetsToSend: Packet[] = [];
+
+    send(): void{
         this.packetStream.stream.index = 0;
-        this.packetStream.serializeServerPacket(updatePacket);
 
         for (const packet of this.packetsToSend) {
             this.packetStream.serializeServerPacket(packet);
@@ -304,11 +322,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.sendData(buffer);
     }
 
-    packetStream = new PacketStream(GameBitStream.create(1 << 16));
-
-    readonly packetsToSend: Packet[] = [];
-
-    sendPacket(packet: Packet): void {
+    addPacketToSend(packet: Packet): void {
         this.packetsToSend.push(packet);
     }
 
@@ -348,8 +362,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         console.log(this.inventory.inventory);
 
-        this.joined = true;
-
         this.petalEntities.map(e => e.join());
 
         console.log(`"${this.name}" joined the game`);
@@ -358,7 +370,11 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         const loggedIn = new LoggedInPacket();
         loggedIn.inventory = this.inventory.inventory;
-        this.sendPacket(loggedIn);
+        this.addPacketToSend(loggedIn);
+
+        this.send();
+
+        this.joined = true;
 
         if (this.inventory.inventory.length) {
             this.inventory.loadConfig(this.inventory.inventory);
