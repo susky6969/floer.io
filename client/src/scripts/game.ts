@@ -22,6 +22,8 @@ import { ClientLoot } from "@/scripts/entities/clientLoot.ts";
 import { ClientProjectile } from "@/scripts/entities/clientProjectile.ts";
 import { ExpUI } from "@/scripts/render/expUI.ts";
 import { Leaderboard } from "@/scripts/render/leaderboard.ts";
+import { Config } from "@/config.ts";
+import { LoggedInPacket } from "@common/packets/loggedInPacket.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -98,17 +100,13 @@ export class Game {
 
         this.leaderboard.init();
 
-        this.inventory.setSlotAmount(GameConstants.player.defaultSlot, GameConstants.player.defaultPrepareSlot);
-        this.inventory.loadArrays(
-            GameConstants.player.defaultEquippedPetals,
-            GameConstants.player.defaultPreparationPetals,
-        )
-
         await loadAssets();
         this.inventory.updatePetalRows();
+
+        this.connect(Config.address);
     }
 
-    startGame() {
+    startGame(loggedInPacket: LoggedInPacket): void {
         if (this.running) return;
         this.running = true;
 
@@ -116,6 +114,8 @@ export class Game {
         this.ui.outGameScreen.css("display", "none");
 
         this.pixi.start();
+
+        this.inventory.loadInventoryData(loggedInPacket.inventory)
 
         this.inventory.updatePetalRows();
     }
@@ -125,25 +125,11 @@ export class Game {
 
         this.pixi.stop();
 
-        for (const entity of this.entityPool) {
-            entity.destroy();
-        }
-
-        this.camera.clear();
-        this.entityPool.clear();
-        this.activePlayerID = -1;
-        this.playerData.clear();
-
         this.ui.inGameScreen.css("display", "none");
         this.ui.outGameScreen.css("display", "block");
 
         this.ui.gameOverScreen.css("display", "none");
 
-        this.inventory.setSlotAmount(GameConstants.player.defaultSlot, GameConstants.player.defaultPrepareSlot);
-        this.inventory.loadArrays(
-            GameConstants.player.defaultEquippedPetals,
-            GameConstants.player.defaultPreparationPetals,
-        );
 
         this.inventory.updatePetalRows();
         this.inventory.keyboardSelectingPetal = undefined;
@@ -156,9 +142,12 @@ export class Game {
             if (packet === undefined) break;
 
             switch (true) {
+                case packet instanceof LoggedInPacket: {
+                    this.startGame(packet);
+                    break;
+                }
                 case packet instanceof UpdatePacket: {
                     this.updateFromPacket(packet);
-                    this.startGame();
                     break;
                 }
                 case packet instanceof GameOverPacket: {
@@ -190,13 +179,19 @@ export class Game {
             this.exp.exp = packet.playerData.exp;
         }
 
+        if (packet.playerDataDirty.overleveled) {
+            this.ui.showOverleveled(packet.playerData.overleveled);
+        }else {
+            this.ui.showOverleveled();
+        }
+
         for (const id of packet.deletedEntities) {
             this.entityPool.get(id)?.destroy();
             this.entityPool.deleteByID(id);
         }
 
         this.playerData.clear();
-        for (const newPlayer of packet.newPlayers) {
+        for (const newPlayer of packet.players) {
             this.playerData.set(newPlayer.id, {
                 name: newPlayer.name,
                 exp: newPlayer.exp,
@@ -300,6 +295,10 @@ export class Game {
     }
 
     sendPacket(packet: Packet) {
+        if (!this.socket) {
+            this.connect(Config.address);
+        }
+
         if (this.socket && this.socket.readyState === this.socket.OPEN) {
             const packetStream = new PacketStream(GameBitStream.create(128));
             packetStream.serializeClientPacket(packet);
@@ -318,12 +317,7 @@ export class Game {
             this.onMessage(msg.data);
         };
 
-        this.socket.onopen = () => {
-            const joinPacket = new JoinPacket();
-            const name = this.ui.nameInput.val();
-            joinPacket.name = name ? name : GameConstants.player.defaultName;
-            this.sendPacket(joinPacket);
-        };
+        this.socket.onopen = () => {};
 
         this.socket.onclose = () => {
             this.endGame();
@@ -333,6 +327,21 @@ export class Game {
             console.error(error);
             this.endGame();
         };
+
+        this.inventory.setSlotAmount(GameConstants.player.defaultSlot, GameConstants.player.defaultPrepareSlot);
+        this.inventory.loadArrays(
+            GameConstants.player.defaultEquippedPetals,
+            GameConstants.player.defaultPreparationPetals,
+        )
+
+        this.inventory.updatePetalRows();
+    }
+
+    sendJoin(): void {
+        const joinPacket = new JoinPacket();
+        const name = this.ui.nameInput.val();
+        joinPacket.name = name ? name : GameConstants.player.defaultName;
+        this.sendPacket(joinPacket);
     }
 
     render() {
@@ -358,6 +367,8 @@ export class Game {
     }
 
     sendInput() {
+        console.log("Sending input...");
+
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0");
         inputPacket.isDefending = this.input.isInputDown("Mouse2");
