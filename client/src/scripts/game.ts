@@ -108,6 +108,7 @@ export class Game {
 
     startGame(loggedInPacket: LoggedInPacket): void {
         if (this.running) return;
+
         this.running = true;
 
         this.ui.inGameScreen.css("display", "block");
@@ -125,20 +126,10 @@ export class Game {
 
         this.pixi.stop();
 
-        for (const entity of this.entityPool) {
-            entity.destroy();
-        }
-
-        this.camera.clear();
-        this.entityPool.clear();
-        this.activePlayerID = -1;
-        this.playerData.clear();
-
         this.ui.inGameScreen.css("display", "none");
         this.ui.outGameScreen.css("display", "block");
 
         this.ui.gameOverScreen.css("display", "none");
-
 
         this.inventory.updatePetalRows();
         this.inventory.keyboardSelectingPetal = undefined;
@@ -224,6 +215,7 @@ export class Game {
             const entity = this.entityPool.get(entityPartialData.id);
 
             if (!entity) {
+                console.warn(`Unknown partial Entity with ID ${entityPartialData.id}`)
                 continue;
             }
             entity.updateFromData(entityPartialData.data, false);
@@ -346,6 +338,15 @@ export class Game {
     }
 
     sendJoin(): void {
+        for (const entity of this.entityPool) {
+            entity.destroy();
+        }
+
+        this.camera.clear();
+        this.entityPool.clear();
+        this.activePlayerID = -1;
+        this.playerData.clear();
+
         const joinPacket = new JoinPacket();
         const name = this.ui.nameInput.val();
         joinPacket.name = name ? name : GameConstants.player.defaultName;
@@ -375,8 +376,6 @@ export class Game {
     }
 
     sendInput() {
-        console.log("Sending input...");
-
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0");
         inputPacket.isDefending = this.input.isInputDown("Mouse2");

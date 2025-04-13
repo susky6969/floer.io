@@ -232,6 +232,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     sendPackets() {
+        if (!this.joined) return;
+
         // calculate visible, deleted, and dirty entities
         // and send them to the client
         const updatePacket = new UpdatePacket();
@@ -449,7 +451,5 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.dirty.exp = true;
 
         this.game.activePlayers.delete(this);
-
-        this.joined = false;
     }
 }
