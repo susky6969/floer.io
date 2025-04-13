@@ -183,7 +183,7 @@ export const Zones:
         borderColor: "#b6ab44",
         density: 1,
         levelAtLowest: 60,
-        levelAtHighest: 65,
+        levelAtHighest: 70,
         spawning: {
             "hornet": 100,
             "mega_hornet": 10,
@@ -204,7 +204,7 @@ export const Zones:
         backgroundColor: "#3da84d",
         borderColor: "#2f823b",
         density: 1,
-        levelAtLowest: 60,
+        levelAtLowest: 70,
         levelAtHighest: 100,
         spawning: {
             "hornet": 3,
