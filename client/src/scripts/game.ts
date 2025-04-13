@@ -386,8 +386,10 @@ export class Game {
 
     sendInput() {
         const inputPacket = new InputPacket();
-        inputPacket.isAttacking = this.input.isInputDown("Mouse0");
-        inputPacket.isDefending = this.input.isInputDown("Mouse2");
+        inputPacket.isAttacking = this.input.isInputDown("Mouse0")
+            || this.input.isInputDown("Key ");
+        inputPacket.isDefending = this.input.isInputDown("Mouse2")
+            || this.input.isInputDown("KeyShift");
         inputPacket.direction = this.input.mouseDirection;
         inputPacket.mouseDistance = this.input.mouseDistance;
 

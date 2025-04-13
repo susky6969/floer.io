@@ -483,7 +483,7 @@ export class Inventory{
         this.moveSelectSlot(0);
     }
 
-    deletePetal() {
+    deleteSelectSlot() {
         if (!this.keyboardSelectingPetal) return;
         this.deletedPetalIndex = this.inventory.indexOf(this.keyboardSelectingPetal);
         this.moveSelectSlot(1);

@@ -5,7 +5,7 @@ import {
 } from "./entities/serverEntity";
 import { Grid } from "./grid";
 import { EntityPool } from "../../common/src/utils/entityPool";
-import { GameConstants, Zones } from "../../common/src/constants";
+import { EntityType, GameConstants, Zones } from "../../common/src/constants";
 import NanoTimer from "nanotimer";
 import { type ServerConfig } from "./config";
 import { IDAllocator } from "./idAllocator";
@@ -14,7 +14,7 @@ import { ServerMob } from "./entities/serverMob";
 import { Mobs } from "../../common/src/definitions/mob";
 import { CollisionResponse } from "../../common/src/utils/collision";
 import { Random } from "../../common/src/utils/random";
-import { type Hitbox, RectHitbox } from "../../common/src/utils/hitbox";
+import { CircleHitbox, type Hitbox, RectHitbox } from "../../common/src/utils/hitbox";
 import { isCollideableEntity, isDamageableEntity } from "./typings";
 import { PacketStream } from "../../common/src/net";
 import { JoinPacket } from "../../common/src/packets/joinPacket";
@@ -206,18 +206,37 @@ export class Game {
 
         for (const zonesKey in Zones) {
             const data = Zones[zonesKey];
-            const position = Random.vector(data.x, data.x + data.width, 0, this.height);
+
             const definitionIdString = Random.weightedRandom(
                 Object.keys(data.spawning),
                 Object.values(data.spawning)
             )
 
+            const definition = Mobs.fromString(definitionIdString);
+
+            let collidedNumber = 0;
+            let position = Random.vector(data.x, data.x + data.width, 0, this.height);
+            do {
+                collidedNumber = 0;
+                const hitbox = new CircleHitbox(definition.hitboxRadius, position);
+                const collided =
+                    this.grid.intersectsHitbox(hitbox);
+                for (const collidedElement of collided) {
+                    if (collidedElement.hitbox.collidesWith(hitbox)) collidedNumber++;
+                }
+                position = Random.vector(data.x, data.x + data.width, 0, this.height);
+            } while (collidedNumber != 0);
+
+
+
             const mobCount = this.grid.intersectsHitbox(new RectHitbox(
                 Vec2.new(data.x, 0), Vec2.new(data.x + data.width, this.height)
             )).size;
 
-            if (mobCount < data.density / 15 * data.width * this.height / 20){
-                new ServerMob(this, position, Mobs.fromString(definitionIdString));
+            const maxMobCount = data.density / 15 * data.width * this.height / 20;
+
+            if (mobCount < maxMobCount){
+                new ServerMob(this, position, definition);
             }
         }
     }
@@ -238,11 +257,17 @@ export class Game {
         return Object.values(Zones)[0];
     }
 
-    hasPlayerHas(petal: PetalDefinition): boolean {
+    gameHas(petal: PetalDefinition): boolean {
         for (const activePlayer of this.activePlayers) {
             if (activePlayer.inventory.inventory.includes(petal))
                 return true;
         }
+        for (const byCategoryElementElement of this.grid.byCategory[EntityType.Loot]) {
+            if (byCategoryElementElement.definition === petal){
+                return true;
+            }
+        }
+
         return false
     }
 }

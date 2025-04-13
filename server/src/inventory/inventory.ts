@@ -11,6 +11,7 @@ import { Vector } from "../../../common/src/utils/vector";
 import { GameConstants } from "../../../common/src/constants";
 import { AttributeEventManager } from "../utils/eventManager";
 import { Rarity } from "../../../common/src/definitions/rarity";
+import { Random } from "../../../common/src/utils/random";
 
 export class Inventory {
     position: Vector;
@@ -33,25 +34,46 @@ export class Inventory {
 
     eventManager = new AttributeEventManager();
 
+    absorbedBefore = new Set<{
+        definition: PetalDefinition,
+        time: number
+    }>();
+
     constructor(player: ServerPlayer) {
         this.game = player.game;
         this.player = player;
         this.position = player.position;
     }
 
-    loadConfig(config: SavedPetalDefinitionData[]): void{
+    loadConfigByData(data: SavedPetalDefinitionData[]): void{
         this.equipped_petals = []
         this.petalBunches = []
         this.inventory = []
 
         for (let i = 0; i < this.slot; i++) {
-            this.equipped_petals.push(config[i]);
-            this.petalBunches.push(new PetalBunch(this, config[i]));
-            this.inventory.push(config[i]);
+            this.equipped_petals.push(data[i]);
+            this.petalBunches.push(new PetalBunch(this, data[i]));
+            this.inventory.push(data[i]);
         }
 
         for (let i = 0; i < this.prepareSlot; i++) {
-            this.inventory.push(config[i + this.slot]);
+            this.inventory.push(data[i + this.slot]);
+        }
+    }
+
+    loadConfigByString(equipped: string[], preparation: string[]): void{
+        this.equipped_petals = []
+        this.petalBunches = []
+        this.inventory = []
+
+        for (let i = 0; i < this.slot; i++) {
+            this.equipped_petals.push(Petals.fromStringData(equipped[i]));
+            this.petalBunches.push(new PetalBunch(this, Petals.fromStringData(equipped[i])));
+            this.inventory.push(Petals.fromStringData(equipped[i]));
+        }
+
+        for (let i = 0; i < this.prepareSlot; i++) {
+            this.inventory.push(Petals.fromStringData(preparation[i]));
         }
     }
 
@@ -60,21 +82,10 @@ export class Inventory {
         this.petalBunches = []
         this.inventory = []
 
-        for (let i = 0; i < this.slot; i++) {
-            this.equipped_petals.push(
-                Petals.fromStringData(GameConstants.player.defaultEquippedPetals[i])
-            );
-            this.petalBunches.push(new PetalBunch(this, this.equipped_petals[i]));
-            this.inventory.push(
-                Petals.fromStringData(GameConstants.player.defaultEquippedPetals[i])
-            );
-        }
-
-        for (let i = 0; i < this.prepareSlot; i++) {
-            this.inventory.push(
-                Petals.fromStringData(GameConstants.player.defaultPreparationPetals[i])
-            );
-        }
+        this.loadConfigByString(
+            GameConstants.player.defaultEquippedPetals,
+            GameConstants.player.defaultPreparationPetals
+        )
     }
 
     changeSlotAmountTo(slot: number): void {
@@ -121,6 +132,12 @@ export class Inventory {
             this.player.addExp(Rarity.fromString(definition.rarity).expWhenAbsorb)
         }
         this.updateInventory(petalIndex, null);
+        if (definition) {
+            this.absorbedBefore.add({
+                definition: definition,
+                time: Date.now()
+            })
+        }
     }
 
     updateInventory(index: number, petal: SavedPetalDefinitionData){
@@ -158,17 +175,63 @@ export class Inventory {
     }
 
     drop(amount: number): PetalDefinition[] {
-        const droppable =
-            this.inventory.filter(e => e && !e.undroppable) as PetalDefinition[];
-        const dropped = droppable.sort((a, b) => {
-            return Rarity.fromString(b.rarity).level - Rarity.fromString(a.rarity).level
-        }).splice(0, amount);
+        let droppableFromInventory =
+            this.inventory.filter(
+                e => e && !e.undroppable
+            ) as PetalDefinition[];
 
-        dropped.forEach(e => {
-            this.inventory[this.inventory.indexOf(e)] = null;
+        let droppable: { fromInventory: boolean, item: PetalDefinition }[] = [];
+
+        droppableFromInventory.forEach((petal) => {
+            droppable.push({ fromInventory: true, item: petal });
         })
 
-        return dropped;
+        this.absorbedBefore.forEach(e => {
+            if ((Date.now() - e.time) / 1000 < 30) {
+                droppable.push({ fromInventory: false, item: e.definition});
+            }
+        })
+
+        let byRarity = new Map<number,
+            typeof droppable[number][]>();
+
+        droppable.forEach(e => {
+            const level = Rarity.fromString(e.item.rarity).level;
+            if (!byRarity.has(level)){
+                byRarity.set(level, []);
+            }
+            byRarity.get(level)?.push(e);
+        });
+
+        let highest =
+            byRarity.get(Array.from(byRarity.keys()).sort((a, b) => b - a)[0]);
+
+        let dropped: typeof droppable[number][] = [];
+
+        if (highest) {
+            if (highest.length > 3) {
+                amount = 0;
+                for (let i = 0; i <= amount; i++) {
+                    dropped.push(highest[Random.int(0, highest.length - 1)]);
+                }
+            } else {
+                amount -= highest.length;
+                for (let i = 0; i < highest.length; i++) {
+                    dropped.push(highest[i]);
+                    droppable.splice(droppable.indexOf(highest[i]), 1);
+                }
+            }
+        }
+
+        dropped = dropped.concat(droppable.sort((a, b) => {
+            return Rarity.fromString(b.item.rarity).level - Rarity.fromString(a.item.rarity).level
+        }).splice(0, amount));
+
+        dropped.forEach(e => {
+            if (e.fromInventory) this.inventory[this.inventory.indexOf(e.item)] = null;
+        })
+
+        return dropped.map(e => e.item as PetalDefinition);
     }
 
     tick(): void {

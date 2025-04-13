@@ -360,8 +360,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.game.activePlayers.add(this);
         this.game.grid.addEntity(this);
 
-        console.log(this.inventory.inventory);
-
         this.petalEntities.map(e => e.join());
 
         console.log(`"${this.name}" joined the game`);
@@ -377,7 +375,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.joined = true;
 
         if (this.inventory.inventory.length) {
-            this.inventory.loadConfig(this.inventory.inventory);
+            this.inventory.loadConfigByData(this.inventory.inventory);
         } else {
             this.inventory.loadDefaultConfig();
         }

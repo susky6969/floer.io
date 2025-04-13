@@ -41,6 +41,9 @@ export class Input {
             this.handleMouseEvent.bind(this, false)
         );
         window.addEventListener("keydown",
+            this.handleKeyboardEvent.bind(this, true));
+
+        window.addEventListener("keyup",
             this.handleKeyboardEvent.bind(this, false))
 
         window.addEventListener("mousemove", e => {
@@ -75,24 +78,27 @@ export class Input {
         if (!this.game.running) return;
         const key = this.getKeyFromInputEvent(event);
 
-        if(["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(event.key)){
-            this.game.inventory.switchSlot(+event.key);
-        }
+        if (down) {
 
-        if(event.key === "q") {
-            this.game.inventory.moveSelectSlot(-1);
-        }
+            if (["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(event.key)) {
+                this.game.inventory.switchSlot(+event.key);
+            }
 
-        if(event.key === "e") {
-            this.game.inventory.moveSelectSlot(1);
-        }
+            if (event.key === "q") {
+                this.game.inventory.moveSelectSlot(-1);
+            }
 
-        if(event.key === "t") {
-            this.game.inventory.deletePetal();
-        }
+            if (event.key === "e") {
+                this.game.inventory.moveSelectSlot(1);
+            }
 
-        if(event.key === "x") {
-            this.game.inventory.transformSlot();
+            if (event.key === "t") {
+                this.game.inventory.deleteSelectSlot();
+            }
+
+            if (event.key === "x") {
+                this.game.inventory.transformSlot();
+            }
         }
 
         this._inputsDown[key] = down;
@@ -103,6 +109,7 @@ export class Input {
         if (event instanceof MouseEvent) {
             key = `Mouse${event.button}`;
         }
+
         if (event instanceof KeyboardEvent) {
             key = `Key${event.key}`;
         }
