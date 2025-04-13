@@ -19,6 +19,7 @@ import { isCollideableEntity, isDamageableEntity } from "./typings";
 import { PacketStream } from "../../common/src/net";
 import { JoinPacket } from "../../common/src/packets/joinPacket";
 import { InputPacket } from "../../common/src/packets/inputPacket";
+import { PetalDefinition } from "../../common/src/definitions/petal";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -235,6 +236,14 @@ export class Game {
         }
 
         return Object.values(Zones)[0];
+    }
+
+    hasPlayerHas(petal: PetalDefinition): boolean {
+        for (const activePlayer of this.activePlayers) {
+            if (activePlayer.inventory.inventory.includes(petal))
+                return true;
+        }
+        return false
     }
 }
 

@@ -16,7 +16,7 @@ const defaultRadius = 6;
 const defaultBoxSize = 50;
 
 function drawPetalPiece(
-    xOffset: number, yOffset: number, displaySize: number, petal: PetalDefinition
+    xOffset: number, yOffset: number, displaySize: number, petal: PetalDefinition, degree?: number
 ) {
     const size = GameSprite.getScaleByUnitRadius(displaySize / defaultBoxSize / 2);
     const center = Vec2.sub(defaultCenter, size);
@@ -26,7 +26,7 @@ function drawPetalPiece(
     piece.scale = size;
     const { x, y } = center;
     piece.position.set(x + xOffset, y + yOffset);
-    piece.setRotation(petal.images?.slotRotation)
+    piece.setRotation((petal.images?.slotRotation ?? 0) + (degree ?? 0))
 
     return piece;
 }
@@ -39,15 +39,17 @@ function drawPetal(petal_box: Container, petal: PetalDefinition) {
     if (petal.isDuplicate) {
         let radiansNow = 0;
         const count = petal.pieceAmount;
+        let degree = 0;
 
         for (let i = 0; i < count; i++) {
             const { x, y } =
                 MathGraphics.getPositionOnCircle(radiansNow, defaultRadius)
             petal_box.addChild(
-                drawPetalPiece(x + offsetX, y + offsetY,displaySize, petal)
+                drawPetalPiece(x + offsetX, y + offsetY,displaySize, petal, degree)
             );
 
             radiansNow += P2 / count;
+            degree += MathGraphics.radiansToDegrees(petal.images?.slotRevolution ?? 0)
         }
     } else {
         petal_box.addChild(

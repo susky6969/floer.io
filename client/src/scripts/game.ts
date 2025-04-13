@@ -24,6 +24,7 @@ import { ExpUI } from "@/scripts/render/expUI.ts";
 import { Leaderboard } from "@/scripts/render/leaderboard.ts";
 import { Config } from "@/config.ts";
 import { LoggedInPacket } from "@common/packets/loggedInPacket.ts";
+import { ParticleManager } from "@/scripts/render/particle.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -64,6 +65,7 @@ export class Game {
     readonly miniMap = new Minimap(this);
     readonly exp = new ExpUI(this);
     readonly leaderboard = new Leaderboard(this);
+    readonly particleManager = new ParticleManager(this);
 
     constructor(app: ClientApplication) {
         this.app = app;
@@ -353,8 +355,12 @@ export class Game {
         this.sendPacket(joinPacket);
     }
 
+    dt = Date.now();
+
     render() {
         if (!this.running) return;
+        const dt = (Date.now() - this.dt) / 1000;
+        this.dt = Date.now()
 
         for (const entity of this.entityPool) {
             entity.render();
@@ -371,6 +377,7 @@ export class Game {
         this.exp.render();
 
         this.leaderboard.render();
+        this.particleManager.render(dt);
 
         this.sendInput();
     }

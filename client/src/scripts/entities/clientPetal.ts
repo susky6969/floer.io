@@ -8,6 +8,9 @@ import { Vec2 } from "@common/utils/vector.ts";
 import { Tween } from '@tweenjs/tween.js';
 import { PetalDefinition } from "@common/definitions/petal.ts";
 import { EasingFunctions, MathGraphics } from "@common/utils/math.ts";
+import { Rarity } from "@common/definitions/rarity.ts";
+import { Color } from "pixi.js";
+import { Random } from "@common/utils/random.ts";
 
 export class ClientPetal extends ClientEntity {
     type = EntityType.Petal;
@@ -60,6 +63,19 @@ export class ClientPetal extends ClientEntity {
             } else if (this.definition.images?.selfGameRotation) {
                 this.angle += this.definition.images.selfGameRotation;
                 this.images.body.setAngle(this.angle);
+            }
+
+            if (Rarity.fromString(this.definition.rarity).showParticle && this.visible) {
+                this.game.particleManager.spawnParticle({
+                    position: this.container.position,
+                    sprite: getGameAssetsPath("petal", "light"),
+                    speed: { min: 0, max: 150 },
+                    direction: { min: -6.28, max: 6.28 },
+                    alpha: { min: 0, max: 0.5 },
+                    lifeTime: { min: 0, max: 0.25 },
+                    scale: { min: 0.01, max: 0.04 },
+                    rotation: { value: 0 }
+                })
             }
         }
     }

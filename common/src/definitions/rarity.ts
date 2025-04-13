@@ -6,6 +6,7 @@ export enum RarityName {
     rare = "rare",
     epic = "epic",
     legendary = "legendary",
+    mythic = "mythic",
     super = "super"
 }
 
@@ -16,6 +17,8 @@ type RarityDefinition = ObjectDefinition & {
     border: string;
     expWhenAbsorb: number;
     level: number;
+    showParticle?: boolean;
+    isUnique?: boolean;
 };
 
 export const Rarity = new Definitions<RarityDefinition>([
@@ -60,11 +63,21 @@ export const Rarity = new Definitions<RarityDefinition>([
         level: 5
     },
     {
+        idString: RarityName.mythic,
+        displayName: "Mythic",
+        color: "#1fdbde",
+        border: "#19b1b4",
+        expWhenAbsorb: 5000,
+        level: 6,
+        showParticle: true,
+        isUnique: true
+    },
+    {
         idString: RarityName.super,
         displayName: "Super",
         color: "#2bffa3",
         border: "#23cf84",
         expWhenAbsorb: 10000,
-        level: 6
+        level: 7
     }
 ] as RarityDefinition[]);

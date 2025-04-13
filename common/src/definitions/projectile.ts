@@ -16,6 +16,12 @@ export const Projectile = new Definitions<ProjectileDefinition>([
         idString: "web",
         displayName: "Web",
         onGround: true
+    },{
+        idString: "peas",
+        displayName: "Peas",
+    },{
+        idString: "poison_peas",
+        displayName: "Peas",
     },
 ] as ProjectileDefinition[]);
 

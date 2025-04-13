@@ -66,6 +66,7 @@ export type AttributeParameters = {
     }
     damage_reflection?: number
     shoot?: ProjectileParameters
+    peas_shoot?: ProjectileParameters
 })
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
@@ -106,6 +107,22 @@ export const Petals = new Definitions<PetalDefinition>([
         usingAssets: "light"
     },
     {
+        idString: "penta",
+        displayName: "Penta",
+        description: "FIVE.",
+        damage: 11,
+        health: 5,
+        extendable: true,
+        reloadTime: 0.5,
+        usable: false,
+        hitboxRadius: 0.3,
+        isDuplicate: true,
+        pieceAmount: 5,
+        isShowedInOne: false,
+        rarity: RarityName.mythic,
+        usingAssets: "light"
+    },
+    {
         idString: "wing",
         displayName: "Wing",
         description: "It comes and goes.",
@@ -128,7 +145,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "tri_wing",
         displayName: "Wing",
         description: "They come and go.",
-        damage: 10,
+        damage: 15,
         health: 15,
         moreExtendDistance: 2,
         images:{
@@ -140,8 +157,8 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: false,
         hitboxRadius: 0.5,
         isDuplicate: true,
-        pieceAmount: 3,
-        isShowedInOne: true,
+        pieceAmount: 2,
+        isShowedInOne: false,
         rarity: RarityName.legendary,
         usingAssets: "wing"
     },
@@ -175,8 +192,7 @@ export const Petals = new Definitions<PetalDefinition>([
         hitboxRadius: 0.3,
         isDuplicate: false,
         pieceAmount: 1,
-        rarity: RarityName.rare,
-        usingAssets: "light"
+        rarity: RarityName.rare
     },{
         idString: "dual_faster",
         displayName: "Faster",
@@ -194,7 +210,25 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 2,
         isShowedInOne: false,
         rarity: RarityName.legendary,
-        usingAssets: "light"
+        usingAssets: "faster"
+    },{
+        idString: "tri_faster",
+        displayName: "Faster",
+        description: "Quickly.",
+        damage: 8,
+        health: 5,
+        extendable: true,
+        reloadTime: 0.5,
+        modifiers: {
+            revolutionSpeed: 0.8
+        },
+        usable: false,
+        hitboxRadius: 0.3,
+        isDuplicate: true,
+        pieceAmount: 3,
+        isShowedInOne: true,
+        rarity: RarityName.mythic,
+        usingAssets: "faster"
     },
     {
         idString: "leaf",
@@ -332,6 +366,28 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 1,
         rarity: RarityName.epic
     },{
+        idString: "myt_tri_rose",
+        displayName: "Rose",
+        description: "Its healing properties are amazing. Not so good at combat though",
+        damage: 5,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.2,
+        images: {
+            slotDisplaySize: 35
+        },
+        attributes: {
+            absorbing_heal: 4
+        },
+        reloadTime: 0.4,
+        hitboxRadius: 0.5,
+        isDuplicate: true,
+        isShowedInOne: true,
+        pieceAmount: 3,
+        rarity: RarityName.mythic,
+        usingAssets: "epic_rose"
+    },{
         idString: "dual_stinger",
         displayName: "Stinger",
         description: "It really hurts, but it's very fragile",
@@ -342,7 +398,7 @@ export const Petals = new Definitions<PetalDefinition>([
         reloadTime: 6,
         hitboxRadius: 0.3,
         isDuplicate: true,
-        isShowedInOne: false,
+        isShowedInOne: true,
         pieceAmount: 2,
         rarity: RarityName.rare,
         usingAssets: "stinger"
@@ -513,6 +569,40 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 1,
         rarity: RarityName.epic,
         usingAssets: "missile"
+    },
+    {
+        idString: "myt_big_missile",
+        displayName: "Missile",
+        description: "You can actually shoot this quickly bigger one",
+        damage: 20,
+        health: 20,
+        extendable: true,
+        images: {
+            selfGameRotation: 0.02,
+            slotDisplaySize: 45,
+            slotRotation: 0.8,
+            centerXOffset: -1,
+            centerYOffset: -1,
+            facingOut: true
+        },
+        usable: true,
+        attributes: {
+            shoot: {
+                hitboxRadius: 1,
+                damage: 20,
+                health: 20,
+                despawnTime: 3,
+                speed: 5,
+                definition: Projectile.fromString("missile")
+            }
+        },
+        useTime: 0.1,
+        reloadTime: 0.5,
+        hitboxRadius: 1,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.mythic,
+        usingAssets: "missile"
     }, {
         idString: "iris",
         displayName: "Iris",
@@ -638,6 +728,26 @@ export const Petals = new Definitions<PetalDefinition>([
         usingAssets: "stinger"
     },
     {
+        idString: "pinger",
+        displayName: "Stinger",
+        description: "It really hurts, but it's very fragile",
+        damage: 35,
+        health: 8,
+        extendable: true,
+        images: {
+            slotRotation: 3.14,
+            slotRevolution: 6.28 / 5
+        },
+        reloadTime: 4,
+        usable: false,
+        hitboxRadius: 0.3,
+        isDuplicate: true,
+        isShowedInOne: true,
+        pieceAmount: 5,
+        rarity: RarityName.mythic,
+        usingAssets: "stinger"
+    },
+    {
         idString: "rice",
         displayName: "Rice",
         description: "Spawns instantly, but not very strong",
@@ -760,5 +870,168 @@ export const Petals = new Definitions<PetalDefinition>([
         isShowedInOne: true,
         rarity: RarityName.legendary,
         usingAssets: "web",
+    },
+    {
+        idString: "myt_tri_web",
+        displayName: "Web",
+        description: "It's so fucking sticky.",
+        damage: 8,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.2,
+        images: {
+            slotDisplaySize: 45,
+        },
+        attributes: {
+            shoot: {
+                definition: Projectile.fromString("web"),
+                speed: 0,
+                damage: 0,
+                health: 10,
+                hitboxRadius: 10,
+                despawnTime: 5,
+                modifiers: {
+                    speed: 0.5
+                }
+            }
+        },
+        reloadTime: 2,
+        hitboxRadius: 0.5,
+        isDuplicate: true,
+        pieceAmount: 3,
+        isShowedInOne: true,
+        rarity: RarityName.mythic,
+        usingAssets: "web",
+    },
+    {
+        idString: "peas",
+        displayName: "Peas",
+        description: "Prooooof.",
+        damage: 8,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.2,
+        images: {
+            slotDisplaySize: 30,
+        },
+        attributes: {
+            peas_shoot: {
+                definition: Projectile.fromString("peas"),
+                speed: 5,
+                damage: 0,
+                health: 10,
+                hitboxRadius: 0.4,
+                despawnTime: 5
+            }
+        },
+        reloadTime: 1.2,
+        hitboxRadius: 0.4,
+        isDuplicate: true,
+        pieceAmount: 4,
+        isShowedInOne: true,
+        rarity: RarityName.rare
+    },
+    {
+        idString: "poison_peas",
+        displayName: "Peas",
+        description: "Prooooof. With Poison.",
+        damage: 8,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.2,
+        images: {
+            slotDisplaySize: 30,
+        },
+        attributes: {
+            peas_shoot: {
+                definition: Projectile.fromString("poison_peas"),
+                speed: 5,
+                damage: 8,
+                health: 5,
+                hitboxRadius: 0.4,
+                despawnTime: 5
+            },
+            poison: {
+                damagePerSecond: 10,
+                duration: 1
+            }
+        },
+        reloadTime: 1.2,
+        hitboxRadius: 0.4,
+        isDuplicate: true,
+        pieceAmount: 4,
+        isShowedInOne: true,
+        rarity: RarityName.epic,
+    },
+    {
+        idString: "leg_poison_peas",
+        displayName: "Peas",
+        description: "Bigger prooooof. With Poison.",
+        damage: 10,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.2,
+        images: {
+            slotDisplaySize: 45,
+        },
+        attributes: {
+            peas_shoot: {
+                definition: Projectile.fromString("poison_peas"),
+                speed: 5,
+                damage: 10,
+                health: 5,
+                hitboxRadius: 0.5,
+                despawnTime: 5
+            },
+            poison: {
+                damagePerSecond: 10,
+                duration: 2
+            }
+        },
+        reloadTime: 1.2,
+        hitboxRadius: 0.5,
+        isDuplicate: true,
+        pieceAmount: 4,
+        isShowedInOne: true,
+        rarity: RarityName.legendary,
+        usingAssets: "poison_peas",
+    },
+    {
+        idString: "myt_poison_peas",
+        displayName: "Peas",
+        description: "Quickly bigger prooooof. With Poison.",
+        damage: 10,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.1,
+        images: {
+            slotDisplaySize: 45,
+        },
+        attributes: {
+            peas_shoot: {
+                definition: Projectile.fromString("poison_peas"),
+                speed: 5,
+                damage: 10,
+                health: 5,
+                hitboxRadius: 0.5,
+                despawnTime: 5
+            },
+            poison: {
+                damagePerSecond: 10,
+                duration: 2
+            }
+        },
+        reloadTime: 0.3,
+        hitboxRadius: 0.5,
+        isDuplicate: true,
+        pieceAmount: 4,
+        isShowedInOne: true,
+        rarity: RarityName.mythic,
+        usingAssets: "poison_peas",
     }
 ] satisfies PetalDefinition[]);

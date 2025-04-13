@@ -8,6 +8,8 @@ import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { AttributeEvents, PetalUsingAnimations, } from "../utils/attribute";
 import { damageableEntity, damageSource } from "../typings";
+import { Vector } from "../../../common/src/utils/vector";
+import { PetalBunch } from "../inventory/petalBunch";
 
 export class ServerPetal extends ServerEntity<EntityType.Petal> {
     type: EntityType.Petal = EntityType.Petal;
@@ -39,6 +41,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     isUsing?: PetalUsingAnimations;
     reloadTime: number = 0;
     useReload: number = 0;
+    petalBunch: PetalBunch;
 
     isLoadingFirstTime: boolean = true;
 
@@ -73,8 +76,10 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         return !this.isReloading && !this.isUsing && !this.destroyed;
     }
 
-    constructor(player: ServerPlayer, definition: PetalDefinition) {
+    constructor(petalBunch: PetalBunch, definition: PetalDefinition) {
+        const player = petalBunch.player;
         super(player.game, player.position);
+        this.petalBunch = petalBunch;
         this.hitbox = new CircleHitbox(definition.hitboxRadius);
 
         this.position = player.position;

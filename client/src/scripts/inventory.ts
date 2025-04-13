@@ -135,17 +135,18 @@ const attributesShowingConfig: { [K in AttributeName] : AttributeShowingFunction
                 color: "#ce76db"
             }]
         },
-        shoot: () => []
+        shoot: () => [],
+        peas_shoot: () => []
     }
 
 export function renderPetalPiece(
-    xOffset: number, yOffset: number, displaySize: number, petal: PetalDefinition
+    xOffset: number, yOffset: number, displaySize: number, petal: PetalDefinition, rotated?: number
 ) {
     const sizePercent = displaySize;
     const size = sizePercent / 100 * defaultBoxSize / 2;
     const center = Vec2.sub(defaultCenter, Vec2.new(size, size));
     const rotatedDegree =
-        MathGraphics.radiansToDegrees(petal.images?.slotRotation ?? 0);
+        MathGraphics.radiansToDegrees(petal.images?.slotRotation ?? 0) + (rotated ?? 0);
 
     const piece = $(`<img alt='' class='piece-petal' src=
         '/img/game/petal/${getGameAssetsFile(petal)}'>`
@@ -177,14 +178,16 @@ export function renderPetal(petal: PetalDefinition) {
     if (petal.isDuplicate) {
         let radiansNow = 0;
         const count = petal.pieceAmount;
+        let degree = 0;
 
         for (let i = 0; i < count; i++) {
             const { x, y } = MathGraphics.getPositionOnCircle(radiansNow, defaultRadius)
             petal_box.append(
-                renderPetalPiece(x + offsetX, y + offsetY, displaySize, petal)
+                renderPetalPiece(x + offsetX, y + offsetY, displaySize, petal, degree)
             );
 
             radiansNow += P2 / count;
+            degree += MathGraphics.radiansToDegrees(petal.images?.slotRevolution ?? 0);
         }
     } else {
         petal_box.append(

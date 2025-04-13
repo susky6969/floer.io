@@ -76,6 +76,16 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                     }
                 }
             )
+            on<AttributeEvents.PROJECTILE_DEAL_DAMAGE>(
+                AttributeEvents.PROJECTILE_DEAL_DAMAGE,
+                (entity) => {
+                    if (entity && data) {
+                        entity.receivePoison(
+                            petal.owner, data.damagePerSecond, data.duration
+                        );
+                    }
+                }
+            )
         }
     },
 
@@ -156,10 +166,26 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 if (!data) return;
                 const direction =
                     MathGraphics.directionBetweenPoints(petal.position, petal.owner.position);
-                const position = data.definition.onGround ? petal.position : petal.owner.position;
+                const position = petal.position;
                 const projectile = new ServerProjectile(
                     petal.owner, position, direction, data, petal);
-                projectile.addVelocity(Vec2.mul(direction, 12 * data.speed))
+                projectile.addVelocity(Vec2.mul(direction, 6 * data.speed));
+                if (data.definition.onGround)
+                    projectile.addVelocity(Vec2.mul(direction, 80 * data.hitboxRadius / 5));
+            }, PetalUsingAnimations.NORMAL)
+        }
+    },
+
+    peas_shoot: {
+        callback: (on, petal, data) => {
+            on(AttributeEvents.ATTACK,() => {
+                if (!data) return;
+                const direction =
+                    MathGraphics.directionBetweenPoints(petal.position, petal.petalBunch.centerPosition);
+                const position = petal.position;
+                const projectile = new ServerProjectile(
+                    petal.owner, position, direction, data, petal);
+                projectile.addVelocity(Vec2.mul(direction, 6 * data.speed))
             }, PetalUsingAnimations.NORMAL)
         }
     },

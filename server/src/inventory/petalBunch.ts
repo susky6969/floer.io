@@ -8,6 +8,9 @@ import { ServerPlayer } from "../entities/serverPlayer";
 
 export class PetalBunch {
     position: Vector;
+
+    centerPosition: Vector;
+
     player: ServerPlayer;
 
     inventory: Inventory;
@@ -27,13 +30,14 @@ export class PetalBunch {
 
         this.definition = definition;
         this.position = player.position;
+        this.centerPosition = player.position;
 
         if (definition) {
             this.totalPieces = definition.pieceAmount;
             this.totalDisplayedPieces = getDisplayedPieces(definition);
 
             for (let i = 0; i < this.totalPieces; i++) {
-                const petal = new ServerPetal(player, definition);
+                const petal = new ServerPetal(this, definition);
                 this.petals.push(petal);
                 if (player.joined && player.isActive()) petal.join()
 
@@ -58,6 +62,8 @@ export class PetalBunch {
             this.position,
             MathGraphics.getPositionOnCircle(revolutionRadians, radius)
         );
+
+        this.centerPosition = firstPetalCenter;
 
         if (this.definition.isDuplicate) {
             const totalPieces = this.totalPieces;

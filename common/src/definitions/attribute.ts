@@ -30,6 +30,10 @@ const AttributeDefinitions = [
     {
         idString: "shoot",
         displayName: "Shoot"
+    },
+    {
+        idString: "peas_shoot",
+        displayName: "Shoot"
     }
 ] as const;
 

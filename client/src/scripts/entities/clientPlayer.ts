@@ -63,12 +63,12 @@ export class ClientPlayer extends ClientEntity {
 
         this.healthBar.visible = this.healthPercent < 1.0;
         this.healthBar.clear()
-            .roundRect(-healthbarWidth / 2, 0, healthbarWidth, 10)
+            .roundRect((-healthbarWidth - 5) / 2, 0, healthbarWidth + 5, 10)
             .fill({
                 color: 0x000000,
                 alpha: 0.3
             })
-            .roundRect((-healthbarWidth + 5) / 2, 3 / 2, fillWidth - 5, 7)
+            .roundRect(-healthbarWidth / 2, 3 / 2, fillWidth, 7)
             .fill({
                 color: 0x87e63e
             });

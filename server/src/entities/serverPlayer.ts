@@ -179,6 +179,9 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             this.overleveled = this.overleveledTimeRemains <= 0;
         } else {
             this.overleveled = false;
+            if (this.overleveledTimeRemains <= GameConstants.player.overleveledTime) {
+                this.overleveledTimeRemains += this.game.dt / 10;
+            }
         }
     }
 
