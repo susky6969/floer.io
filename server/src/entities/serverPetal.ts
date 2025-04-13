@@ -91,6 +91,12 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     }
 
     tick(): void{
+        if (this.owner.overleveled) {
+            this.isReloading = true;
+            this.isLoadingFirstTime = true;
+            return;
+        }
+
         if (this.isReloading) {
             if (
                 !this.definition.reloadTime

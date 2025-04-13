@@ -19,7 +19,8 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
     hitbox: CircleHitbox;
     definition: MobDefinition;
-    private modifiers: Modifiers = GameConstants.mob.defaultModifiers();
+    modifiers: Modifiers = GameConstants.mob.defaultModifiers();
+    otherModifiers: Partial<Modifiers>[] = [];
 
     get name(): string {
         return this.definition.displayName
@@ -191,6 +192,12 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                 modifiersNow = this.calcModifiers(modifiersNow, effect.modifier);
             }
         })
+
+        this.otherModifiers.forEach(effect => {
+            modifiersNow = this.calcModifiers(modifiersNow, effect)
+        })
+
+        this.otherModifiers = [];
 
         this.modifiers = modifiersNow;
     }
