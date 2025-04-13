@@ -18,8 +18,9 @@ import { spawnLoot } from "../utils/loot";
 import { AttributeEvents } from "../utils/attribute";
 import { Modifiers } from "../../../common/src/typings";
 import { EventFunctionArguments } from "../utils/eventManager";
-import { getLevelInformation } from "../../../common/src/utils/levels";
+import { getLevelExpCost, getLevelInformation } from "../../../common/src/utils/levels";
 import { damageableEntity, damageSource } from "../typings";
+import { LoggedInPacket } from "../../../common/src/packets/loggedInPacket";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
@@ -80,7 +81,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         zoom: true,
         inventory: false,
         slot: false,
-        exp: false
+        exp: false,
+        overleveled: false
     };
 
     private _zoom = 45;
@@ -105,9 +107,13 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     modifiers: Modifiers = GameConstants.player.defaultModifiers();
+    otherModifiers: Partial<Modifiers>[] = [];
 
     exp: number = 0;
     level: number = 1;
+
+    overleveled: boolean = false;
+    overleveledTimeRemains: number = GameConstants.player.overleveledTime;
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
         switch (source.type) {
@@ -132,6 +138,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         super(game, position);
         this.position = position;
         this.socket = socket;
+
         this.inventory = new Inventory(this);
 
         this.updateModifiers();
@@ -165,6 +172,14 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.heal(this.modifiers.healPerSecond * this.game.dt);
 
         this.updateModifiers();
+
+        if (this.level >= this.game.inWhichZone(this).levelAtHighest) {
+            this.dirty.overleveled = true;
+            this.overleveledTimeRemains -= this.game.dt;
+            this.overleveled = this.overleveledTimeRemains <= 0;
+        } else {
+            this.overleveled = false;
+        }
     }
 
     addExp(exp: number) {
@@ -260,11 +275,11 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             .concat(this.inventory.inventory);
         updatePacket.playerData.slot = this.inventory.slot;
         updatePacket.playerData.exp = this.exp;
+        updatePacket.playerData.overleveled = this.overleveledTimeRemains;
 
         updatePacket.playerDataDirty = this.dirty;
 
-        updatePacket.newPlayers = [...this.game.activePlayers];
-        updatePacket.deletedPlayers = this.game.deletedPlayers;
+        updatePacket.players = [...this.game.activePlayers];
 
         updatePacket.map.width = this.game.width;
         updatePacket.map.height = this.game.height;
@@ -323,16 +338,28 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.name = packet.name.trim();
         if (!this.name) this.name = GameConstants.player.defaultName;
 
-        this.game.players.add(this);
+        this.game.activePlayers.add(this);
         this.game.grid.addEntity(this);
 
+        console.log(this.inventory.inventory);
+
         this.joined = true;
+
         this.petalEntities.map(e => e.join());
 
         console.log(`"${this.name}" joined the game`);
 
-        this.inventory.defaultConfig();
-        this.updateModifiers()
+        this.updateModifiers();
+
+        const loggedIn = new LoggedInPacket();
+        loggedIn.inventory = this.inventory.inventory;
+        this.sendPacket(loggedIn);
+
+        if (this.inventory.inventory.length) {
+            this.inventory.loadConfig(this.inventory.inventory);
+        } else {
+            this.inventory.loadDefaultConfig();
+        }
     }
 
     processInput(packet: InputPacket): void {
@@ -393,6 +420,12 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             }
         })
 
+        this.otherModifiers.forEach(effect => {
+            modifiersNow = this.calcModifiers(modifiersNow, effect)
+        })
+
+        this.otherModifiers = [];
+
         this.modifiers = modifiersNow;
 
         this.maxHealth = this.modifiers.maxHealth;
@@ -406,11 +439,17 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         }
         spawnLoot(
             this.game,
-            this.inventory.inventory
-                .filter(e => e != null && !e.undroppable) as PetalDefinition[],
+            this.inventory.drop(3),
             this.position
         )
+
+        this.exp = getLevelExpCost(Math.floor(this.level * 0.75) + 1);
+
+        this.dirty.inventory = true;
+        this.dirty.exp = true;
+
         this.game.activePlayers.delete(this);
-        this.game.deletedPlayers.push(this.id);
+
+        this.joined = false;
     }
 }
