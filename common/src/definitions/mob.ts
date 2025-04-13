@@ -197,6 +197,7 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Fixed,
         hitboxRadius: 2,
         lootTable: {
+            "sand": 0.66,
             "dual_stinger": 0.02,
             "missile": 0.12,
             "big_missile": 0.01,
@@ -215,6 +216,7 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Fixed,
         hitboxRadius: 6,
         lootTable: {
+            "sand": 0.66,
             "stinger": 0.5,
             "dual_stinger": 0.1,
             "missile": 0.66,
@@ -502,6 +504,7 @@ export const Mobs = new Definitions<MobDefinition>([
         hitboxRadius: 1.5,
         speed: 3,
         lootTable: {
+            "sand": 0.66,
             "fast": 0.44,
             "iris": 0.12,
             "twin": 0.8,
@@ -524,6 +527,7 @@ export const Mobs = new Definitions<MobDefinition>([
         hitboxRadius: 1.5,
         speed: 3,
         lootTable: {
+            "sand": 0.66,
             "fast": 0.92,
             "leaf": 0.56,
             "twin": 0.24,
@@ -544,6 +548,7 @@ export const Mobs = new Definitions<MobDefinition>([
         hitboxRadius: 1,
         speed: 3,
         lootTable: {
+            "sand": 0.66,
             "fast": 0.88,
             "leaf": 0.52,
             "twin": 0.24,

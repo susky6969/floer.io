@@ -294,17 +294,17 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "sand",
         displayName: "Sand",
-        description: "A bunch of sand particles",
-        damage: 4,
-        health: 5,
-        reloadTime: 1.4,
+        description: "A bunch of sand particles.",
+        damage: 2,
+        health: 2,
+        reloadTime: 2,
         extendable: true,
         usable: false,
-        hitboxRadius: 0.4,
+        hitboxRadius: 0.3,
         isDuplicate: true,
-        pieceAmount: 4,
+        pieceAmount: 6,
         isShowedInOne: true,
-        rarity: RarityName.rare
+        rarity: RarityName.unusual
     },
     {
         idString: "rose",
