@@ -295,9 +295,9 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "sand",
         displayName: "Sand",
         description: "A bunch of sand particles.",
-        damage: 2,
+        damage: 3,
         health: 2,
-        reloadTime: 2,
+        reloadTime: 1.5,
         extendable: true,
         usable: false,
         hitboxRadius: 0.3,
@@ -920,8 +920,8 @@ export const Petals = new Definitions<PetalDefinition>([
             peas_shoot: {
                 definition: Projectile.fromString("peas"),
                 speed: 5,
-                damage: 0,
-                health: 10,
+                damage: 8,
+                health: 5,
                 hitboxRadius: 0.4,
                 despawnTime: 5
             }
