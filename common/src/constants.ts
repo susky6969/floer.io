@@ -26,6 +26,7 @@ export const GameConstants = {
         defaultPetalDistance: 3.8,
         defaultPetalAttackingDistance: 6.5,
         defaultPetalDefendingDistance: 2.5,
+        overleveledTime: 30,
         defaultModifiers: (): Modifiers => ({
             healing: 1,
             maxHealth: 150,
@@ -64,12 +65,14 @@ export const GameConstants = {
 export const Zones:
 {
     [key: string]: {
-        x: number,
-        width: number,
-        displayColor: string,
-        backgroundColor: string,
-        borderColor: string,
-        density: number,
+        x: number
+        width: number
+        displayColor: string
+        backgroundColor: string
+        borderColor: string
+        density: number
+        levelAtLowest: number
+        levelAtHighest: number
         spawning: Record<string, number>
     }
 } = {
@@ -79,6 +82,8 @@ export const Zones:
         displayColor: "#1da25e",
         backgroundColor: "#29ca77",
         borderColor: "#1da25e",
+        levelAtLowest: 0,
+        levelAtHighest: 15,
         density: 0.7,
         spawning: {
             "ladybug": 10,
@@ -98,6 +103,8 @@ export const Zones:
         backgroundColor: "#ecdcb8",
         borderColor: "#bfb295",
         density: 0.7,
+        levelAtLowest: 15,
+        levelAtHighest: 30,
         spawning: {
             "ladybug": 10,
             "shiny_ladybug": 0.1,
@@ -118,6 +125,8 @@ export const Zones:
         backgroundColor: "#9a5951",
         borderColor: "#742d2d",
         density: 0.75,
+        levelAtLowest: 30,
+        levelAtHighest: 45,
         spawning: {
             "ladybug": 10,
             "dark_ladybug": 20,
@@ -142,6 +151,8 @@ export const Zones:
         backgroundColor: "#888484",
         borderColor: "#484646",
         density: 0.8,
+        levelAtLowest: 45,
+        levelAtHighest: 60,
         spawning: {
             "dark_ladybug": 20,
             "massive_dark_ladybug": 5,
@@ -164,6 +175,8 @@ export const Zones:
         backgroundColor: "#ded247",
         borderColor: "#b6ab44",
         density: 0.8,
+        levelAtLowest: 60,
+        levelAtHighest: 999,
         spawning: {
             "hornet": 100,
             "mega_hornet": 15,
