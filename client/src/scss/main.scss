@@ -341,3 +341,26 @@ img {
     flex-direction: column;
     padding: 15px;
 }
+
+#floer-version {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 25px;
+    color: rgba(255, 255, 255, 0.5);
+    -webkit-text-stroke: medium #000000;
+    z-index: 999;
+}
+
+#qq-box {
+    position: absolute;
+    top: 35px;
+    left: 5px;
+    width: 80px;
+    height: 30px;
+    border-radius: 5px;
+    background: rgb(0, 202, 252);
+    border: rgb(0, 164, 204) 5px solid;
+    text-decoration: none;
+    color: white;
+}
