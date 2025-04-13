@@ -355,7 +355,7 @@ export const Petals = new Definitions<PetalDefinition>([
         health: 1,
         extendable: false,
         usable: true,
-        useTime: 0,
+        useTime: 0.2,
         images: {
             slotDisplaySize: 45,
         },
@@ -718,7 +718,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 hitboxRadius: 3,
                 despawnTime: 5,
                 modifiers: {
-                    speed: 0.6
+                    speed: 0.4
                 }
             }
         },
@@ -749,7 +749,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 hitboxRadius: 5,
                 despawnTime: 5,
                 modifiers: {
-                    speed: 0.7
+                    speed: 0.5
                 }
             }
         },

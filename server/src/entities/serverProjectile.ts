@@ -9,6 +9,8 @@ import { ServerPetal } from "./serverPetal";
 import { collideableEntity, damageableEntity, damageSource } from "../typings";
 import { Effect } from "../utils/effects";
 import { ServerMob } from "./serverMob";
+import { Config } from "../config";
+import { ServerPlayer } from "./serverPlayer";
 
 export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
     type: EntityType.Projectile = EntityType.Projectile;
@@ -86,31 +88,27 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
             }
         }
 
+        if (this.parameters.modifiers && this.canEffect(to)) {
+            to.otherModifiers.push(this.parameters.modifiers)
+        }
+    }
+
+    canEffect(to: damageableEntity): to is ServerPlayer | ServerMob {
+        if (!(to instanceof ServerPlayer || to instanceof ServerMob)) return false
+
         if (this.parameters.modifiers) {
             if (this.source.type === EntityType.Player) {
-                if (to instanceof ServerMob
+                return !(to instanceof ServerMob
                     && to.definition.shootable
-                    && to.definition.shoot.definition === this.definition
-                ) return;
-                new Effect({
-                    effectedTarget: to,
-                    source: this.source,
-                    duration: 0.1,
-                    modifier: this.parameters.modifiers
-                }).start();
-
-                return;
+                    && to.definition.shoot.definition === this.definition);
             }
 
             if (this.source.type != to.type) {
-                new Effect({
-                    effectedTarget: to,
-                    source: this.source,
-                    duration: 0.1,
-                    modifier: this.parameters.modifiers
-                }).start();
+                return true;
             }
         }
+
+        return false;
     }
 
     receiveDamage(amount: number, source: damageSource, disableEvent?: boolean) {
