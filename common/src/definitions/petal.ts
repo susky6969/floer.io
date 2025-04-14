@@ -682,7 +682,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 52
         },
         modifiers: {
-            maxHealth: 13.3333334
+            maxHealth: 40 / 3
         },
         reloadTime: 1,
         hitboxRadius: 0.6,
@@ -841,7 +841,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "tri_web",
         displayName: "Web",
-        description: "It's really sticky.",
+        description: "It's really sticky",
         damage: 8,
         health: 5,
         extendable: false,
@@ -874,7 +874,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "myt_tri_web",
         displayName: "Web",
-        description: "It's extremely sticky.",
+        description: "It's extremely sticky",
         damage: 8,
         health: 5,
         extendable: false,
@@ -936,7 +936,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "poison_peas",
         displayName: "Peas",
-        description: "Prooooof. With Poison.",
+        description: "Prooooof. With Poison",
         damage: 8,
         health: 5,
         extendable: false,
@@ -969,7 +969,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "leg_poison_peas",
         displayName: "Peas",
-        description: "Bigger prooooof. With Poison.",
+        description: "Bigger prooooof. With Poison",
         damage: 10,
         health: 5,
         extendable: false,
@@ -1003,7 +1003,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "myt_poison_peas",
         displayName: "Peas",
-        description: "Quickly bigger prooooof. With Poison.",
+        description: "Quickly bigger prooooof. With Poison",
         damage: 10,
         health: 5,
         extendable: false,
@@ -1037,7 +1037,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "corn",
         displayName: "Corn",
-        description: "You can actually eat it.",
+        description: "You can actually eat it",
         damage: 12,
         health: 200,
         extendable: true,
