@@ -71,6 +71,9 @@ export type AttributeParameters = {
         chance: number
         multiplier: number
     }
+    health_percent_damage?: {
+        percent: number
+    }
 })
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
@@ -394,16 +397,24 @@ export const Petals = new Definitions<PetalDefinition>([
     },{
         idString: "dual_stinger",
         displayName: "Stinger",
-        description: "It really hurts, but it's very fragile",
-        damage: 25,
-        health: 8,
+        description: "Slash your enemies with a powerful claw that deals additional damage based on their current health",
+        damage: 15,
+        health: 15,
         extendable: true,
         usable: false,
-        reloadTime: 4,
-        hitboxRadius: 0.3,
-        isDuplicate: true,
-        isShowedInOne: true,
-        pieceAmount: 2,
+        images: {
+            slotDisplaySize: 25,
+            selfGameRotation: 0.01
+        },
+        attributes: {
+            health_percent_damage: {
+                percent: 0.3
+            }
+        },
+        reloadTime: 2.5,
+        hitboxRadius: 0.5,
+        isDuplicate: false,
+        pieceAmount: 1,
         rarity: RarityName.rare,
         usingAssets: "stinger"
     },

@@ -38,6 +38,10 @@ const AttributeDefinitions = [
     {
         idString: "critical_hit",
         displayName: "Critical Hit"
+    },
+    {
+        idString: "health_percent_damage",
+        displayName: "Health Percent Damage"
     }
 ] as const;
 

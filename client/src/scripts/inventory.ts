@@ -147,6 +147,13 @@ const attributesShowingConfig: { [K in AttributeName] : AttributeShowingFunction
                 value: `${data.multiplier}x`,
                 color: "#ff5500"
             }]
+        },
+        health_percent_damage: (data) => {
+            return [{
+                displayName: "Current Health Damage",
+                value: `${data.percent * 100}%`,
+                color: "#ff3333"
+            }]
         }
     }
 

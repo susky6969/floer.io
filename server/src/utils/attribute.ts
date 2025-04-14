@@ -204,4 +204,19 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
             )
         }
     },
+
+    health_percent_damage: {
+        callback: (on, petal, data) => {
+            on<AttributeEvents.PETAL_DEAL_DAMAGE>(
+                AttributeEvents.PETAL_DEAL_DAMAGE,
+                (entity) => {
+                    if (!entity || !data) return
+                    if (isDamageableEntity(entity) && entity.health) {
+                        const additionalDamage = entity.health * data.percent;
+                        entity.receiveDamage(additionalDamage, petal.owner);
+                    }
+                }
+            )
+        }
+    },
 } as const;
