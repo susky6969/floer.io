@@ -397,7 +397,7 @@ export const Petals = new Definitions<PetalDefinition>([
     },{
         idString: "triangle",
         displayName: "Triangle",
-        description: "Slash your enemies with a powerful claw that deals additional damage based on their current health",
+        description: "Slash your enemies with a powerful triangle that deals additional damage based on their current health",
         damage: 5,
         health: 15,
         extendable: true,
