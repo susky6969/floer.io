@@ -50,7 +50,10 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
     }
 
     constructor(source: damageSource,
-                position: Vector, direction: Vector, parameters: ProjectileParameters, from?: ServerPetal) {
+                position: Vector,
+                direction: Vector,
+                parameters: ProjectileParameters,
+                from?: ServerPetal) {
         super(source.game, position);
 
         this.hitbox = new CircleHitbox(parameters.hitboxRadius);

@@ -124,6 +124,7 @@ class Particle {
         this.position = options.position;
 
         this.sprite = Sprite.from(options.sprite);
+        this.sprite.visible = false;
         this.sprite.anchor.set(0.5);
 
         if (options.zIndex) {
@@ -156,6 +157,8 @@ class Particle {
         if (this.tick > this.end) {
             this.dead = true;
         }
+
+        this.sprite.visible = true;
 
         const t = this.tick / this.end;
 

@@ -11,8 +11,8 @@ export enum EntityType {
 export const GameConstants = {
     maxPosition: 2048,
     player: {
-        radius: 1.5,
-        defaultBodyDamage: 20,
+        radius: 1.3,
+        defaultBodyDamage: 25,
         defaultHealth: 125,
         maxSpeed: 3.5,
         defaultName: "Player",
@@ -23,9 +23,9 @@ export const GameConstants = {
         defaultPrepareSlot: 8,
         defaultEquippedPetals: ["basic", "basic", "basic", "basic", "basic", "basic", "basic", "basic"],
         defaultPreparationPetals: [],
-        defaultPetalDistance: 3.8,
+        defaultPetalDistance: 3.5,
         defaultPetalAttackingDistance: 6.5,
-        defaultPetalDefendingDistance: 2.5,
+        defaultPetalDefendingDistance: 1.7,
         overleveledTime: 30,
         defaultModifiers: (): Modifiers => ({
             healing: 1,
@@ -93,7 +93,8 @@ export const Zones:
             "bee": 10,
             "worker_ant": 10,
             "baby_ant": 5,
-            "soldier_ant": 2
+            "soldier_ant": 2,
+            "centipede": 1
         }
     },
     "Medium": {
@@ -102,7 +103,7 @@ export const Zones:
         displayColor: "#92a728",
         backgroundColor: "#ecdcb8",
         borderColor: "#bfb295",
-        density: 0.7,
+        density: 0.9,
         levelAtLowest: 15,
         levelAtHighest: 30,
         spawning: {
@@ -110,13 +111,15 @@ export const Zones:
             "shiny_ladybug": 0.1,
             "beetle": 5,
             "cactus": 35,
-            "mega_cactus": 15,
+            "mega_cactus": 5,
             "mega_beetle": 0.1,
             "bee": 10,
             "worker_ant": 5,
             "baby_ant": 5,
             "soldier_ant": 5,
-            "passive_bee": 1
+            "passive_bee": 1,
+            "centipede": 6,
+            "desert_centipede": 6
         }
     },
     "Hard": {
@@ -125,7 +128,7 @@ export const Zones:
         displayColor: "#923a28",
         backgroundColor: "#9a5951",
         borderColor: "#742d2d",
-        density: 0.8,
+        density: 1,
         levelAtLowest: 30,
         levelAtHighest: 45,
         spawning: {
@@ -138,7 +141,7 @@ export const Zones:
             "mega_spider": 1,
             "beetle": 10,
             "mega_beetle": 1,
-            "mantis": 10,
+            "mantis": 3,
             "mega_mantis": 1,
             "rock": 5,
             "boulder": 20,
@@ -146,6 +149,9 @@ export const Zones:
             "baby_ant": 7,
             "soldier_ant": 15,
             "passive_bee": 5,
+            "centipede": 1,
+            "desert_centipede": 1,
+            "evil_centipede": 7
         }
     },
     "???": {
@@ -170,10 +176,12 @@ export const Zones:
             "worker_ant": 7,
             "baby_ant": 7,
             "soldier_ant": 20,
-            "mantis": 20,
-            "mega_mantis": 5,
-            "mega_cactus": 1,
+            "mantis": 7,
+            "mega_mantis": 1,
             "passive_bee": 20,
+            "centipede": 1,
+            "desert_centipede": 1,
+            "evil_centipede": 10
         }
     }
 }

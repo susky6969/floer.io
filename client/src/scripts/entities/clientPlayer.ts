@@ -4,9 +4,10 @@ import { GameSprite, getGameAssetsPath } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
 import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
-import { Text, Graphics } from "pixi.js";
+import { Text, Graphics, ColorMatrixFilter } from "pixi.js";
 import { MathGraphics, MathNumeric } from "@common/utils/math.ts";
 import { Vec2 } from "@common/utils/vector.ts";
+import { Tween } from "@tweenjs/tween.js";
 
 export class ClientPlayer extends ClientEntity {
     type = EntityType.Player;
@@ -81,6 +82,12 @@ export class ClientPlayer extends ClientEntity {
 
         if (isNew){
             this.container.position = Camera.vecToScreen(this.position);
+        } else {
+            if (data.full) {
+                if (this.healthPercent > data.full.healthPercent) {
+                    this.getDamageAnimation()
+                }
+            }
         }
 
         if (data.state.poisoned) {
@@ -95,5 +102,49 @@ export class ClientPlayer extends ClientEntity {
             this.healthPercent = data.full.healthPercent;
             this.drawHealthBar();
         }
+    }
+
+    getDamageAnimation() {
+        this.game.addTween(
+            new Tween({ color: { r: 255, g: 0, b: 0 } })
+                .to({ color: { r: 255, g: 255, b: 255 } }, 50 )
+                .onUpdate(d => {
+                    this.images.body.setTint(d.color);
+                })
+        )
+
+        this.game.addTween(
+            new Tween({ brightness: 1 })
+                .delay(50)
+                .to({ brightness: 3 }, 50 )
+                .onUpdate(d => {
+                    const filter = new ColorMatrixFilter();
+                    filter.brightness(d.brightness, true);
+                    this.images.body.filters = filter;
+                })
+        )
+
+        this.game.addTween(
+            new Tween({ brightness: 3 })
+                .delay(100)
+                .to({ brightness: 1 }, 50 )
+                .onUpdate(d => {
+                    const filter = new ColorMatrixFilter();
+                    filter.brightness(d.brightness, true);
+                    this.images.body.filters = filter;
+                })
+        )
+    }
+
+    destroy() {
+        this.game.addTween(
+            new Tween({ scale: this.images.body.scale.x, alpha: 1 },)
+                .to({ scale: this.images.body.scale.x * 3, alpha: 0 }, 200 )
+                .onUpdate(d => {
+                    this.images.body.setScale(d.scale);
+                    this.images.body.setAlpha(d.alpha);
+                }),
+            super.destroy.bind(this)
+        )
     }
 }

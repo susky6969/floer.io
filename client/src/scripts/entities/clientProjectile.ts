@@ -59,4 +59,15 @@ export class ClientProjectile extends ClientEntity {
             this.images.body.setRotation(Vec2.directionToRadians(data.direction));
         }
     }
+
+    destroy() {
+        this.game.addTween(new Tween({ scale: this.images.body.scale.x, alpha: 1 },)
+                .to({ scale: this.images.body.scale.x * 3, alpha: 0 }, 200 )
+                .onUpdate(d => {
+                    this.images.body.setScale(d.scale);
+                    this.images.body.setAlpha(d.alpha);
+                })
+            , super.destroy.bind(this)
+        )
+    }
 }

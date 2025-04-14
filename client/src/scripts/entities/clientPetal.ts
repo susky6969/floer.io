@@ -89,7 +89,8 @@ export class ClientPetal extends ClientEntity {
                 this.images.body.setScaleByUnitRadius(this.definition.hitboxRadius)
             } else {
                 this.reloadAnimation = new Tween({ alpha: 1, scale: this.definition.hitboxRadius })
-                    .to({ alpha: 0, scale: this.definition.hitboxRadius * 4 }, Math.min(100, this.definition.reloadTime ? this.definition.reloadTime * 1000 : 100))
+                    .to({ alpha: 0, scale: this.definition.hitboxRadius * 4 }
+                        , Math.min(100, this.definition.reloadTime ? this.definition.reloadTime * 1000 : 100))
                     .easing(EasingFunctions.sineOut)
                     .onUpdate((obj) => {
                         this.images.body.alpha = obj.alpha;

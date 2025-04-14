@@ -10,6 +10,7 @@ import { ServerPlayer } from "../entities/serverPlayer";
 import { ServerMob } from "../entities/serverMob";
 import { ServerProjectile } from "../entities/serverProjectile";
 import { Projectile } from "../../../common/src/definitions/projectile";
+import { isDamageableEntity } from "../typings";
 
 export enum AttributeEvents {
     HEALING = "HEALING",
@@ -192,23 +193,15 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
 
     critical_hit: {
         callback: (on, petal, data) => {
-            const originalDealDamageTo = petal.dealDamageTo;
-            petal.dealDamageTo = function(to: any): void {
-                if (petal.damage && to.canReceiveDamageFrom(petal)) {
-                    let finalDamage = petal.damage;
-                    
-                    if (data && Math.random() < data.chance) {
-                        finalDamage = petal.damage * data.multiplier;
+            on<AttributeEvents.PETAL_DEAL_DAMAGE>(
+                AttributeEvents.PETAL_DEAL_DAMAGE,
+                (entity) => {
+                    if (!entity || !data) return
+                    if (Math.random() < data.chance && isDamageableEntity(entity) && petal.damage) {
+                        entity.receiveDamage(petal.damage * (data.multiplier - 1), petal.owner);
                     }
-                    
-                    to.receiveDamage(finalDamage, petal.owner);
-                    petal.owner.sendEvent(
-                        AttributeEvents.PETAL_DEAL_DAMAGE,
-                        to,
-                        petal
-                    );
                 }
-            };
+            )
         }
     },
 } as const;

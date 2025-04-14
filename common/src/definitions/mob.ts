@@ -17,8 +17,13 @@ export type MobDefinition = ObjectDefinition & {
     readonly lootTable: Record<string, number>
     readonly rarity: RarityName;
     readonly exp: number
+    readonly images?: {
+        width?: number
+        height?: number
+    }
     readonly reachingAway?: boolean
-} & MobCategoryType & MobShootType;
+    readonly hideInformation?: boolean
+} & MobSegmentType & MobCategoryType & MobShootType;
 
 export type MobCategoryType =  {
     readonly category: MobCategory.Fixed
@@ -37,6 +42,14 @@ export type MobShootType = {
     readonly shootable: true
     readonly shoot: ProjectileParameters;
     readonly shootSpeed: number
+}
+
+export type MobSegmentType = {
+    readonly hasSegments?: false
+} | {
+    readonly hasSegments?: true
+    readonly segmentAmount: number
+    readonly segmentDefinitionIdString: string
 }
 
 export const Mobs = new Definitions<MobDefinition>([
@@ -109,7 +122,7 @@ export const Mobs = new Definitions<MobDefinition>([
         damage: 10,
         health: 25,
         category: MobCategory.Passive,
-        hitboxRadius: 2,
+        hitboxRadius: 1.8,
         speed: 3,
         lootTable: {
             "rose": 1,
@@ -128,7 +141,7 @@ export const Mobs = new Definitions<MobDefinition>([
         idString: "massive_dark_ladybug",
         displayName: "Ladybug",
         damage: 20,
-        health: 250,
+        health: 150,
         category: MobCategory.Passive,
         hitboxRadius: 3.5,
         speed: 3,
@@ -558,6 +571,156 @@ export const Mobs = new Definitions<MobDefinition>([
             "penta": 0.001
         },
         rarity: RarityName.unusual,
+        exp: 4
+    },{
+        idString: "centipede",
+        displayName: "Centipede",
+        damage: 10,
+        health: 50,
+        category: MobCategory.Unactive,
+        speed: 1,
+        hitboxRadius: 1.5,
+        images: {
+            width: 242.874,
+            height: 226
+        },
+        lootTable: {
+            "fast": 0.88,
+            "leaf": 0.52,
+            "twin": 0.24,
+            "tri_leaf": 0.0004,
+            "triplet": 0.0012,
+            "penta": 0.001,
+            "peas": 0.28,
+            "poison_peas": 0.01,
+            "leg_poison_peas": 0.004,
+            "myt_poison_peas": 0.0001,
+        },
+        rarity: RarityName.unusual,
+        exp: 4,
+        hasSegments: true,
+        segmentAmount: 10,
+        segmentDefinitionIdString: "centipede_body"
+    },{
+        idString: "centipede_body",
+        displayName: "Centipede",
+        damage: 10,
+        health: 50,
+        category: MobCategory.Unactive,
+        speed: 1,
+        images: {
+            width: 226
+        },
+        hitboxRadius: 1.5,
+        hideInformation: true,
+        lootTable: {
+            "fast": 0.88,
+            "leaf": 0.52,
+            "twin": 0.24,
+            "tri_leaf": 0.0004,
+            "triplet": 0.0012,
+            "penta": 0.001,
+            "peas": 0.28,
+            "poison_peas": 0.01,
+            "leg_poison_peas": 0.004,
+            "myt_poison_peas": 0.0001,
+        },
+        rarity: RarityName.unusual,
+        exp: 4
+    },{
+        idString: "desert_centipede",
+        displayName: "Centipede",
+        damage: 10,
+        health: 50,
+        category: MobCategory.Unactive,
+        speed: 5,
+        hitboxRadius: 1.5,
+        images: {
+            width: 242.874,
+            height: 226
+        },
+        lootTable: {
+            "fast": 0.88,
+            "twin": 0.24,
+            "triplet": 0.0012,
+            "penta": 0.001,
+            "dice": 0.05,
+            "powder": 0.01
+        },
+        rarity: RarityName.unusual,
+        exp: 4,
+        hasSegments: true,
+        segmentAmount: 10,
+        segmentDefinitionIdString: "desert_centipede_body"
+    },{
+        idString: "desert_centipede_body",
+        displayName: "Centipede",
+        damage: 10,
+        health: 50,
+        category: MobCategory.Unactive,
+        speed: 5,
+        images: {
+            width: 226
+        },
+        hitboxRadius: 1.5,
+        hideInformation: true,
+        lootTable: {
+            "fast": 0.88,
+            "twin": 0.24,
+            "triplet": 0.0012,
+            "penta": 0.001,
+            "dice": 0.05,
+            "powder": 0.01
+        },
+        rarity: RarityName.unusual,
+        exp: 4
+    },{
+        idString: "evil_centipede",
+        displayName: "Centipede",
+        damage: 10,
+        health: 50,
+        category: MobCategory.Enemy,
+        aggroRadius: 25,
+        speed: 3,
+        hitboxRadius: 1.5,
+        images: {
+            width: 242.874,
+            height: 226
+        },
+        lootTable: {
+            "iris": 0.82,
+            "peas": 0.28,
+            "poison_peas": 0.01,
+            "leg_poison_peas": 0.004,
+            "myt_poison_peas": 0.0001
+        },
+        rarity: RarityName.rare,
+        exp: 4,
+        hasSegments: true,
+        segmentAmount: 10,
+        segmentDefinitionIdString: "evil_centipede_body"
+    }, {
+        idString: "evil_centipede_body",
+        displayName: "Centipede",
+        damage: 10,
+        health: 50,
+        category: MobCategory.Enemy,
+        aggroRadius: 25,
+        speed: 3,
+        hitboxRadius: 1.5,
+        hideInformation: true,
+        images: {
+            width: 242.874,
+            height: 226
+        },
+        lootTable: {
+            "iris": 0.82,
+            "peas": 0.28,
+            "poison_peas": 0.01,
+            "leg_poison_peas": 0.004,
+            "myt_poison_peas": 0.0001
+        },
+        rarity: RarityName.rare,
         exp: 4
     }
 ] satisfies MobDefinition[]);

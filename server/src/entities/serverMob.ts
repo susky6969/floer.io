@@ -12,7 +12,8 @@ import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { ServerProjectile } from "./serverProjectile";
 import { Modifiers } from "../../../common/src/typings";
-import { damageableEntity, damageSource } from "../typings";
+import { collideableEntity, damageableEntity, damageSource } from "../typings";
+import { CollisionResponse } from "../../../common/src/utils/collision";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
@@ -70,7 +71,13 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         return !(entity instanceof ServerMob);
     }
 
-    constructor(game: Game, position: Vector, definition: MobDefinition) {
+    lastSegment?: ServerMob;
+
+    constructor(game: Game
+                , position: Vector
+                , direction: Vector
+                , definition: MobDefinition
+                , lastSegment?: ServerMob) {
         super(game, position);
         this.definition = definition;
         this.hitbox = new CircleHitbox(definition.hitboxRadius);
@@ -79,8 +86,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
         this.weight = definition.hitboxRadius * 10;
 
+        this.lastSegment = lastSegment;
+
         this.game.grid.addEntity(this);
         this.position = position;
+        this.direction = direction;
     }
 
     changeAggroTo(entity?: ServerEntity): void {
@@ -97,36 +107,50 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     tick(): void{
         super.tick()
 
-        if (this.definition.category !== MobCategory.Fixed) {
-            if (this.aggroTarget) {
-                if (this.aggroTarget.destroyed) {
-                    this.changeAggroTo();
-                } else {
-                    this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
+        if (this.lastSegment && !this.lastSegment.destroyed) {
+            this.direction = MathGraphics.directionBetweenPoints(
+                this.position,
+                this.lastSegment.position
+            );
 
-                    if (this.definition.shootable) {
-                        this.shootReload += this.game.dt;
-                        if (this.shootReload >= this.definition.shootSpeed) {
-                            // Vec2.add(this.position,Vec2.mul(this.direction, this.hitbox.radius))
-                            new ServerProjectile(this,
-                                this.position,
-                                this.direction, this.definition.shoot);
-                            this.shootReload = 0;
+            this.position = MathGraphics.getPositionOnCircle(
+                Vec2.directionToRadians(
+                    this.direction,
+                ),
+                this.definition.hitboxRadius + this.lastSegment.definition.hitboxRadius,
+                this.lastSegment.position
+            );
+        }else {
+            if (this.definition.category !== MobCategory.Fixed) {
+                if (this.aggroTarget) {
+                    if (this.aggroTarget.destroyed) {
+                        this.changeAggroTo();
+                    } else {
+                        this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
+
+                        if (this.definition.shootable) {
+                            this.shootReload += this.game.dt;
+                            if (this.shootReload >= this.definition.shootSpeed) {
+                                // Vec2.add(this.position,Vec2.mul(this.direction, this.hitbox.radius))
+                                new ServerProjectile(this,
+                                    this.position,
+                                    this.direction, this.definition.shoot);
+                                this.shootReload = 0;
+                            }
                         }
-                    }
-                    if (this.definition.reachingAway) {
-                        if (Vec2.distance(this.position, this.aggroTarget.position) > 15){
+                        if (this.definition.reachingAway) {
+                            if (Vec2.distance(this.position, this.aggroTarget.position) > 15){
+                                this.setAcceleration(Vec2.mul(
+                                    this.direction, this.speed
+                                ));
+                            }
+                        } else {
                             this.setAcceleration(Vec2.mul(
                                 this.direction, this.speed
                             ));
                         }
-                    } else {
-                        this.setAcceleration(Vec2.mul(
-                            this.direction, this.speed
-                        ));
                     }
-                }
-            }else {
+                }else {
                     this.walkingReload += this.game.dt;
                     if (this.walkingReload >= GameConstants.mob.walkingReload) {
                         if (this.walkingTime === 0) this.direction = Random.vector(-1, 1, -1, 1)
@@ -157,8 +181,10 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                             }
                         }
                     }
+                }
             }
         }
+
 
         this.updateModifiers();
     }

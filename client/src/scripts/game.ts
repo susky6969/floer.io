@@ -49,6 +49,8 @@ export class Game {
     width: number = 0;
     height: number = 0;
 
+    tweens = new Set<Tween>;
+
     get activePlayer(): ClientPlayer | undefined {
         if (this.activePlayerID) return this.entityPool.get(this.activePlayerID) as ClientPlayer;
         return undefined;
@@ -78,6 +80,15 @@ export class Game {
     })
 
     inventory: Inventory;
+
+    addTween(tween: Tween, doFunc?: Function): void {
+        this.tweens.add(tween);
+        tween.start();
+        tween.onComplete(() => {
+            this.tweens.delete(tween);
+            if(doFunc) doFunc();
+        })
+    }
 
     async init() {
         await this.pixi.init({
@@ -382,6 +393,10 @@ export class Game {
         this.particleManager.render(dt);
 
         this.sendInput();
+
+        this.tweens.forEach(tween => {
+            tween.update();
+        })
     }
 
     sendInput() {

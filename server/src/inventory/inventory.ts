@@ -175,63 +175,63 @@ export class Inventory {
     }
 
     drop(amount: number): PetalDefinition[] {
+        let fullDroppable: { fromInventory: boolean, item: PetalDefinition }[] = [];
+
         let droppableFromInventory =
             this.inventory.filter(
                 e => e && !e.undroppable
             ) as PetalDefinition[];
 
-        let droppable: { fromInventory: boolean, item: PetalDefinition }[] = [];
-
         droppableFromInventory.forEach((petal) => {
-            droppable.push({ fromInventory: true, item: petal });
+            fullDroppable.push({ fromInventory: true, item: petal });
         })
 
         this.absorbedBefore.forEach(e => {
             if ((Date.now() - e.time) / 1000 < 30) {
-                droppable.push({ fromInventory: false, item: e.definition});
+                fullDroppable.push({ fromInventory: false, item: e.definition});
             }
         })
 
-        let byRarity = new Map<number,
-            typeof droppable[number][]>();
+        let sortByRarity = new Map<number,
+            typeof fullDroppable[number][]>();
 
-        droppable.forEach(e => {
+        fullDroppable.forEach(e => {
             const level = Rarity.fromString(e.item.rarity).level;
-            if (!byRarity.has(level)){
-                byRarity.set(level, []);
+            if (!sortByRarity.has(level)){
+                sortByRarity.set(level, []);
             }
-            byRarity.get(level)?.push(e);
+            sortByRarity.get(level)?.push(e);
         });
 
-        let highest =
-            byRarity.get(Array.from(byRarity.keys()).sort((a, b) => b - a)[0]);
+        let highestRarityPetals =
+            sortByRarity.get(Array.from(sortByRarity.keys()).sort((a, b) => b - a)[0]);
 
-        let dropped: typeof droppable[number][] = [];
+        let droppedPetals: typeof fullDroppable[number][] = [];
 
-        if (highest) {
-            if (highest.length > 3) {
+        if (highestRarityPetals) {
+            if (highestRarityPetals.length > 3) {
                 amount = 0;
                 for (let i = 0; i <= amount; i++) {
-                    dropped.push(highest[Random.int(0, highest.length - 1)]);
+                    droppedPetals.push(highestRarityPetals[Random.int(0, highestRarityPetals.length - 1)]);
                 }
             } else {
-                amount -= highest.length;
-                for (let i = 0; i < highest.length; i++) {
-                    dropped.push(highest[i]);
-                    droppable.splice(droppable.indexOf(highest[i]), 1);
+                amount -= highestRarityPetals.length;
+                for (let i = 0; i < highestRarityPetals.length; i++) {
+                    droppedPetals.push(highestRarityPetals[i]);
+                    fullDroppable.splice(fullDroppable.indexOf(highestRarityPetals[i]), 1);
                 }
             }
         }
 
-        dropped = dropped.concat(droppable.sort((a, b) => {
+        droppedPetals = droppedPetals.concat(fullDroppable.sort((a, b) => {
             return Rarity.fromString(b.item.rarity).level - Rarity.fromString(a.item.rarity).level
         }).splice(0, amount));
 
-        dropped.forEach(e => {
+        droppedPetals.forEach(e => {
             if (e.fromInventory) this.inventory[this.inventory.indexOf(e.item)] = null;
         })
 
-        return dropped.map(e => e.item as PetalDefinition);
+        return droppedPetals.map(e => e.item as PetalDefinition);
     }
 
     tick(): void {

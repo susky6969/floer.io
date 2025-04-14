@@ -7,8 +7,9 @@ import { Camera } from "@/scripts/render/camera.ts";
 import { PetalDefinition } from "@common/definitions/petal.ts";
 import { Graphics, Text, Container } from "pixi.js";
 import { Vec2 } from "@common/utils/vector.ts";
-import { MathGraphics, P2 } from "@common/utils/math.ts";
+import { EasingFunctions, MathGraphics, P2 } from "@common/utils/math.ts";
 import { Rarity } from "@common/definitions/rarity.ts";
+import { Tween } from "@tweenjs/tween.js";
 
 const defaultCenter = Vec2.new(0, -4);
 
@@ -92,9 +93,11 @@ export class ClientLoot extends ClientEntity {
         const rarity = Rarity.fromString(this.definition.rarity);
 
         this.background.clear()
-            .rect(-25, -25, 50, 50)
+            .roundRect(-27, -27, 54, 54, 2)
+            .fill({ color: "#000", alpha: 0.2 })
+            .roundRect(-25, -25, 50, 50, 2)
             .fill(rarity.border)
-            .rect(-22, -22, 44, 44)
+            .roundRect(-22, -22, 44, 44, 2)
             .fill(rarity.color);
 
         this.container.zIndex = -1;
@@ -115,6 +118,37 @@ export class ClientLoot extends ClientEntity {
             this.background,
             this.name
         );
+
+        this.game.addTween(
+            new Tween({ scale: 0, alpha: 0 })
+                .to({ scale: 1, alpha: 1 }, 100 )
+                .onUpdate(d => {
+                    this.container.scale = d.scale;
+                    this.container.alpha = d.alpha;
+                })
+        )
+
+        this.game.addTween(
+            new Tween({ angle: 0.1, scale: 0.95 })
+                .delay(100)
+                .to({ angle: -0.1, scale: 1.05 }, 900 )
+                .repeat(Infinity)
+                .onUpdate(d => {
+                    this.container.rotation = d.angle;
+                    this.container.scale = d.scale;
+                })
+        )
+
+        this.game.addTween(
+            new Tween({ angle: -0.1, scale: 1.05 })
+                .delay(1000)
+                .to({ angle: 0.1, scale: 0.95 }, 1000 )
+                .repeat(Infinity)
+                .onUpdate(d => {
+                    this.container.rotation = d.angle;
+                    this.container.scale = d.scale;
+                })
+        )
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Petal], isNew: boolean): void {
@@ -125,5 +159,16 @@ export class ClientLoot extends ClientEntity {
 
             this.init();
         }
+    }
+
+    destroy() {
+        this.game.addTween(
+            new Tween({ scale: 1 })
+                .to({ scale: 0 }, 80 )
+                .onUpdate(d => {
+                    this.container.scale = d.scale;
+                }),
+            super.destroy.bind(this)
+        )
     }
 }

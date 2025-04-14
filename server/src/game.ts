@@ -20,6 +20,8 @@ import { PacketStream } from "../../common/src/net";
 import { JoinPacket } from "../../common/src/packets/joinPacket";
 import { InputPacket } from "../../common/src/packets/inputPacket";
 import { PetalDefinition } from "../../common/src/definitions/petal";
+import { P2 } from "../../common/src/utils/math";
+import { spawnSegmentMobs } from "./utils/mob";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -236,7 +238,19 @@ export class Game {
             const maxMobCount = data.density / 15 * data.width * this.height / 20;
 
             if (mobCount < maxMobCount){
-                new ServerMob(this, position, definition);
+                if (definition.hasSegments) {
+                    spawnSegmentMobs(
+                        this,
+                        definition,
+                        position,
+                    )
+                } else {
+                    new ServerMob(this,
+                        position,
+                        Vec2.radiansToDirection(Random.float(-P2, P2)),
+                        definition
+                    );
+                }
             }
         }
     }
