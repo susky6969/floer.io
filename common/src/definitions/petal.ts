@@ -398,7 +398,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "triangle",
         displayName: "Triangle",
         description: "Slash your enemies with a powerful claw that deals additional damage based on their current health",
-        damage: 15,
+        damage: 5,
         health: 15,
         extendable: true,
         usable: false,
@@ -941,7 +941,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 despawnTime: 5
             }
         },
-        reloadTime: 1.2,
+        reloadTime: 1.8,
         hitboxRadius: 0.4,
         isDuplicate: true,
         pieceAmount: 4,
@@ -974,7 +974,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 duration: 1
             }
         },
-        reloadTime: 1.2,
+        reloadTime: 1.8,
         hitboxRadius: 0.4,
         isDuplicate: true,
         pieceAmount: 4,
@@ -1007,7 +1007,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 duration: 2
             }
         },
-        reloadTime: 1.2,
+        reloadTime: 1.8,
         hitboxRadius: 0.5,
         isDuplicate: true,
         pieceAmount: 4,
@@ -1041,7 +1041,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 duration: 2
             }
         },
-        reloadTime: 0.3,
+        reloadTime: 0.5,
         hitboxRadius: 0.5,
         isDuplicate: true,
         pieceAmount: 5,
