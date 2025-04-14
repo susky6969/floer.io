@@ -34,6 +34,10 @@ const AttributeDefinitions = [
     {
         idString: "peas_shoot",
         displayName: "Shoot"
+    },
+    {
+        idString: "critical_hit",
+        displayName: "Critical Hit"
     }
 ] as const;
 

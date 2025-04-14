@@ -189,4 +189,26 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
             }, PetalUsingAnimations.NORMAL)
         }
     },
+
+    critical_hit: {
+        callback: (on, petal, data) => {
+            const originalDealDamageTo = petal.dealDamageTo;
+            petal.dealDamageTo = function(to: any): void {
+                if (petal.damage && to.canReceiveDamageFrom(petal)) {
+                    let finalDamage = petal.damage;
+                    
+                    if (data && Math.random() < data.chance) {
+                        finalDamage = petal.damage * data.multiplier;
+                    }
+                    
+                    to.receiveDamage(finalDamage, petal.owner);
+                    petal.owner.sendEvent(
+                        AttributeEvents.PETAL_DEAL_DAMAGE,
+                        to,
+                        petal
+                    );
+                }
+            };
+        }
+    },
 } as const;

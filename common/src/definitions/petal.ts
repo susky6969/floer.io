@@ -67,6 +67,10 @@ export type AttributeParameters = {
     damage_reflection?: number
     shoot?: ProjectileParameters
     peas_shoot?: ProjectileParameters
+    critical_hit?: {
+        chance: number
+        multiplier: number
+    }
 })
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
@@ -1047,6 +1051,30 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         reloadTime: 8,
         hitboxRadius: 0.6,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.epic
+    },
+    {
+        idString: "dice",
+        displayName: "Dice",
+        description: "Roll the dice! Has a 15% chance to deal 8x damage",
+        damage: 9,
+        health: 32,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 45,
+            selfGameRotation: 0.01
+        },
+        attributes: {
+            critical_hit: {
+                chance: 0.15,
+                multiplier: 8
+            }
+        },
+        reloadTime: 3,
+        hitboxRadius: 0.5,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic

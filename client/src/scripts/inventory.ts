@@ -136,7 +136,18 @@ const attributesShowingConfig: { [K in AttributeName] : AttributeShowingFunction
             }]
         },
         shoot: () => [],
-        peas_shoot: () => []
+        peas_shoot: () => [],
+        critical_hit: (data) => {
+            return [{
+                displayName: "Critical Chance",
+                value: `${data.chance * 100}%`,
+                color: "#ff9900"
+            }, {
+                displayName: "Critical Multiplier",
+                value: `${data.multiplier}x`,
+                color: "#ff5500"
+            }]
+        }
     }
 
 export function renderPetalPiece(
