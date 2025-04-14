@@ -62,7 +62,7 @@ export class ClientProjectile extends ClientEntity {
 
     destroy() {
         this.game.addTween(new Tween({ scale: this.images.body.scale.x, alpha: 1 },)
-                .to({ scale: this.images.body.scale.x * 3, alpha: 0 }, 200 )
+                .to({ scale: this.images.body.scale.x * 3, alpha: 0 }, 150 )
                 .onUpdate(d => {
                     this.images.body.setScale(d.scale);
                     this.images.body.setAlpha(d.alpha);

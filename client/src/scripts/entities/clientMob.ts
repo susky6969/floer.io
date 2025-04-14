@@ -29,6 +29,8 @@ export class ClientMob extends ClientEntity {
 
     definition!: MobDefinition;
 
+    lastGettingDamage: number = 0;
+
     constructor(game: Game, id: number) {
         super(game, id);
 
@@ -144,6 +146,8 @@ export class ClientMob extends ClientEntity {
     }
 
     getDamageAnimation() {
+        if (Date.now() - this.lastGettingDamage < 90) return
+        this.lastGettingDamage = Date.now();
         this.game.addTween(
             new Tween({ color: { r: 255, g: 0, b: 0 } })
                 .to({ color: { r: 255, g: 255, b: 255 } }, 30 )
@@ -158,7 +162,7 @@ export class ClientMob extends ClientEntity {
                 .to({ brightness: 3 }, 30 )
                 .onUpdate(d => {
                     const filter = new ColorMatrixFilter();
-                    filter.brightness(d.brightness, true);
+                    filter.brightness(d.brightness, false);
                     this.images.body.filters = filter;
                 })
         )
@@ -169,7 +173,7 @@ export class ClientMob extends ClientEntity {
                 .to({ brightness: 1 }, 30 )
                 .onUpdate(d => {
                     const filter = new ColorMatrixFilter();
-                    filter.brightness(d.brightness, true);
+                    filter.brightness(d.brightness, false);
                     this.images.body.filters = filter;
                 })
         )

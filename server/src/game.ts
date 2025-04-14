@@ -231,9 +231,15 @@ export class Game {
 
 
 
-            const mobCount = this.grid.intersectsHitbox(new RectHitbox(
+            const collided = this.grid.intersectsHitbox(new RectHitbox(
                 Vec2.new(data.x, 0), Vec2.new(data.x + data.width, this.height)
-            )).size;
+            ));
+
+            let mobCount = 0;
+
+            for (const collidedElement of collided) {
+                if (collidedElement instanceof ServerMob) mobCount++;
+            }
 
             const maxMobCount = data.density / 15 * data.width * this.height / 20;
 
