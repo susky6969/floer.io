@@ -7,12 +7,14 @@ import { GameConstants } from "../../../common/src/constants";
 import { Rarity } from "../../../common/src/definitions/rarity";
 
 export function spawnLoot(game: Game, loots: PetalDefinition[], position: Vector): void {
-    if (loots.length <= 0) return;
     loots.forEach(loot => {
         if (Rarity.fromString(loot.rarity).isUnique && game.gameHas(loot)) {
             loots.splice(loots.indexOf(loot), 1);
         }
     });
+
+    if (loots.length <= 0) return;
+
     if (loots.length > 1) {
         let radiansNow = 0;
         const everyOccupiedRadians = P2 / loots.length;
