@@ -23,7 +23,7 @@ export const GameConstants = {
         defaultPrepareSlot: 8,
         defaultEquippedPetals: ["basic", "basic", "basic", "basic", "basic", "basic", "basic", "basic"],
         defaultPreparationPetals: [],
-        defaultPetalDistance: 3.5,  
+        defaultPetalDistance: 3.5,
         defaultPetalAttackingDistance: 6.5,
         defaultPetalDefendingDistance: 1.7,
         overleveledTime: 30,
