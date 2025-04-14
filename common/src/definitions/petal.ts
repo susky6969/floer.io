@@ -395,8 +395,8 @@ export const Petals = new Definitions<PetalDefinition>([
         rarity: RarityName.mythic,
         usingAssets: "epic_rose"
     },{
-        idString: "dual_stinger",
-        displayName: "Stinger",
+        idString: "triangle",
+        displayName: "Triangle",
         description: "Slash your enemies with a powerful claw that deals additional damage based on their current health",
         damage: 15,
         health: 15,
