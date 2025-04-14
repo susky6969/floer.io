@@ -79,7 +79,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "fast",
         displayName: "Fast",
         description: "Weaker than most petals, but recharges very quickly",
-        damage: 8,
+        damage: 9,
         health: 5,
         extendable: true,
         reloadTime: 0.5,
@@ -94,7 +94,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "twin",
         displayName: "Twin",
         description: "Why stop at one? Why not TWO?!",
-        damage: 8,
+        damage: 9,
         health: 5,
         extendable: true,
         reloadTime: 0.5,
@@ -378,7 +378,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 35
         },
         attributes: {
-            absorbing_heal: 4
+            absorbing_heal: 3
         },
         reloadTime: 0.4,
         hitboxRadius: 0.5,
@@ -682,7 +682,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 52
         },
         modifiers: {
-            maxHealth: 13.44444444
+            maxHealth: 13.3333334
         },
         reloadTime: 1,
         hitboxRadius: 0.6,
@@ -841,7 +841,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "tri_web",
         displayName: "Web",
-        description: "It's so fucking sticky.",
+        description: "It's really sticky.",
         damage: 8,
         health: 5,
         extendable: false,
@@ -874,7 +874,7 @@ export const Petals = new Definitions<PetalDefinition>([
     {
         idString: "myt_tri_web",
         displayName: "Web",
-        description: "It's so fucking sticky.",
+        description: "It's extremely sticky.",
         damage: 8,
         health: 5,
         extendable: false,
@@ -919,7 +919,7 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             peas_shoot: {
                 definition: Projectile.fromString("peas"),
-                speed: 5,
+                speed: 6.25,
                 damage: 8,
                 health: 5,
                 hitboxRadius: 0.4,
@@ -948,7 +948,7 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             peas_shoot: {
                 definition: Projectile.fromString("poison_peas"),
-                speed: 5,
+                speed: 6.25,
                 damage: 8,
                 health: 5,
                 hitboxRadius: 0.4,
@@ -981,7 +981,7 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             peas_shoot: {
                 definition: Projectile.fromString("poison_peas"),
-                speed: 5,
+                speed: 6.25,
                 damage: 10,
                 health: 5,
                 hitboxRadius: 0.5,
@@ -1015,21 +1015,21 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             peas_shoot: {
                 definition: Projectile.fromString("poison_peas"),
-                speed: 5,
+                speed: 6.25,
                 damage: 10,
                 health: 5,
                 hitboxRadius: 0.5,
                 despawnTime: 5
             },
             poison: {
-                damagePerSecond: 12,
+                damagePerSecond: 10,
                 duration: 2
             }
         },
         reloadTime: 0.3,
         hitboxRadius: 0.5,
         isDuplicate: true,
-        pieceAmount: 4,
+        pieceAmount: 5,
         isShowedInOne: true,
         rarity: RarityName.mythic,
         usingAssets: "poison_peas",
