@@ -209,11 +209,11 @@ export class Inventory {
         let droppedPetals: typeof fullDroppable[number][] = [];
 
         if (highestRarityPetals) {
-            if (highestRarityPetals.length > 3) {
-                amount = 0;
-                for (let i = 0; i <= amount; i++) {
+            if (highestRarityPetals.length > amount) {
+                for (let i = 0; i < amount; i++) {
                     droppedPetals.push(highestRarityPetals[Random.int(0, highestRarityPetals.length - 1)]);
                 }
+                amount = 0;
             } else {
                 amount -= highestRarityPetals.length;
                 for (let i = 0; i < highestRarityPetals.length; i++) {
