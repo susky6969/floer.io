@@ -50,7 +50,7 @@ function drawPetal(petal_box: Container, petal: PetalDefinition) {
             );
 
             radiansNow += P2 / count;
-            degree += MathGraphics.radiansToDegrees(petal.images?.slotRevolution ?? 0)
+            degree += petal.images?.slotRevolution ?? 0
         }
     } else {
         petal_box.addChild(
