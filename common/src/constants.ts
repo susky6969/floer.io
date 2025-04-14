@@ -160,7 +160,7 @@ export const Zones:
         displayColor: "#a4aaa6",
         backgroundColor: "#888484",
         borderColor: "#484646",
-        density: 1,
+        density: 0.825,
         levelAtLowest: 45,
         levelAtHighest: 999,
         spawning: {
@@ -181,7 +181,7 @@ export const Zones:
             "passive_bee": 20,
             "centipede": 1,
             "desert_centipede": 1,
-            "evil_centipede": 10
+            "evil_centipede": 2
         }
     }
 }
