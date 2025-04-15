@@ -452,8 +452,8 @@ export const Petals = new Definitions<PetalDefinition>([
             boost: 10
         },
         modifiers: {
-            maxHealth: 666,
-            healPerSecond: 30
+            maxHealth: 66666,
+            healPerSecond: 66666
         },
         reloadTime: 0,
         hitboxRadius: 0.6,

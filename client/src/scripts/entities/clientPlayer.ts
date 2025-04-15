@@ -87,7 +87,7 @@ export class ClientPlayer extends ClientEntity {
         } else {
             if (data.full) {
                 if (this.healthPercent > data.full.healthPercent) {
-                    this.getDamageAnimation()
+                    this.getDamageAnimation(this.images.body)
                 }
             }
         }
@@ -104,40 +104,6 @@ export class ClientPlayer extends ClientEntity {
             this.healthPercent = data.full.healthPercent;
             this.drawHealthBar();
         }
-    }
-
-    getDamageAnimation() {
-        if (Date.now() - this.lastGettingDamage < 90) return
-        this.lastGettingDamage = Date.now();
-        this.game.addTween(
-            new Tween({ color: { r: 255, g: 0, b: 0 } })
-                .to({ color: { r: 255, g: 255, b: 255 } }, 30 )
-                .onUpdate(d => {
-                    this.images.body.setTint(d.color);
-                })
-        )
-
-        this.game.addTween(
-            new Tween({ brightness: 1 })
-                .delay(30)
-                .to({ brightness: 3 }, 30 )
-                .onUpdate(d => {
-                    const filter = new ColorMatrixFilter();
-                    filter.brightness(d.brightness, false);
-                    this.images.body.filters = filter;
-                })
-        )
-
-        this.game.addTween(
-            new Tween({ brightness: 3 })
-                .delay(60)
-                .to({ brightness: 1 }, 30 )
-                .onUpdate(d => {
-                    const filter = new ColorMatrixFilter();
-                    filter.brightness(d.brightness, false);
-                    this.images.body.filters = filter;
-                })
-        )
     }
 
     destroy() {
