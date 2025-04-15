@@ -12,15 +12,16 @@ import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { ServerProjectile } from "./serverProjectile";
 import { Modifiers } from "../../../common/src/typings";
-import { collideableEntity, damageableEntity, damageSource } from "../typings";
+import { collideableEntity, damageableEntity, damageSource, isDamageSourceEntity } from "../typings";
 import { CollisionResponse } from "../../../common/src/utils/collision";
+import { ProjectileParameters } from "../../../common/src/definitions/projectile";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
 
     hitbox: CircleHitbox;
     definition: MobDefinition;
-    modifiers: Modifiers = GameConstants.mob.defaultModifiers();
+    modifiers: Modifiers = GameConstants.defaultModifiers();
     otherModifiers: Partial<Modifiers>[] = [];
 
     get name(): string {
@@ -41,7 +42,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         this.setFullDirty();
     }
 
-    aggroTarget?: ServerPlayer;
+    aggroTarget?: damageSource;
 
     _direction: Vector = Vec2.new(0, 0);
 
@@ -66,8 +67,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     shootReload: number = 0;
 
     canReceiveDamageFrom(entity: ServerEntity): boolean {
-        if (entity instanceof ServerProjectile)
+        if (entity instanceof ServerProjectile) {
             return entity.source.type != this.type;
+        }
+        if (entity instanceof ServerFriendlyMob)
+            return true
         return !(entity instanceof ServerMob);
     }
 
@@ -93,15 +97,21 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         this.direction = direction;
     }
 
-    changeAggroTo(entity?: ServerEntity): void {
+    changeAggroTo(entity?: damageSource): void {
         if (![MobCategory.Enemy, MobCategory.Passive].includes(this.definition.category)) return;
 
         if (this.aggroTarget && !entity) {
             this.aggroTarget = undefined;
         } else if (!this.aggroTarget && entity) {
-            if (!(entity instanceof ServerPlayer) ) return;
+            if (!this.canReceiveDamageFrom(entity)) return;
             this.aggroTarget = entity;
         }
+    }
+
+    shoot(shoot: ProjectileParameters): void {
+        new ServerProjectile(this,
+            this.position,
+            this.direction, shoot);
     }
 
     tick(): void{
@@ -120,21 +130,23 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                 this.definition.hitboxRadius + this.lastSegment.definition.hitboxRadius,
                 this.lastSegment.position
             );
-        }else {
+        } else {
             if (this.definition.category !== MobCategory.Fixed) {
                 if (this.aggroTarget) {
                     if (this.aggroTarget.destroyed) {
                         this.changeAggroTo();
                     } else {
+                        if (Vec2.distance(this.aggroTarget.position, this.position) > 60) {
+                            return this.changeAggroTo();
+                        }
+
                         this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
 
                         if (this.definition.shootable) {
                             this.shootReload += this.game.dt;
                             if (this.shootReload >= this.definition.shootSpeed) {
                                 // Vec2.add(this.position,Vec2.mul(this.direction, this.hitbox.radius))
-                                new ServerProjectile(this,
-                                    this.position,
-                                    this.direction, this.definition.shoot);
+                                this.shoot(this.definition.shoot)
                                 this.shootReload = 0;
                             }
                         }
@@ -175,7 +187,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                             this.game.grid.intersectsHitbox(aggro);
 
                         for (const entity of entities) {
-                            if (!(entity instanceof ServerPlayer)) continue;
+                            if (!(isDamageSourceEntity(entity))) continue;
                             if (aggro.collidesWith(entity.hitbox)) {
                                 this.changeAggroTo(entity);
                             }
@@ -211,7 +223,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     }
 
     updateModifiers(): void {
-        let modifiersNow = GameConstants.mob.defaultModifiers();
+        let modifiersNow = GameConstants.defaultModifiers();
 
         this.effects.effects.forEach(effect => {
             if (effect.modifier) {
@@ -257,5 +269,55 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         }
 
         spawnLoot(this.game, loots, this.position)
+    }
+}
+
+export class ServerFriendlyMob extends ServerMob {
+    canReceiveDamageFrom(source: damageableEntity): boolean {
+        switch (source.type) {
+            case EntityType.Player:
+                return source != this.owner
+            case EntityType.Mob:
+                if (source instanceof ServerFriendlyMob) return source.owner !== this.owner;
+                return true;
+            case EntityType.Petal:
+                return source.owner != this.owner
+            case EntityType.Projectile:
+                return source.source != this
+                   && source.source !== this.owner;
+        }
+    }
+
+    shoot(shoot: ProjectileParameters) {
+        new ServerProjectile(this.owner,
+            this.position,
+            this.direction, shoot);
+    }
+
+
+    constructor(game: Game
+        , public owner: ServerPlayer
+        , definition: MobDefinition) {
+        super(game, Random.pointInsideCircle(owner.position, 6), owner.direction, definition);
+    }
+
+    tick() {
+        if (Vec2.distance(this.position, this.owner.position) > 25) {
+            this.changeAggroTo();
+            this.direction = MathGraphics.directionBetweenPoints(this.owner.position, this.position);
+            this.addVelocity(Vec2.mul(this.direction, 10), 0.6)
+        }
+
+        super.tick();
+    }
+
+    dealDamageTo(to: damageableEntity) {
+        if (to.canReceiveDamageFrom(this))
+            to.receiveDamage(this.damage, this.owner);
+    }
+
+    destroy() {
+        this.destroyed = true;
+        this.game.grid.remove(this);
     }
 }

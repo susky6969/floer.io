@@ -6,4 +6,5 @@ export interface Modifiers {
     healPerSecond: number;
     speed: number;
     revolutionSpeed: number;
+    zoom: number;
 }

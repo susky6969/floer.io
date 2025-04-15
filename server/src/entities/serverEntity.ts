@@ -184,7 +184,7 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
             this.addVelocity(
                 Vec2.mul(
                     collision.dir,
-                    (collision.pen + (entity.type !== this.type ? this.knockback : 0))
+                    (collision.pen + (entity.type !== this.type ? entity.knockback : 0))
                     * entity.weight
                     * (-1)
                     / (this.weight + entity.weight)
@@ -220,6 +220,7 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
         now.healPerSecond += extra.healPerSecond ?? 0;
         now.speed *= extra.speed ?? 1;
         now.revolutionSpeed += extra.revolutionSpeed ?? 0;
+        now.zoom += extra.zoom ?? 0;
 
         return now;
     }

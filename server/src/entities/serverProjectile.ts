@@ -8,7 +8,7 @@ import { AttributeEvents } from "../utils/attribute";
 import { ServerPetal } from "./serverPetal";
 import { collideableEntity, damageableEntity, damageSource } from "../typings";
 import { Effect } from "../utils/effects";
-import { ServerMob } from "./serverMob";
+import { ServerFriendlyMob, ServerMob } from "./serverMob";
 import { Config } from "../config";
 import { ServerPlayer } from "./serverPlayer";
 
@@ -35,6 +35,7 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
             case EntityType.Player:
                 return source != this.source;
             case EntityType.Mob:
+                if (source instanceof ServerFriendlyMob) return source.owner != this.source;
                 return source.type != this.source.type;
             case EntityType.Petal:
                 return source.owner != this.source;

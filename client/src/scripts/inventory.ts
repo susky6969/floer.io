@@ -81,6 +81,10 @@ const showingConfig: { [key: string] : showingConfig } =
             color: "#58fd48",
             percent: true
         },
+        zoom: {
+            displayName: "Extra Zoom",
+            color: "#58fd48"
+        },
         undroppable: {
             displayName: "Undroppable",
             color: "#656548",
@@ -137,6 +141,14 @@ const attributesShowingConfig: { [K in AttributeName] : AttributeShowingFunction
         },
         shoot: () => [],
         peas_shoot: () => [],
+        place_projectile: () => [],
+        spawner: (data) => {
+            return [{
+                displayName: "Content",
+                value: `${data.displayName}`,
+                color: "#6161f0"
+            },]
+        },
         critical_hit: (data) => {
             return [{
                 displayName: "Critical Chance",
@@ -211,7 +223,7 @@ export function renderPetal(petal: PetalDefinition) {
     petal_box.css("background", rarity.color);
     petal_box.css("border-color", rarity.border);
 
-    if (petal.isDuplicate) {
+    if (!petal.equipment && petal.isDuplicate) {
         let radiansNow = 0;
         const count = petal.pieceAmount;
         let degree = 0;
@@ -648,11 +660,12 @@ export class Inventory{
                     showingConfig[modifiersDefinitionKey];
                 let original = (definition.modifiers
                     [modifiersDefinitionKey as keyof Modifiers]);
+                if (!showing) continue;
                 if (!original) {
                     addAttribute(showing,
                         ""
                     );
-                }else {
+                } else {
                     let value = original;
                     let startsWith = "";
                     let endsWith = "";
@@ -685,7 +698,7 @@ export class Inventory{
             }
         }
 
-        if (definition.reloadTime) {
+        if (!definition.equipment && definition.reloadTime) {
             let content = definition.reloadTime + "s";
             if (definition.usable) {
                 content += " + " + definition.useTime + "s";

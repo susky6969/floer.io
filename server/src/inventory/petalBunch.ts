@@ -1,10 +1,11 @@
-import { PetalDefinition, getDisplayedPieces, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
+import { getDisplayedPieces, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { ServerPetal } from "../entities/serverPetal";
-import { P2, MathGraphics } from "../../../common/src/utils/math";
+import { MathGraphics, P2 } from "../../../common/src/utils/math";
 import { Vec2, Vector } from "../../../common/src/utils/vector";
 import { Inventory } from "./inventory";
 import { GameConstants } from "../../../common/src/constants";
 import { ServerPlayer } from "../entities/serverPlayer";
+import { PetalUsingAnimations } from "../utils/attribute";
 
 export class PetalBunch {
     position: Vector;
@@ -17,6 +18,11 @@ export class PetalBunch {
 
     readonly totalPieces: number = 0;
     readonly totalDisplayedPieces: number = 0;
+
+    get displayedPieces(): number {
+        return this.petals.filter(petal => !petal.hidden).length;
+    }
+
     readonly definition: SavedPetalDefinitionData;
     petals: ServerPetal[] = [];
 
@@ -33,7 +39,7 @@ export class PetalBunch {
         this.centerPosition = player.position;
 
         if (definition) {
-            this.totalPieces = definition.pieceAmount;
+            this.totalPieces = definition.equipment ? 1 : definition.pieceAmount;
             this.totalDisplayedPieces = getDisplayedPieces(definition);
 
             for (let i = 0; i < this.totalPieces; i++) {
@@ -48,6 +54,7 @@ export class PetalBunch {
 
     tick(radius: number, revolutionRadians: number, singleOccupiedRadians: number): void {
         if (!this.definition) return;
+        if (this.definition.equipment) return;
 
         if (radius > GameConstants.player.defaultPetalDistance){
             if (!this.definition.extendable) radius = GameConstants.player.defaultPetalDistance;

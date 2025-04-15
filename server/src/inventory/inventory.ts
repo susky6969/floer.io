@@ -241,7 +241,7 @@ export class Inventory {
         this.totalDisplayedPetals = 0;
 
         this.petalBunches.forEach(petalBunch => {
-            this.totalDisplayedPetals += petalBunch.totalDisplayedPieces;
+            this.totalDisplayedPetals += petalBunch.displayedPieces;
         });
 
         const radius = this.range;
@@ -253,7 +253,7 @@ export class Inventory {
 
         this.petalBunches.forEach(petalBunch => {
             petalBunch.tick(radius, revolutionRadians, singleOccupiedRadians);
-            revolutionRadians += singleOccupiedRadians * petalBunch.totalDisplayedPieces;
+            revolutionRadians += singleOccupiedRadians * petalBunch.displayedPieces;
         });
     }
 }

@@ -7,7 +7,7 @@ import { EventInitializer } from "./eventManager";
 import { Effect } from "./effects";
 import { EntityType } from "../../../common/src/constants";
 import { ServerPlayer } from "../entities/serverPlayer";
-import { ServerMob } from "../entities/serverMob";
+import { ServerFriendlyMob, ServerMob } from "../entities/serverMob";
 import { ServerProjectile } from "../entities/serverProjectile";
 import { Projectile } from "../../../common/src/definitions/projectile";
 import { isDamageableEntity } from "../typings";
@@ -19,12 +19,14 @@ export enum AttributeEvents {
     PETAL_DEAL_DAMAGE = "PETAL_DEAL_DAMAGE",
     FLOWER_DEAL_DAMAGE = "FLOWER_DEAL_DAMAGE",
     FLOWER_GET_DAMAGE = "FLOWER_GET_DAMAGE",
-    PROJECTILE_DEAL_DAMAGE = "PROJECTILE_DEAL_DAMAGE"
+    PROJECTILE_DEAL_DAMAGE = "PROJECTILE_DEAL_DAMAGE",
+    CAN_USE = "CAN_USE"
 }
 
 export enum PetalUsingAnimations {
     ABSORB = "ABSORB",
-    NORMAL = "NORMAL"
+    NORMAL = "NORMAL",
+    HATCH = "HATCH",
 }
 
 export interface AttributeRealize<T extends AttributeName = AttributeName> {
@@ -170,7 +172,7 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 const position = petal.position;
                 const projectile = new ServerProjectile(
                     petal.owner, position, direction, data, petal);
-                projectile.addVelocity(Vec2.mul(direction, 6 * data.speed));
+                projectile.addVelocity(Vec2.mul(direction, data.velocityAtFirst ?? data.speed * 6));
                 if (data.definition.onGround)
                     projectile.addVelocity(Vec2.mul(direction, 80 * data.hitboxRadius / 5));
             }, PetalUsingAnimations.NORMAL)
@@ -186,8 +188,42 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 const position = petal.position;
                 const projectile = new ServerProjectile(
                     petal.owner, position, direction, data, petal);
-                projectile.addVelocity(Vec2.mul(direction, 6 * data.speed))
+                projectile.addVelocity(Vec2.mul(direction, data.velocityAtFirst ?? data.speed * 6))
             }, PetalUsingAnimations.NORMAL)
+        }
+    },
+
+    place_projectile: {
+        callback: (on, petal, data) => {
+            on(AttributeEvents.ATTACK,() => {
+                if (!data) return;
+                const direction =
+                    MathGraphics.directionBetweenPoints(petal.position, petal.owner.position);
+                const position = petal.position;
+                const projectile = new ServerProjectile(
+                    petal.owner, position, direction, data, petal);
+                projectile.addVelocity(Vec2.mul(direction, data.velocityAtFirst ?? data.speed * 6));
+                if (data.definition.onGround)
+                    projectile.addVelocity(Vec2.mul(direction, 80 * data.hitboxRadius / 5));
+            }, PetalUsingAnimations.NORMAL)
+
+            on(AttributeEvents.DEFEND,() => {
+                if (!data) return;
+                const direction =
+                    MathGraphics.directionBetweenPoints(petal.position, petal.owner.position);
+                const position = petal.position;
+                const projectile = new ServerProjectile(
+                    petal.owner, position, direction, data, petal);
+            }, PetalUsingAnimations.NORMAL)
+        }
+    },
+
+    spawner: {
+        callback: (on, petal, data) => {
+            on(AttributeEvents.CAN_USE,() => {
+                if (!data) return;
+                petal.spawned = new ServerFriendlyMob(petal.game, petal.owner, data);
+            }, PetalUsingAnimations.HATCH);
         }
     },
 

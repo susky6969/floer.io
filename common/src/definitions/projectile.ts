@@ -22,6 +22,10 @@ export const Projectile = new Definitions<ProjectileDefinition>([
     },{
         idString: "poison_peas",
         displayName: "Peas",
+    },{
+        idString: "pollen",
+        displayName: "Pollen",
+        onGround: true
     },
 ] as ProjectileDefinition[]);
 
@@ -34,4 +38,5 @@ export interface ProjectileParameters {
     health: number
     hitboxRadius: number
     modifiers?: Partial<Modifiers>
+    velocityAtFirst?: number
 }

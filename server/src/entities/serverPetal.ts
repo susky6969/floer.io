@@ -2,14 +2,13 @@ import { ServerEntity } from "./serverEntity";
 import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType } from "../../../common/src/constants";
-import { AttributeParameters, PetalDefinition } from "../../../common/src/definitions/petal";
+import { PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
-import { ServerMob } from "./serverMob";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { AttributeEvents, PetalUsingAnimations, } from "../utils/attribute";
 import { damageableEntity, damageSource } from "../typings";
-import { Vector } from "../../../common/src/utils/vector";
 import { PetalBunch } from "../inventory/petalBunch";
+import { ServerFriendlyMob, ServerMob } from "./serverMob";
 
 export class ServerPetal extends ServerEntity<EntityType.Petal> {
     type: EntityType.Petal = EntityType.Petal;
@@ -21,6 +20,18 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
 
     _isReloading: boolean = false;
 
+    _hidden: boolean = false;
+
+    get hidden(): boolean {
+        return this._hidden;
+    }
+
+    set hidden(value: boolean) {
+        this._hidden = value;
+
+        this.setDirty();
+    }
+
     get isReloading(): boolean {
         return this._isReloading;
     }
@@ -28,7 +39,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     set isReloading(isReloading: boolean) {
         if (this._isReloading === isReloading) return;
         this._isReloading = isReloading;
-        if (isReloading) {
+        if (isReloading || this.definition.equipment) {
             this.reloadTime = 0;
         } else {
             this.health = this.definition.health;
@@ -51,25 +62,21 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     knockback: number = 0;
     weight = 0.02;
 
+    spawned?: ServerMob;
+
     get canUse(): boolean {
-        if (this.definition.usable)
+        if (!this.definition.equipment && this.definition.usable)
             return this.useReload >= this.definition.useTime;
         return false;
     }
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
         if (!this.health) return false;
-        switch (source.type) {
-            case EntityType.Player:
-                return source != this.owner
-            case EntityType.Mob:
-                return true
-            case EntityType.Petal:
-                return source != this
-                    && source.owner != this.owner
-            case EntityType.Projectile:
-                return source.source != this.owner
-        }
+        return this.owner.canReceiveDamageFrom(source);
+    }
+
+    canCollideWith(entity: ServerEntity): boolean {
+        return !this.definition.equipment && super.canCollideWith(entity);
     }
 
     isActive(): boolean {
@@ -80,14 +87,16 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         const player = petalBunch.player;
         super(player.game, player.position);
         this.petalBunch = petalBunch;
-        this.hitbox = new CircleHitbox(definition.hitboxRadius);
 
         this.position = player.position;
         this.definition = definition;
         this.owner = player;
 
-        this.damage = definition.damage;
-        this.health = definition.health;
+        this.hitbox = new CircleHitbox(definition.hitboxRadius);
+        if (!(definition.equipment)) {
+            this.damage = definition.damage;
+            this.health = definition.health;
+        }
     }
 
     join(): void {
@@ -102,28 +111,49 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             return;
         }
 
-        if (this.isReloading) {
-            if (
-                !this.definition.reloadTime
-                || this.reloadTime >= this.definition.reloadTime
-            ){
-                this.isReloading = false;
-            }
-            this.reloadTime += this.game.dt;
-            this.position = this.owner.position;
-        } else if (this.isUsing) {
-            if (this.isUsing === PetalUsingAnimations.ABSORB) {
+        if (!this.definition.equipment) {
+            if (this.isReloading) {
+                if (
+                    !this.definition.reloadTime
+                    || this.reloadTime >= this.definition.reloadTime
+                ) {
+                    this.isReloading = false;
+                }
+                this.reloadTime += this.game.dt;
                 this.position = this.owner.position;
+            } else if (this.isUsing) {
+                if (this.isUsing === PetalUsingAnimations.ABSORB) {
+                    this.position = this.owner.position;
+                } else if (this.isUsing === PetalUsingAnimations.HATCH) {
+                    if (!this.spawned || this.spawned.destroyed) {
+                        this.isReloading = true;
+                        this.isUsing = undefined;
+                        this.useReload = 0;
+                        this.hidden = false;
+                    }
+                }
+            } else {
+                if (this.definition.usable) {
+                    this.useReload += this.game.dt;
+                    if (this.canUse) {
+                        this.owner.sendEvent(AttributeEvents.CAN_USE, undefined, this)
+                    }
+                }
             }
         } else {
-            if (this.definition.usable) {
-                this.useReload += this.game.dt;
-            }
+            this.isLoadingFirstTime = false;
+            this.isReloading = false;
+            this.position = this.owner.position;
         }
     }
 
     startUsing(animation: PetalUsingAnimations, func?: Function): void{
         this.isUsing = animation;
+
+        if (this.isUsing === PetalUsingAnimations.HATCH) {
+            this.hidden = true;
+            return;
+        }
 
         setTimeout(() => {
             if (!this.isReloading) {
@@ -132,7 +162,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
             }
             this.isUsing = undefined;
             this.useReload = 0;
-        }, 100);
+        }, animation === PetalUsingAnimations.NORMAL ? 0 : 100);
     }
 
     dealDamageTo(to: damageableEntity): void{
@@ -163,11 +193,16 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         return {
             position: this.position,
             definition: this.definition,
-            isReloading: this.isReloading,
+            isReloading: this.isReloading || this.hidden,
             ownerId: this.owner.id,
             full: {
 
             }
         };
     };
+
+    destroy() {
+        super.destroy();
+        if (this.spawned) this.spawned.destroy();
+    }
 }

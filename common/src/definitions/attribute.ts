@@ -36,6 +36,10 @@ const AttributeDefinitions = [
         displayName: "Shoot"
     },
     {
+        idString: "place_projectile",
+        displayName: "Place Projectile"
+    },
+    {
         idString: "critical_hit",
         displayName: "Critical Hit"
     },
@@ -50,6 +54,9 @@ const AttributeDefinitions = [
     {
         idString: "paralyze",
         displayName: "Paralyze"
+    },{
+        idString: "spawner",
+        displayName: "Spawner"
     }
 ] as const;
 

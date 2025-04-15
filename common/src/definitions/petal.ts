@@ -3,22 +3,18 @@ import { AttributeName } from "./attribute";
 import { RarityName } from "./rarity";
 import { Modifiers } from "../typings";
 import { Projectile, ProjectileDefinition, ProjectileParameters } from "./projectile";
+import { MobDefinition, Mobs } from "./mob";
 
 export type SavedPetalDefinitionData = PetalDefinition | null
 
 export type PetalDefinition = ObjectDefinition & {
     readonly description?: string
-    readonly damage?: number
-    readonly health?: number
-    readonly reloadTime?: number
-    readonly hitboxRadius: number
-    readonly extendable: boolean
-    readonly moreExtendDistance?: number
     readonly rarity: RarityName
     readonly attributes?: AttributeParameters
     readonly modifiers?: Partial<Modifiers>
     readonly undroppable?: boolean
     readonly unstackable?: boolean
+    readonly hitboxRadius: number
     readonly images?: {
         readonly slotDisplaySize?: number
         readonly slotRotation?: number
@@ -28,7 +24,18 @@ export type PetalDefinition = ObjectDefinition & {
         readonly centerYOffset?: number
         readonly facingOut?: boolean
     }
-} & PetalPieceType & PetalUsageType;
+} & PetalEquipmentType;
+
+type PetalEquipmentType = ({
+    readonly equipment?: false
+    readonly damage?: number
+    readonly health?: number
+    readonly reloadTime?: number
+    readonly extendable: boolean
+    readonly moreExtendDistance?: number
+} & PetalPieceType & PetalUsageType) | {
+    readonly equipment: true
+}
 
 type PetalPieceType = {
     readonly isDuplicate: false
@@ -67,6 +74,8 @@ export type AttributeParameters = {
     damage_reflection?: number
     shoot?: ProjectileParameters
     peas_shoot?: ProjectileParameters
+    place_projectile?: ProjectileParameters
+    spawner?: MobDefinition
     critical_hit?: {
         chance: number
         multiplier: number
@@ -84,6 +93,7 @@ export type AttributeParameters = {
 })
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
+    if (petal.equipment) return 0;
     if (petal.isDuplicate && petal.isShowedInOne) return 1;
     return petal.pieceAmount;
 }
@@ -1127,27 +1137,163 @@ export const Petals = new Definitions<PetalDefinition>([
         description: "A deadly pincer that poisons and paralyzes enemies",
         damage: 5,
         health: 5,
-        extendable: true,
-        usable: false,
-        images: {
+        extendable:
+        true,
+            usable
+    :
+        false,
+            images
+    :
+        {
             slotDisplaySize: 35,
-            selfGameRotation: 0.01
-        },
+                selfGameRotation
+        :
+            0.01
+        }
+    ,
         attributes: {
             poison: {
                 damagePerSecond: 10,
-                duration: 1
-            },
+                    duration
+            :
+                1
+            }
+        ,
             paralyze: {
                 duration: 0.8,
-                speedReduction: 1.0
+                    speedReduction
+            :
+                1.0
+            }
+        }
+    ,
+        reloadTime: 1.25,
+            hitboxRadius
+    :
+        0.45,
+            isDuplicate
+    :
+        false,
+            pieceAmount
+    :
+        1,
+            rarity
+    :
+        RarityName.rare,
+            usingAssets
+    :
+        "dice",
+    },{
+        idString: "antennae",
+        displayName: "Antennae",
+        description: "Allows your flower to sense foes farther away. ",
+        equipment: true,
+        images: {
+            slotDisplaySize: 60
+        },
+        hitboxRadius: 0.9,
+        modifiers: {
+            zoom: 15
+        },
+        rarity: RarityName.legendary
+    },
+    {
+        idString: "pollen",
+        displayName: "Pollen",
+        description: "Asthmatics beware. ",
+        damage: 8,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.2,
+        attributes: {
+            place_projectile: {
+                definition: Projectile.fromString("pollen"),
+                speed: 0,
+                damage: 8,
+                health: 5,
+                hitboxRadius: 0.3,
+                despawnTime: 5,
+                velocityAtFirst: 20
             }
         },
-        reloadTime: 1.25,
-        hitboxRadius: 0.45,
+        reloadTime: 1,
+        hitboxRadius: 0.3,
+        isDuplicate: true,
+        pieceAmount: 3,
+        isShowedInOne: false,
+        rarity: RarityName.epic,
+    },
+    {
+        idString: "myt_pollen",
+        displayName: "Pollen",
+        description: "Asthmatics beware. ",
+        damage: 8,
+        health: 5,
+        extendable: false,
+        usable: true,
+        useTime: 0.1,
+        attributes: {
+            place_projectile: {
+                definition: Projectile.fromString("pollen"),
+                speed: 0,
+                damage: 8,
+                health: 5,
+                hitboxRadius: 0.3,
+                despawnTime: 5,
+                velocityAtFirst: 20
+            }
+        },
+        reloadTime: 0.1,
+        hitboxRadius: 0.3,
+        isDuplicate: true,
+        pieceAmount: 4,
+        isShowedInOne: false,
+        rarity: RarityName.mythic,
+        usingAssets: "pollen"
+    },
+    {
+        idString: "egg",
+        displayName: "Egg",
+        description: "Something interesting might pop out of this.",
+        damage: 1,
+        health: 50,
+        extendable: false,
+        usable: true,
+        images: {
+            slotDisplaySize: 45
+        },
+        useTime: 1,
+        attributes: {
+            spawner: Mobs.fromString("solider_ant")
+        },
+        reloadTime: 1,
+        hitboxRadius: 0.6,
         isDuplicate: false,
         pieceAmount: 1,
-        rarity: RarityName.rare,
-        usingAssets: "dice",
+        rarity: RarityName.epic
+    },
+    {
+        idString: "myt_egg",
+        displayName: "Egg",
+        description: "Something interesting might pop out of this.",
+        damage: 1,
+        health: 50,
+        extendable: false,
+        usable: true,
+        images: {
+            slotDisplaySize: 45
+        },
+        useTime: 1.5,
+        attributes: {
+            spawner: Mobs.fromString("hornet")
+        },
+        reloadTime: 2.1,
+        hitboxRadius: 0.6,
+        isDuplicate: true,
+        pieceAmount: 2,
+        isShowedInOne: false,
+        rarity: RarityName.mythic,
+        usingAssets: "egg"
     }
 ] satisfies PetalDefinition[]);

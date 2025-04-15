@@ -43,14 +43,18 @@ export class ClientPetal extends ClientEntity {
     }
 
     render(): void {
-        if (this.reloadAnimation) {
-            this.reloadAnimation.update();
-        }else {
-            this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8)
-        }
-
         if (this.definition) {
             const owner = this.game.entityPool.get(this.ownerId);
+
+            if (this.definition.equipment) {
+                if (owner) {
+                    this.container.position = Vec2.sub(
+                        owner.container.position,
+                        Vec2.new(0, 25)
+                    );
+                }
+                return;
+            }
 
             if (this.definition.images?.facingOut) {
                 if (owner) {
@@ -78,15 +82,22 @@ export class ClientPetal extends ClientEntity {
                 })
             }
         }
+
+        if (this.reloadAnimation) {
+            this.reloadAnimation.update();
+        } else {
+            this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8)
+        }
     }
 
     changeVisibleTo(visible: boolean): void {
         if (this.visible !== visible) {
             this.visible = visible;
-            if (visible) {
+            if (visible || this.definition.equipment) {
+                this.reloadAnimation = undefined;
                 this.images.body.setVisible(visible);
                 this.images.body.setAlpha(1);
-                this.images.body.setScaleByUnitRadius(this.definition.hitboxRadius)
+                this.images.body.setScaleByUnitRadius(this.definition.hitboxRadius);
             } else {
                 this.reloadAnimation = new Tween({ alpha: 1, scale: this.definition.hitboxRadius })
                     .to({ alpha: 0, scale: this.definition.hitboxRadius * 4 }
@@ -106,8 +117,6 @@ export class ClientPetal extends ClientEntity {
     updateFromData(data: EntitiesNetData[EntityType.Petal], _isNew: boolean): void {
         this.position = data.position;
 
-        this.render();
-
         if (_isNew){
             this.definition = data.definition;
 
@@ -116,9 +125,10 @@ export class ClientPetal extends ClientEntity {
             this.images.body
                 .setFrame(getGameAssetsPath("petal", this.definition))
                 .setScaleByUnitRadius(data.definition.hitboxRadius)
-
-            this.images.body.setVisible(!data.isReloading);
+                .setVisible(!data.isReloading);
         }
+
+        this.render();
 
         this.ownerId = data.ownerId;
 

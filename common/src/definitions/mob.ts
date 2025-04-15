@@ -169,7 +169,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "fast": 0.24,
             "stinger": 0.14,
             "twin": 0.06,
-            "dual_stinger": 0.02,
+            "triangle": 0.02,
             "bubble": 0.012,
             "leg_bubble": 0.0012,
             "wing": 0.006,
@@ -191,13 +191,15 @@ export const Mobs = new Definitions<MobDefinition>([
             "fast": 0.48,
             "stinger": 0.28,
             "twin": 0.12,
-            "dual_stinger": 0.04,
+            "triangle": 0.04,
             "bubble": 0.024,
             "leg_bubble": 0.0024,
             "wing": 0.012,
             "tri_wing": 0.006,
             "pinger": 0.0006,
-            "penta": 0.006
+            "penta": 0.006,
+            "pollen": 0.03,
+            "myt_pollen": 0.006
         },
         rarity: RarityName.rare,
         exp: 10,
@@ -211,7 +213,7 @@ export const Mobs = new Definitions<MobDefinition>([
         hitboxRadius: 2,
         lootTable: {
             "sand": 0.66,
-            "dual_stinger": 0.02,
+            "triangle": 0.02,
             "missile": 0.12,
             "big_missile": 0.01,
             "cactus": 0.06,
@@ -231,7 +233,7 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "sand": 0.66,
             "stinger": 0.5,
-            "dual_stinger": 0.1,
+            "triangle": 0.1,
             "missile": 0.66,
             "big_missile": 0.01,
             "cactus": 0.12,
@@ -343,7 +345,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "leg_bubble": 0.006,
             "wing": 0.03,
             "tri_wing": 0.009,
-            "pinger": 0.001
+            "pinger": 0.001,
+            "myt_egg": 0.006
         },
         rarity: RarityName.epic,
         exp: 10
@@ -376,7 +379,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "leg_bubble": 0.012,
             "triplet": 0.024,
             "tri_stinger": 0.012,
-            "pinger": 0.002
+            "pinger": 0.002,
+            "myt_egg": 0.006
         },
         rarity: RarityName.mythic,
         exp: 20,
@@ -457,7 +461,7 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "iris": 0.24,
             "stinger": 0.36,
-            "dual_stinger": 0.024,
+            "triangle": 0.024,
             "tri_stinger": 0.012,
             "web": 0.18,
             "tri_web": 0.004,
@@ -494,7 +498,7 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "iris": 0.48,
             "stinger": 0.72,
-            "dual_stinger": 0.08,
+            "triangle": 0.08,
             "tri_stinger": 0.02,
             "web": 0.36,
             "tri_web": 0.01,
@@ -513,7 +517,7 @@ export const Mobs = new Definitions<MobDefinition>([
         damage: 10,
         health: 40,
         category: MobCategory.Enemy,
-        aggroRadius: 10,
+        aggroRadius: 20,
         hitboxRadius: 1.5,
         speed: 3,
         lootTable: {
@@ -527,7 +531,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "faster": 0.4,
             "dual_faster": 0.01,
             "penta": 0.001,
-            "tri_faster": 0.001
+            "tri_faster": 0.001,
+            "egg": 0.06
         },
         rarity: RarityName.unusual,
         exp: 4

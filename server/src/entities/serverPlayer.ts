@@ -21,6 +21,7 @@ import { EventFunctionArguments } from "../utils/eventManager";
 import { getLevelExpCost, getLevelInformation } from "../../../common/src/utils/levels";
 import { damageableEntity, damageSource } from "../typings";
 import { LoggedInPacket } from "../../../common/src/packets/loggedInPacket";
+import { ServerFriendlyMob } from "./serverMob";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
@@ -106,7 +107,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             )
     }
 
-    modifiers: Modifiers = GameConstants.player.defaultModifiers();
+    modifiers: Modifiers = GameConstants.defaultModifiers();
     otherModifiers: Partial<Modifiers>[] = [];
 
     exp: number = 0;
@@ -120,11 +121,13 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             case EntityType.Player:
                 return source != this
             case EntityType.Mob:
+                if (source instanceof ServerFriendlyMob) return source.owner !== this;
                 return true
             case EntityType.Petal:
-                return source.owner != this
+                return source.owner != this;
             case EntityType.Projectile:
-                return source.source != this
+                if (source.source instanceof ServerFriendlyMob) return source.source.owner != this;
+                return source.source != this;
         }
     }
 
@@ -420,7 +423,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     updateModifiers(): void {
-        let modifiersNow = GameConstants.player.defaultModifiers();
+        let modifiersNow = GameConstants.defaultModifiers();
 
         let effectedPetals: PetalDefinition[] = []
 
@@ -448,6 +451,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.modifiers = modifiersNow;
 
         this.maxHealth = this.modifiers.maxHealth;
+        this.zoom = this.modifiers.zoom;
     }
 
     destroy() {
