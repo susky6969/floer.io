@@ -91,9 +91,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         this.weight = definition.hitboxRadius * 10;
 
         this.lastSegment = lastSegment;
+        this.position = position;
 
         this.game.grid.addEntity(this);
         this.position = position;
+        
         this.direction = direction;
     }
 
