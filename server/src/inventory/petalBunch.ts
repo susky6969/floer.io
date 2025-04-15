@@ -20,7 +20,7 @@ export class PetalBunch {
     readonly totalDisplayedPieces: number = 0;
 
     get displayedPieces(): number {
-        return this.petals.filter(petal => !petal.hidden).length;
+        return Math.min(this.totalDisplayedPieces,this.petals.filter(petal => !petal.hidden).length);
     }
 
     readonly definition: SavedPetalDefinitionData;
