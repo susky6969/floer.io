@@ -1143,7 +1143,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 speedReduction: 1.0
             }
         },
-        reloadTime: 3,
+        reloadTime: 1.25,
         hitboxRadius: 0.45,
         isDuplicate: false,
         pieceAmount: 1,
