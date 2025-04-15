@@ -183,7 +183,7 @@ export const Mobs = new Definitions<MobDefinition>([
         idString: "passive_bee",
         displayName: "Bee",
         damage: 50,
-        health: 50,
+        health: 30,
         category: MobCategory.Passive,
         hitboxRadius: 1.5,
         speed: 3.5,
