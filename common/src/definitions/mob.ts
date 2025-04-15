@@ -692,7 +692,7 @@ export const Mobs = new Definitions<MobDefinition>([
         hitboxRadius: 1.5,
         images: {
             width: 242.874,
-            height: 226
+            height: 226 
         },
         lootTable: {
             "iris": 0.82,
@@ -724,6 +724,7 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "iris": 0.82,
             "peas": 0.28,
+            "chip": 0.28,
             "poison_peas": 0.01,
             "leg_poison_peas": 0.004,
             "myt_poison_peas": 0.002
