@@ -464,6 +464,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "triangle": 0.024,
             "tri_stinger": 0.012,
             "web": 0.18,
+            "pincer": 0.18,
             "tri_web": 0.004,
             "faster": 0.4,
             "dual_faster": 0.01,
@@ -501,6 +502,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "triangle": 0.08,
             "tri_stinger": 0.02,
             "web": 0.36,
+            "pincer": 0.36,
             "tri_web": 0.01,
             "faster": 0.6,
             "dual_faster": 0.02,
@@ -695,6 +697,7 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "iris": 0.82,
             "peas": 0.28,
+            "chip": 0.28,
             "poison_peas": 0.01,
             "leg_poison_peas": 0.004,
             "myt_poison_peas": 0.002

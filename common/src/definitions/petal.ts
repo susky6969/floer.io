@@ -1125,11 +1125,10 @@ export const Petals = new Definitions<PetalDefinition>([
             }
         },
         reloadTime: 2.5,
-        hitboxRadius: 0.5,
+        hitboxRadius: 0.55,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.rare,
-        usingAssets: "dice",
     },
     {
         idString: "pincer",
@@ -1179,10 +1178,7 @@ export const Petals = new Definitions<PetalDefinition>([
         1,
             rarity
     :
-        RarityName.rare,
-            usingAssets
-    :
-        "dice",
+        RarityName.rare
     },{
         idString: "antennae",
         displayName: "Antennae",
