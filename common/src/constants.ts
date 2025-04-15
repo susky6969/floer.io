@@ -21,7 +21,7 @@ export const GameConstants = {
         spawnMaxY: 50,
         defaultSlot: 8,
         defaultPrepareSlot: 8,
-        defaultEquippedPetals: ["myt_big_missile", "myt_poison_peas", "salt", "myt_tri_rose", "unstoppable_bubble"],
+        defaultEquippedPetals: ["basic", "basic", "basic", "basic", "basic", "basic", "basic", "basic"],
         defaultPreparationPetals: [],
         defaultPetalDistance: 3.5,
         defaultPetalAttackingDistance: 6.5,
@@ -84,7 +84,7 @@ export const Zones:
         borderColor: "#1da25e",
         levelAtLowest: 0,
         levelAtHighest: 15,
-        density: 0,
+        density: 0.8,
         spawning: {
             "ladybug": 10,
             "rock": 20,
