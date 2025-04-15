@@ -278,7 +278,7 @@ export class Game {
     }
 
     gameHas(petal: PetalDefinition): boolean {
-        for (const activePlayer of this.activePlayers) {
+        for (const activePlayer of this.players) {
             if (activePlayer.inventory.inventory.includes(petal))
                 return true;
         }
