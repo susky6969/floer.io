@@ -1265,7 +1265,7 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         useTime: 1,
         attributes: {
-            spawner: Mobs.fromString("solider_ant")
+            spawner: Mobs.fromString("soldier_ant")
         },
         reloadTime: 1,
         hitboxRadius: 0.6,
