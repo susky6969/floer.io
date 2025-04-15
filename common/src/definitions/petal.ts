@@ -346,7 +346,7 @@ export const Petals = new Definitions<PetalDefinition>([
             absorbing_heal: 3.5
         },
         reloadTime: 3.5,
-        hitboxRadius: 0.4,
+        hitboxRadius: 0.34,
         isDuplicate: true,
         isShowedInOne: true,
         pieceAmount: 3,
@@ -475,7 +475,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 45,
         },
         reloadTime: 2.5,
-        hitboxRadius: 0.585,
+        hitboxRadius: 0.55,
         isDuplicate: false,
         pieceAmount: 1,
         undroppable: true,
@@ -942,7 +942,7 @@ export const Petals = new Definitions<PetalDefinition>([
             }
         },
         reloadTime: 1.2,
-        hitboxRadius: 0.4,
+        hitboxRadius: 0.33,
         isDuplicate: true,
         pieceAmount: 4,
         isShowedInOne: true,
@@ -966,7 +966,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 speed: 6.25,
                 damage: 8,
                 health: 5,
-                hitboxRadius: 0.38,
+                hitboxRadius: 0.33,
                 despawnTime: 5
             },
             poison: {
@@ -1085,7 +1085,7 @@ export const Petals = new Definitions<PetalDefinition>([
             }
         },
         reloadTime: 3,
-        hitboxRadius: 0.585,
+        hitboxRadius: 0.6,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic
