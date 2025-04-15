@@ -7,25 +7,27 @@ import { GameConstants } from "../../../common/src/constants";
 import { Rarity } from "../../../common/src/definitions/rarity";
 
 export function spawnLoot(game: Game, loots: PetalDefinition[], position: Vector): void {
+    let spawnedLoots = loots.concat([]);
+
     loots.forEach(loot => {
         if (Rarity.fromString(loot.rarity).isUnique && game.gameHas(loot)) {
-            loots.splice(loots.indexOf(loot), 1);
+            spawnedLoots.splice(spawnedLoots.indexOf(loot), 1);
         }
     });
 
-    if (loots.length <= 0) return;
+    if (spawnedLoots.length <= 0) return;
 
-    if (loots.length > 1) {
+    if (spawnedLoots.length > 1) {
         let radiansNow = 0;
-        const everyOccupiedRadians = P2 / loots.length;
-        loots.forEach(loot => {
+        const everyOccupiedRadians = P2 / spawnedLoots.length;
+        spawnedLoots.forEach(loot => {
             new ServerLoot(game,
                 MathGraphics.getPositionOnCircle(radiansNow, GameConstants.loot.spawnRadius, position), loot
             )
             radiansNow += everyOccupiedRadians;
         })
     } else {
-        const loot = loots[0];
+        const loot = spawnedLoots[0];
 
         new ServerLoot(game, position, loot)
     }
