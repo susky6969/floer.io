@@ -61,6 +61,8 @@ export interface PoisonEffectData {
 }
 
 export class PoisonEffect extends Effect {
+    damagePerSecond: number
+
     constructor(data: PoisonEffectData) {
         super({
             effectedTarget: data.effectedTarget,
@@ -75,6 +77,7 @@ export class PoisonEffect extends Effect {
             },
             workingType: [EntityType.Mob, EntityType.Player]
         });
+        this.damagePerSecond = data.damagePerSecond;
     }
 
     destroy() {

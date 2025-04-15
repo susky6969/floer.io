@@ -198,8 +198,12 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     receivePoison(source: damageSource,
                   damagePerSecond: number,
                   duration: number): void {
-        if (this.state.poison)
+
+        if (this.state.poison) {
+            const poison = this.state.poison;
+            if (poison.duration * poison.damagePerSecond > damagePerSecond * duration) return;
             this.state.poison.destroy();
+        }
 
         this.state.poison = new PoisonEffect({
             effectedTarget: this,
