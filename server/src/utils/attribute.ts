@@ -219,4 +219,53 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
             )
         }
     },
+
+    damage_avoidance: {
+        callback: (on, petal, data) => {
+            const originalReceiveDamage = petal.receiveDamage;
+            
+            petal.receiveDamage = function(amount: number, source: any) {
+                if (data && Math.random() < data.chance) {
+                    return;
+                }
+                originalReceiveDamage.call(this, amount, source);
+            };
+        }
+    },
+    
+    paralyze: {
+        callback: (on, petal, data) => {
+            on<AttributeEvents.PETAL_DEAL_DAMAGE>(
+                AttributeEvents.PETAL_DEAL_DAMAGE,
+                (entity) => {
+                    if (!entity || !data) return;
+                    new Effect({
+                        effectedTarget: entity,
+                        source: petal.owner,
+                        modifier: {
+                            speed: 1 - data.speedReduction
+                        },
+                        duration: data.duration,
+                        workingType: [EntityType.Player, EntityType.Mob]
+                    }).start();
+                }
+            );
+            on<AttributeEvents.PROJECTILE_DEAL_DAMAGE>(
+                AttributeEvents.PROJECTILE_DEAL_DAMAGE,
+                (entity) => {
+                    if (!entity || !data) return;
+                    
+                    new Effect({
+                        effectedTarget: entity,
+                        source: petal.owner,
+                        modifier: {
+                            speed: 1 - data.speedReduction
+                        },
+                        duration: data.duration,
+                        workingType: [EntityType.Player, EntityType.Mob]
+                    }).start();
+                }
+            );
+        }
+    },
 } as const;

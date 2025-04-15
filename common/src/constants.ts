@@ -22,6 +22,7 @@ export const GameConstants = {
         defaultSlot: 8,
         defaultPrepareSlot: 8,
         defaultEquippedPetals: ["basic", "basic", "basic", "basic", "basic", "basic", "basic", "basic"],
+        //defaultEquippedPetals: ["chip", "chip", "pincer", "dandelion", "salt", "tri_cactus", "poison_cactus", "unstoppable_bubble"],
         defaultPreparationPetals: [],
         defaultPetalDistance: 3.5,
         defaultPetalAttackingDistance: 6.5,

@@ -74,6 +74,13 @@ export type AttributeParameters = {
     health_percent_damage?: {
         percent: number
     }
+    damage_avoidance?: {
+        chance: number
+    }
+    paralyze?: {
+        duration: number
+        speedReduction: number
+    }
 })
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
@@ -1089,5 +1096,58 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic
+    },
+    {
+        idString: "chip",
+        displayName: "Chip",
+        description: "A lucky microchip with a 70% chance to avoid taking damage",
+        damage: 8,
+        health: 8,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 40,
+            selfGameRotation: 0.02
+        },
+        attributes: {
+            damage_avoidance: {
+                chance: 0.7
+            }
+        },
+        reloadTime: 2.5,
+        hitboxRadius: 0.5,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.rare,
+        usingAssets: "dice",
+    },
+    {
+        idString: "pincer",
+        displayName: "Pincer",
+        description: "A deadly pincer that poisons and paralyzes enemies",
+        damage: 5,
+        health: 5,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 35,
+            selfGameRotation: 0.01
+        },
+        attributes: {
+            poison: {
+                damagePerSecond: 10,
+                duration: 1
+            },
+            paralyze: {
+                duration: 0.8,
+                speedReduction: 1.0
+            }
+        },
+        reloadTime: 3,
+        hitboxRadius: 0.45,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.rare,
+        usingAssets: "dice",
     }
 ] satisfies PetalDefinition[]);

@@ -42,6 +42,14 @@ const AttributeDefinitions = [
     {
         idString: "health_percent_damage",
         displayName: "Health Percent Damage"
+    },
+    {
+        idString: "damage_avoidance",
+        displayName: "Damage Avoidance"
+    },
+    {
+        idString: "paralyze",
+        displayName: "Paralyze"
     }
 ] as const;
 

@@ -154,6 +154,24 @@ const attributesShowingConfig: { [K in AttributeName] : AttributeShowingFunction
                 value: `${data.percent * 100}%`,
                 color: "#ff3333"
             }]
+        },
+        damage_avoidance: (data) => {
+            return [{
+                displayName: "Damage Avoidance",
+                value: `${data.chance * 100}%`,
+                color: "#3399ff"
+            }]
+        },
+        paralyze: (data) => {
+            return [{
+                displayName: "Paralyze",
+                value: `${data.duration}s`,
+                color: "#cc00cc"
+            }, {
+                displayName: "Speed Reduction",
+                value: `${data.speedReduction * 100}%`,
+                color: "#9966ff"
+            }]
         }
     }
 
