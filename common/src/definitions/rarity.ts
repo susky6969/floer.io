@@ -19,6 +19,7 @@ type RarityDefinition = ObjectDefinition & {
     level: number;
     showParticle?: boolean;
     isUnique?: boolean;
+    petalMaxCount?: number;
 };
 
 export const Rarity = new Definitions<RarityDefinition>([
@@ -70,7 +71,8 @@ export const Rarity = new Definitions<RarityDefinition>([
         expWhenAbsorb: 5000,
         level: 6,
         showParticle: true,
-        isUnique: true
+        isUnique: true,
+        petalMaxCount: 3
     },
     {
         idString: RarityName.super,

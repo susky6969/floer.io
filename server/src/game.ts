@@ -22,6 +22,7 @@ import { InputPacket } from "../../common/src/packets/inputPacket";
 import { PetalDefinition } from "../../common/src/definitions/petal";
 import { P2 } from "../../common/src/utils/math";
 import { spawnSegmentMobs } from "./utils/mob";
+import { RarityName } from "../../common/src/definitions/rarity";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -290,6 +291,22 @@ export class Game {
         }
 
         return false
+    }
+
+    rarityPetalCount(rarity: RarityName): number {
+        let num = 0;
+
+        for (const activePlayer of this.players) {
+            activePlayer.inventory.inventory.forEach((e) => {
+                if (e && e.rarity === rarity) num++;
+            })
+        }
+
+        for (const byCategoryElementElement of this.grid.byCategory[EntityType.Loot]) {
+            if (byCategoryElementElement.definition.rarity === rarity) num++;
+        }
+
+        return num
     }
 }
 
