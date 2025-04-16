@@ -6,7 +6,7 @@ import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
 import { Text, Graphics, ColorMatrixFilter } from "pixi.js";
 import { MathGraphics, MathNumeric } from "@common/utils/math.ts";
-import { Vec2 } from "@common/utils/vector.ts";
+import { Vec2, Vector } from "@common/utils/vector.ts";
 import { Tween } from "@tweenjs/tween.js";
 
 export class ClientPlayer extends ClientEntity {
@@ -23,6 +23,8 @@ export class ClientPlayer extends ClientEntity {
     healthBar = new Graphics();
 
     lastGettingDamage: number = 0;
+
+    actuallyPosition: Vector = Vec2.new(0, 0);
 
     constructor(game: Game, id: number) {
         super(game, id)
@@ -60,6 +62,10 @@ export class ClientPlayer extends ClientEntity {
         if( name ) this.name.text = name;
 
         this.updateContainerPosition();
+
+        this.actuallyPosition = Vec2.targetEasing(this.container.position, Camera.vecToScreen(
+            Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)
+        ), 6 * this.interpolationFactor)
     }
 
     drawHealthBar(): void {
