@@ -205,6 +205,13 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     receiveDamage(amount: number, source: damageSource, disableEvent?: boolean) {
         if (!this.isActive()) return;
+        
+        // 闪避
+        if (this.modifiers.damageAvoidanceChance > 0 && Math.random() < this.modifiers.damageAvoidanceChance) {
+            console.log(`Player ${this.name} avoided damage from ${source.type}`);
+            return;
+        }
+        
         this.health -= amount;
 
         if (!disableEvent) {
@@ -424,30 +431,57 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     updateModifiers(): void {
         let modifiersNow = GameConstants.defaultModifiers();
-
         let effectedPetals: PetalDefinition[] = []
+        
+        // 闪避
+        let avoidanceFailureChance = 1;
 
         for (const petal of this.petalEntities) {
             const modifier = petal.definition.modifiers;
             if (modifier && !petal.isLoadingFirstTime) {
-                if (petal.definition.unstackable && effectedPetals.includes(petal.definition)) return;
-                modifiersNow = this.calcModifiers(modifiersNow, modifier);
+                if (petal.definition.unstackable && effectedPetals.includes(petal.definition)) continue;
+                if (modifier.damageAvoidanceChance) {
+                    avoidanceFailureChance *= (1 - modifier.damageAvoidanceChance);
+                    const modifierWithoutAvoidance = {...modifier};
+                    delete modifierWithoutAvoidance.damageAvoidanceChance;
+                    
+                    modifiersNow = this.calcModifiers(modifiersNow, modifierWithoutAvoidance);
+                } else {
+                    modifiersNow = this.calcModifiers(modifiersNow, modifier);
+                }
+                
                 effectedPetals.push(petal.definition)
             }
         }
 
         this.effects.effects.forEach(effect => {
             if (effect.modifier) {
-                modifiersNow = this.calcModifiers(modifiersNow, effect.modifier);
+                if (effect.modifier.damageAvoidanceChance) {
+                    avoidanceFailureChance *= (1 - effect.modifier.damageAvoidanceChance);
+                    const modifierWithoutAvoidance = {...effect.modifier};
+                    delete modifierWithoutAvoidance.damageAvoidanceChance;
+                    modifiersNow = this.calcModifiers(modifiersNow, modifierWithoutAvoidance);
+                } else {
+                    modifiersNow = this.calcModifiers(modifiersNow, effect.modifier);
+                }
             }
         })
 
         this.otherModifiers.forEach(effect => {
-            modifiersNow = this.calcModifiers(modifiersNow, effect)
+            if (effect.damageAvoidanceChance) {
+                avoidanceFailureChance *= (1 - effect.damageAvoidanceChance);
+                const modifierWithoutAvoidance = {...effect};
+                delete modifierWithoutAvoidance.damageAvoidanceChance;
+                modifiersNow = this.calcModifiers(modifiersNow, modifierWithoutAvoidance);
+            } else {
+                modifiersNow = this.calcModifiers(modifiersNow, effect);
+            }
         })
 
         this.otherModifiers = [];
-
+        
+        modifiersNow.damageAvoidanceChance = 1 - avoidanceFailureChance;
+        
         this.modifiers = modifiersNow;
 
         this.maxHealth = this.modifiers.maxHealth;

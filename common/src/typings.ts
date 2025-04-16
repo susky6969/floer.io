@@ -7,4 +7,5 @@ export interface Modifiers {
     speed: number;
     revolutionSpeed: number;
     zoom: number;
+    damageAvoidanceChance: number;
 }

@@ -94,6 +94,12 @@ const showingConfig: { [key: string] : showingConfig } =
             displayName: "Unstackable",
             color: "#656548",
             noValue: true
+        },
+        damageAvoidanceChance: {
+            displayName: "Flower Evasion",
+            color: "#3399ff",
+            percent: false,
+            startsWith: ""
         }
     }
 
@@ -672,6 +678,9 @@ export class Inventory{
                     if (showing.percent) {
                         value = original * 100 - 100;
                         if (value > 0) startsWith = "+"
+                        endsWith = "%";
+                    } else if (modifiersDefinitionKey === "damageAvoidanceChance") {
+                        value = original * 100;
                         endsWith = "%";
                     }
 

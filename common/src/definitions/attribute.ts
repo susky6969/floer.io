@@ -49,7 +49,7 @@ const AttributeDefinitions = [
     },
     {
         idString: "damage_avoidance",
-        displayName: "Damage Avoidance"
+        displayName: "Flower Evasion"
     },
     {
         idString: "paralyze",

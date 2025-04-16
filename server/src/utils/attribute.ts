@@ -286,6 +286,7 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                     }).start();
                 }
             );
+            
             on<AttributeEvents.PROJECTILE_DEAL_DAMAGE>(
                 AttributeEvents.PROJECTILE_DEAL_DAMAGE,
                 (entity) => {
