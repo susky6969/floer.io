@@ -1290,9 +1290,9 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         useTime: 1.5,
         attributes: {
-            spawner: Mobs.fromString("mega_hornet")
+            spawner: Mobs.fromString("leg_hornet")
         },
-        reloadTime: 5.1,
+        reloadTime: 3.1,
         hitboxRadius: 0.6,
         isDuplicate: true,
         pieceAmount: 2,

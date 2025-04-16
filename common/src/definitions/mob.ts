@@ -136,27 +136,6 @@ export const Mobs = new Definitions<MobDefinition>([
         },
         rarity: RarityName.epic,
         exp: 5
-    },
-    {
-        idString: "massive_dark_ladybug",
-        displayName: "Ladybug",
-        damage: 20,
-        health: 150,
-        category: MobCategory.Passive,
-        hitboxRadius: 3.5,
-        speed: 3,
-        usingAssets: "dark_ladybug",
-        lootTable: {
-            "tri_rose": 1,
-            "epic_rose": 0.08,
-            "bubble": 0.32,
-            "leg_bubble": 0.03,
-            "triplet": 0.08,
-            "penta": 0.006,
-            "myt_tri_rose": 0.006
-        },
-        rarity: RarityName.legendary,
-        exp: 20
     },{
         idString: "bee",
         displayName: "Bee",
@@ -297,26 +276,6 @@ export const Mobs = new Definitions<MobDefinition>([
         rarity: RarityName.epic,
         exp: 5
     },{
-        idString: "mega_beetle",
-        displayName: "Beetle",
-        damage: 30,
-        health: 400,
-        category: MobCategory.Enemy,
-        aggroRadius: 20,
-        hitboxRadius: 3,
-        speed: 3,
-        lootTable: {
-            "iris": 1,
-            "salt": 0.6,
-            "wing": 0.31,
-            "triplet": 0.02,
-            "tri_stinger": 0.0006,
-            "powder": 0.016
-        },
-        rarity: RarityName.legendary,
-        exp: 50,
-        usingAssets: "beetle"
-    },{
         idString: "hornet",
         displayName: "Hornet",
         damage: 50,
@@ -353,24 +312,24 @@ export const Mobs = new Definitions<MobDefinition>([
         rarity: RarityName.epic,
         exp: 10
     },{
-        idString: "mega_hornet",
+        idString: "leg_hornet",
         displayName: "Hornet",
         damage: 35,
-        health: 150,
+        health: 70,
         category: MobCategory.Enemy,
         reachingAway: true,
         shootable: true,
         shoot: {
-            hitboxRadius: 1.8,
-            damage: 20,
-            health: 20,
+            hitboxRadius: 0.9,
+            damage: 15,
+            health: 15,
             despawnTime: 3,
             speed: 6,
             definition: Projectile.fromString("missile")
         },
         shootSpeed: 1.5,
         aggroRadius: 30,
-        hitboxRadius: 3 / 0.6,
+        hitboxRadius: 2 * 0.9 / 0.6,
         speed: 4,
         lootTable: {
             "dandelion": 0.28,
@@ -386,7 +345,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "antennae": 0.03,
             "myt_antennae": 0.006
         },
-        rarity: RarityName.mythic,
+        rarity: RarityName.legendary,
         exp: 20,
         usingAssets: "hornet"
     },{
@@ -419,38 +378,6 @@ export const Mobs = new Definitions<MobDefinition>([
             "myt_poison_peas": 0.003
         },
         rarity: RarityName.rare,
-        exp: 20,
-        usingAssets: "mantis"
-    },{
-        idString: "mega_mantis",
-        displayName: "Mantis",
-        damage: 30,
-        health: 100,
-        category: MobCategory.Enemy,
-        reachingAway: true,
-        shootable: true,
-        shoot: {
-            hitboxRadius: 1.4,
-            damage: 15,
-            health: 15,
-            despawnTime: 3,
-            speed: 7,
-            definition: Projectile.fromString("peas")
-        },
-        shootSpeed: 1.5,
-        aggroRadius: 30,
-        hitboxRadius: 2 * 2 / 0.7,
-        speed: 3,
-        lootTable: {
-            "peas": 0.12,
-            "poison_peas": 0.02,
-            "leg_poison_peas": 0.005,
-            "leg_bubble": 0.012,
-            "wing": 0.06,
-            "tri_wing": 0.018,
-            "myt_poison_peas": 0.006
-        },
-        rarity: RarityName.legendary,
         exp: 20,
         usingAssets: "mantis"
     },{
@@ -737,5 +664,115 @@ export const Mobs = new Definitions<MobDefinition>([
         },
         rarity: RarityName.rare,
         exp: 4
+    },{
+        idString: "mega_mantis",
+        displayName: "Mantis",
+        damage: 30,
+        health: 300,
+        category: MobCategory.Enemy,
+        reachingAway: true,
+        shootable: true,
+        shoot: {
+            hitboxRadius: 1.4,
+            damage: 15,
+            health: 15,
+            despawnTime: 3,
+            speed: 7,
+            definition: Projectile.fromString("peas")
+        },
+        shootSpeed: 1.5,
+        aggroRadius: 30,
+        hitboxRadius: 2 * 2 / 0.7,
+        speed: 3,
+        lootTable: {
+            "peas": 0.12,
+            "poison_peas": 0.02,
+            "leg_poison_peas": 0.005,
+            "leg_bubble": 0.012,
+            "wing": 0.06,
+            "tri_wing": 0.018,
+            "myt_poison_peas": 0.006
+        },
+        rarity: RarityName.mythic,
+        exp: 20,
+        usingAssets: "mantis"
+    },{
+        idString: "mega_hornet",
+        displayName: "Hornet",
+        damage: 35,
+        health: 300,
+        category: MobCategory.Enemy,
+        reachingAway: true,
+        shootable: true,
+        shoot: {
+            hitboxRadius: 1.8,
+            damage: 20,
+            health: 20,
+            despawnTime: 3,
+            speed: 6,
+            definition: Projectile.fromString("missile")
+        },
+        shootSpeed: 1.5,
+        aggroRadius: 30,
+        hitboxRadius: 3 / 0.6,
+        speed: 4,
+        lootTable: {
+            "dandelion": 0.28,
+            "missile": 0.18,
+            "big_missile": 0.02,
+            "myt_big_missile": 0.009,
+            "bubble": 0.2,
+            "leg_bubble": 0.012,
+            "triplet": 0.024,
+            "tri_stinger": 0.012,
+            "pinger": 0.004,
+            "myt_egg": 0.012,
+            "antennae": 0.03,
+            "myt_antennae": 0.006
+        },
+        rarity: RarityName.mythic,
+        exp: 20,
+        usingAssets: "hornet"
+    },{
+        idString: "mega_beetle",
+        displayName: "Beetle",
+        damage: 30,
+        health: 400,
+        category: MobCategory.Enemy,
+        aggroRadius: 20,
+        hitboxRadius: 3,
+        speed: 3,
+        lootTable: {
+            "iris": 1,
+            "salt": 0.6,
+            "wing": 0.31,
+            "triplet": 0.02,
+            "tri_stinger": 0.0006,
+            "powder": 0.016
+        },
+        rarity: RarityName.mythic,
+        exp: 50,
+        usingAssets: "beetle"
+    },
+    {
+        idString: "massive_dark_ladybug",
+        displayName: "Ladybug",
+        damage: 20,
+        health: 300,
+        category: MobCategory.Passive,
+        hitboxRadius: 3.5,
+        speed: 3,
+        usingAssets: "dark_ladybug",
+        lootTable: {
+            "tri_rose": 1,
+            "epic_rose": 0.08,
+            "bubble": 0.32,
+            "leg_bubble": 0.03,
+            "triplet": 0.08,
+            "penta": 0.006,
+            "myt_tri_rose": 0.006
+        },
+        rarity: RarityName.mythic,
+        exp: 20
     }
 ] satisfies MobDefinition[]);
