@@ -24,8 +24,6 @@ export class ClientPlayer extends ClientEntity {
 
     lastGettingDamage: number = 0;
 
-    actuallyPosition: Vector = Vec2.new(0, 0);
-
     constructor(game: Game, id: number) {
         super(game, id)
 
@@ -62,10 +60,6 @@ export class ClientPlayer extends ClientEntity {
         if( name ) this.name.text = name;
 
         this.updateContainerPosition();
-
-        this.actuallyPosition = Vec2.targetEasing(this.container.position, Camera.vecToScreen(
-            this.position
-        ), 6)
     }
 
     drawHealthBar(): void {

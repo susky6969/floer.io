@@ -395,7 +395,7 @@ export class Game {
         }
 
         if (this.activePlayer) {
-            this.camera.position = this.activePlayer.actuallyPosition;
+            this.camera.position = this.activePlayer.container.position;
         }
 
         this.camera.render();
