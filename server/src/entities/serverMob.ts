@@ -243,7 +243,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
         for (const lootsKey in lootTable) {
             if (!Petals.hasString(lootsKey)) continue;
-            const random = Random.int(0, lootsKey);
+            const random = Random.int(0, randomMax);
             if (random <= lootTable[lootsKey] * randomMax){
                 loots.push(Petals.fromString(lootsKey));
             }
