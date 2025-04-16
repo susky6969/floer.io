@@ -1299,5 +1299,26 @@ export const Petals = new Definitions<PetalDefinition>([
         isShowedInOne: false,
         rarity: RarityName.mythic,
         usingAssets: "egg"
+    },
+    {
+        idString: "talisman",
+        displayName: "Talisman",
+        description: "A necklace that allows the wearer to anticipate enemy attacks",
+        damage: 10,
+        health: 10,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 40,
+            selfGameRotation: 0.01
+        },
+        modifiers: {
+            damageAvoidanceChance: 0.12
+        },
+        reloadTime: 2.5,
+        hitboxRadius: 0.45,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.rare,
     }
 ] satisfies PetalDefinition[]);

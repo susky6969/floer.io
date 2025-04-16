@@ -5,6 +5,7 @@ export type PlayerModifiers = Modifiers & {
     maxHealth: number;
     revolutionSpeed: number;
     zoom: number;
+    damageAvoidanceChance: number;
 }
 
 export interface Modifiers {
