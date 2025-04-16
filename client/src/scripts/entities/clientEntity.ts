@@ -71,7 +71,7 @@ export abstract class ClientEntity implements GameEntity {
             this.container.position =
                 Vec2.targetEasing(this.container.position, Camera.vecToScreen(
                     Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)
-                ), n)
+                ), n * this.interpolationFactor)
         } else {
             this.container.position = Camera.vecToScreen(
                 Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)
