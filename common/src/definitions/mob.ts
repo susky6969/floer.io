@@ -346,7 +346,9 @@ export const Mobs = new Definitions<MobDefinition>([
             "wing": 0.03,
             "tri_wing": 0.009,
             "pinger": 0.001,
-            "myt_egg": 0.006
+            "myt_egg": 0.006,
+            "antennae": 0.01,
+            "myt_antennae": 0.002
         },
         rarity: RarityName.epic,
         exp: 10
@@ -379,8 +381,10 @@ export const Mobs = new Definitions<MobDefinition>([
             "leg_bubble": 0.012,
             "triplet": 0.024,
             "tri_stinger": 0.012,
-            "pinger": 0.002,
-            "myt_egg": 0.006
+            "pinger": 0.004,
+            "myt_egg": 0.012,
+            "antennae": 0.03,
+            "myt_antennae": 0.006
         },
         rarity: RarityName.mythic,
         exp: 20,
@@ -692,7 +696,7 @@ export const Mobs = new Definitions<MobDefinition>([
         hitboxRadius: 1.5,
         images: {
             width: 242.874,
-            height: 226 
+            height: 226
         },
         lootTable: {
             "iris": 0.82,

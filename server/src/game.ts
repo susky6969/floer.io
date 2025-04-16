@@ -282,6 +282,7 @@ export class Game {
             if (activePlayer.inventory.inventory.includes(petal))
                 return true;
         }
+
         for (const byCategoryElementElement of this.grid.byCategory[EntityType.Loot]) {
             if (byCategoryElementElement.definition === petal){
                 return true;

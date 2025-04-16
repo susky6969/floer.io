@@ -11,7 +11,7 @@ import { Random } from "../../../common/src/utils/random";
 import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { ServerProjectile } from "./serverProjectile";
-import { Modifiers } from "../../../common/src/typings";
+import { PlayerModifiers } from "../../../common/src/typings";
 import { collideableEntity, damageableEntity, damageSource, isDamageSourceEntity } from "../typings";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { ProjectileParameters } from "../../../common/src/definitions/projectile";
@@ -21,8 +21,6 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
     hitbox: CircleHitbox;
     definition: MobDefinition;
-    modifiers: Modifiers = GameConstants.defaultModifiers();
-    otherModifiers: Partial<Modifiers>[] = [];
 
     get name(): string {
         return this.definition.displayName
@@ -95,7 +93,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
         this.game.grid.addEntity(this);
         this.position = position;
-        
+
         this.direction = direction;
     }
 
@@ -199,7 +197,6 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
             }
         }
 
-
         this.updateModifiers();
     }
 
@@ -224,24 +221,6 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         }
     }
 
-    updateModifiers(): void {
-        let modifiersNow = GameConstants.defaultModifiers();
-
-        this.effects.effects.forEach(effect => {
-            if (effect.modifier) {
-                modifiersNow = this.calcModifiers(modifiersNow, effect.modifier);
-            }
-        })
-
-        this.otherModifiers.forEach(effect => {
-            modifiersNow = this.calcModifiers(modifiersNow, effect)
-        })
-
-        this.otherModifiers = [];
-
-        this.modifiers = modifiersNow;
-    }
-
     get data(): Required<EntitiesNetData[EntityType]>{
         return {
             position: this.position,
@@ -264,7 +243,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
         for (const lootsKey in lootTable) {
             if (!Petals.hasString(lootsKey)) continue;
-            const random = Random.int(0, randomMax);
+            const random = Random.int(0, 1);
             if (random <= lootTable[lootsKey] * randomMax){
                 loots.push(Petals.fromString(lootsKey));
             }
@@ -288,6 +267,10 @@ export class ServerFriendlyMob extends ServerMob {
                 return source.source != this
                    && source.source !== this.owner;
         }
+    }
+
+    canCollideWith(entity: collideableEntity): boolean {
+        return this.owner.canReceiveDamageFrom(entity);
     }
 
     shoot(shoot: ProjectileParameters) {

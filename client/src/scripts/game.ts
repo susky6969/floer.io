@@ -50,6 +50,7 @@ export class Game {
     height: number = 0;
 
     tweens = new Set<Tween>;
+    private lastUpdateTime: number = 0;
 
     get activePlayer(): ClientPlayer | undefined {
         if (this.activePlayerID) return this.entityPool.get(this.activePlayerID) as ClientPlayer;
@@ -80,6 +81,8 @@ export class Game {
     })
 
     inventory: Inventory;
+
+    serverDt: number = 0;
 
     addTween(tween: Tween, doFunc?: Function): void {
         this.tweens.add(tween);
@@ -182,6 +185,9 @@ export class Game {
 
     updateFromPacket(packet: UpdatePacket): void {
         if (!this.running) return;
+
+        this.serverDt = (Date.now() - this.lastUpdateTime) / 1000;
+        this.lastUpdateTime = Date.now();
 
         if (packet.playerDataDirty.id) {
             this.activePlayerID = packet.playerData.id;
@@ -368,15 +374,15 @@ export class Game {
         this.sendPacket(joinPacket);
     }
 
-    dt = Date.now();
+    lastRenderTime = Date.now();
 
     render() {
         if (!this.running) return;
-        const dt = (Date.now() - this.dt) / 1000;
-        this.dt = Date.now()
+        const dt = (Date.now() - this.lastRenderTime) / 1000;
+        this.lastRenderTime = Date.now();
 
         for (const entity of this.entityPool) {
-            entity.render();
+            entity.render(dt);
         }
 
         if (this.activePlayer) {

@@ -27,7 +27,7 @@ export class ClientPlayer extends ClientEntity {
     constructor(game: Game, id: number) {
         super(game, id)
 
-        this.container.zIndex = 0;
+        this.container.zIndex = 2;
 
         this.name = new Text({
             text: this.game.playerData.get(id)?.name,
@@ -52,12 +52,14 @@ export class ClientPlayer extends ClientEntity {
         this.game.camera.addObject(this.container);
     }
 
-    render(): void {
+    render(dt: number): void {
+        super.render(dt);
+
         const name = this.game.playerData.get(this.id)?.name;
 
         if( name ) this.name.text = name;
 
-        this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
+        this.updateContainerPosition();
     }
 
     drawHealthBar(): void {
@@ -78,9 +80,9 @@ export class ClientPlayer extends ClientEntity {
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Player], isNew: boolean): void {
-        this.position = data.position;
+        super.updateFromData(data, isNew);
 
-        this.render();
+        this.position = data.position;
 
         if (isNew){
             this.container.position = Camera.vecToScreen(this.position);

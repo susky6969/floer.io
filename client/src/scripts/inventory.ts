@@ -6,7 +6,7 @@ import { AttributeParameters, PetalDefinition, Petals, SavedPetalDefinitionData 
 import { UI } from "@/ui.ts";
 import { RarityName, Rarity } from "@common/definitions/rarity.ts";
 import { getGameAssetsFile } from "@/scripts/utils/pixi.ts";
-import { Modifiers } from "@common/typings.ts";
+import { PlayerModifiers } from "@common/typings.ts";
 import { AttributeName } from "@common/definitions/attribute.ts";
 
 const defaultCenter = Vec2.new(25, 21);
@@ -659,7 +659,7 @@ export class Inventory{
                 const showing =
                     showingConfig[modifiersDefinitionKey];
                 let original = (definition.modifiers
-                    [modifiersDefinitionKey as keyof Modifiers]);
+                    [modifiersDefinitionKey as keyof PlayerModifiers]);
                 if (!showing) continue;
                 if (!original) {
                     addAttribute(showing,

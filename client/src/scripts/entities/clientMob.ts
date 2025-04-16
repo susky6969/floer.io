@@ -25,8 +25,6 @@ export class ClientMob extends ClientEntity {
     name: Text;
     rarity: Text;
 
-    direction: Vector = Vec2.new(0, 0);
-
     definition!: MobDefinition;
 
     lastGettingDamage: number = 0;
@@ -74,7 +72,11 @@ export class ClientMob extends ClientEntity {
         );
     }
 
-    render(): void {
+    render(dt: number): void {
+        super.render(dt);
+
+        this.updateContainerPosition();
+
         this.container.position =
             Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8);
 
@@ -93,11 +95,11 @@ export class ClientMob extends ClientEntity {
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Mob], isNew: boolean): void {
+        super.updateFromData(data, isNew);
+
         this.position = data.position;
         this.direction = data.direction;
         this.definition = data.definition;
-
-        this.render()
 
         const radius = MathNumeric.clamp(
             Camera.unitToScreen(this.definition.hitboxRadius) * 2,

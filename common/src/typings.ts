@@ -1,10 +1,13 @@
 import { GameConstants } from "./constants";
 
-export interface Modifiers {
+export type PlayerModifiers = Modifiers & {
     healing: number;
     maxHealth: number;
-    healPerSecond: number;
-    speed: number;
     revolutionSpeed: number;
     zoom: number;
+}
+
+export interface Modifiers {
+    healPerSecond: number;
+    speed: number;
 }

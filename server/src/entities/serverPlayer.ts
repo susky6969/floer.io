@@ -16,7 +16,7 @@ import { ServerPetal } from "./serverPetal";
 import { PetalDefinition, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { AttributeEvents } from "../utils/attribute";
-import { Modifiers } from "../../../common/src/typings";
+import { PlayerModifiers } from "../../../common/src/typings";
 import { EventFunctionArguments } from "../utils/eventManager";
 import { getLevelExpCost, getLevelInformation } from "../../../common/src/utils/levels";
 import { damageableEntity, damageSource } from "../typings";
@@ -107,8 +107,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             )
     }
 
-    modifiers: Modifiers = GameConstants.defaultModifiers();
-    otherModifiers: Partial<Modifiers>[] = [];
+    modifiers: PlayerModifiers = GameConstants.player.defaultModifiers();
+    otherModifiers: Partial<PlayerModifiers>[] = [];
 
     exp: number = 0;
     level: number = 1;
@@ -422,8 +422,19 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         };
     }
 
+    calcModifiers(now: PlayerModifiers, extra: Partial<PlayerModifiers>): PlayerModifiers {
+        now.healing *= extra.healing ?? 1;
+        now.maxHealth += extra.maxHealth ?? 0;
+        now.healPerSecond += extra.healPerSecond ?? 0;
+        now.speed *= extra.speed ?? 1;
+        now.revolutionSpeed += extra.revolutionSpeed ?? 0;
+        now.zoom += extra.zoom ?? 0;
+
+        return now;
+    }
+
     updateModifiers(): void {
-        let modifiersNow = GameConstants.defaultModifiers();
+        let modifiersNow = GameConstants.player.defaultModifiers();
 
         let effectedPetals: PetalDefinition[] = []
 

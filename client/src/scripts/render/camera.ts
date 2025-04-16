@@ -1,6 +1,7 @@
 import { Container } from "pixi.js";
 import { Vec2, type Vector } from "@common/utils/vector";
 import { type Game } from "@/scripts/game";
+import { MathNumeric } from "@common/utils/math.ts";
 
 export class Camera {
     readonly container = new Container({
@@ -16,6 +17,7 @@ export class Camera {
     height = 1;
 
     private _zoom = 64;
+    private zoomNow = 64;
 
     /**
      * How many pixels each game unit is
@@ -36,12 +38,10 @@ export class Camera {
         return a * this.scale;
     }
 
-
     get zoom(): number { return this._zoom; }
     set zoom(zoom: number) {
         if (zoom === this._zoom) return;
         this._zoom = zoom;
-        this.resize();
     }
 
     constructor(game: Game) {
@@ -54,6 +54,8 @@ export class Camera {
     }
 
     resize(): void {
+        this.zoomNow = MathNumeric.targetEasing(this.zoomNow, this._zoom, 6);
+
         this.width = this.game.pixi.screen.width;
         this.height = this.game.pixi.screen.height;
 
@@ -61,11 +63,13 @@ export class Camera {
         const maxDim = Math.max(this.width, this.height);
         const maxScreenDim = Math.max(minDim * (16 / 9), maxDim);
 
-        this.container.scale.set((maxScreenDim * 0.5) / (this._zoom * Camera.scale));
-        this.render();
+        this.container.scale.set((maxScreenDim * 0.5) / (this.zoomNow * Camera.scale));
+        // this.render();
     }
 
     render(): void {
+        this.resize();
+
         const position = this.position;
         const cameraPos = Vec2.add(
             Vec2.mul(position, this.container.scale.x),

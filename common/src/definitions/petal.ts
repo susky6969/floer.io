@@ -1,7 +1,7 @@
 import { Definitions, ObjectDefinition } from "../utils/definitions";
 import { AttributeName } from "./attribute";
 import { RarityName } from "./rarity";
-import { Modifiers } from "../typings";
+import { PlayerModifiers } from "../typings";
 import { Projectile, ProjectileDefinition, ProjectileParameters } from "./projectile";
 import { MobDefinition, Mobs } from "./mob";
 
@@ -11,7 +11,7 @@ export type PetalDefinition = ObjectDefinition & {
     readonly description?: string
     readonly rarity: RarityName
     readonly attributes?: AttributeParameters
-    readonly modifiers?: Partial<Modifiers>
+    readonly modifiers?: Partial<PlayerModifiers>
     readonly undroppable?: boolean
     readonly unstackable?: boolean
     readonly hitboxRadius: number
@@ -855,8 +855,6 @@ export const Petals = new Definitions<PetalDefinition>([
             shoot: {
                 definition: Projectile.fromString("web"),
                 speed: 0,
-                damage: 0,
-                health: 10,
                 hitboxRadius: 3,
                 despawnTime: 5,
                 modifiers: {
@@ -886,8 +884,6 @@ export const Petals = new Definitions<PetalDefinition>([
             shoot: {
                 definition: Projectile.fromString("web"),
                 speed: 0,
-                damage: 0,
-                health: 10,
                 hitboxRadius: 5,
                 despawnTime: 5,
                 modifiers: {
@@ -919,8 +915,6 @@ export const Petals = new Definitions<PetalDefinition>([
             shoot: {
                 definition: Projectile.fromString("web"),
                 speed: 0,
-                damage: 0,
-                health: 10,
                 hitboxRadius: 10,
                 despawnTime: 5,
                 modifiers: {
@@ -1182,7 +1176,7 @@ export const Petals = new Definitions<PetalDefinition>([
     },{
         idString: "antennae",
         displayName: "Antennae",
-        description: "Allows your flower to sense foes farther away. ",
+        description: "Allows your flower to sense foes farther away",
         equipment: true,
         images: {
             slotDisplaySize: 60
@@ -1192,6 +1186,20 @@ export const Petals = new Definitions<PetalDefinition>([
             zoom: 15
         },
         rarity: RarityName.legendary
+    },{
+        idString: "myt_antennae",
+        displayName: "Antennae",
+        description: "Allows your flower to sense foes farther farther away",
+        equipment: true,
+        images: {
+            slotDisplaySize: 60
+        },
+        hitboxRadius: 0.9,
+        modifiers: {
+            zoom: 45
+        },
+        rarity: RarityName.mythic,
+        usingAssets: "antennae"
     },
     {
         idString: "pollen",
@@ -1282,9 +1290,9 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         useTime: 1.5,
         attributes: {
-            spawner: Mobs.fromString("hornet")
+            spawner: Mobs.fromString("mega_hornet")
         },
-        reloadTime: 2.1,
+        reloadTime: 5.1,
         hitboxRadius: 0.6,
         isDuplicate: true,
         pieceAmount: 2,

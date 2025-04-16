@@ -1,6 +1,6 @@
 import { ServerEntity } from "../entities/serverEntity";
 import { EntityType } from "../../../common/src/constants";
-import { Modifiers } from "../../../common/src/typings";
+import { PlayerModifiers } from "../../../common/src/typings";
 import { ServerPlayer } from "../entities/serverPlayer";
 import { ServerMob } from "../entities/serverMob";
 import { damageSource, isDamageableEntity, isDamageSourceEntity } from "../typings";
@@ -11,7 +11,7 @@ export interface EffectData{
     readonly workingType?: EntityType[]
     readonly duration: number
     readonly func?: (dt: number, effected: ServerEntity) => void
-    readonly modifier?: Partial<Modifiers>
+    readonly modifier?: Partial<PlayerModifiers>
 }
 
 export class Effect {
@@ -24,7 +24,7 @@ export class Effect {
     workingType?: EntityType[];
     duration: number;
     func?: EffectData["func"];
-    modifier?: Partial<Modifiers>;
+    modifier?: Partial<PlayerModifiers>;
 
     constructor(data: EffectData) {
         this.effectedTarget = data.effectedTarget;

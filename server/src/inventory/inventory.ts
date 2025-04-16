@@ -211,9 +211,11 @@ export class Inventory {
         if (highestRarityPetals) {
             if (highestRarityPetals.length > amount) {
                 for (let i = 0; i < amount; i++) {
+                    const index = Random.int(0, highestRarityPetals.length - 1);
                     droppedPetals.push(highestRarityPetals[
-                        Random.int(0, highestRarityPetals.length - 1)
+                        index
                     ]);
+                    highestRarityPetals.splice(index, 1);
                 }
                 amount = 0;
             } else {

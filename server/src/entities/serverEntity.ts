@@ -1,5 +1,5 @@
 import { type GameEntity } from "../../../common/src/utils/entityPool";
-import { EntityType } from "../../../common/src/constants";
+import { EntityType, GameConstants } from "../../../common/src/constants";
 import { GameBitStream } from "../../../common/src/net";
 import { type EntitiesNetData, EntitySerializations } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, type Hitbox } from "../../../common/src/utils/hitbox";
@@ -7,7 +7,7 @@ import { Vec2, type Vector } from "../../../common/src/utils/vector";
 import { type Game } from "../game";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { EffectManager, PoisonEffect } from "../utils/effects";
-import { Modifiers } from "../../../common/src/typings";
+import { Modifiers, PlayerModifiers } from "../../../common/src/typings";
 import { collideableEntity, damageSource } from "../typings";
 
 export interface Velocity {
@@ -23,6 +23,9 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
 
     _position: Vector;
     _oldPosition?: Vector;
+
+    modifiers: Modifiers = GameConstants.defaultModifiers();
+    otherModifiers: Partial<Modifiers>[] = [];
 
     hasInited: boolean = false;
     destroyed: boolean = false;
@@ -215,14 +218,28 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
     }
 
     calcModifiers(now: Modifiers, extra: Partial<Modifiers>): Modifiers {
-        now.healing *= extra.healing ?? 1;
-        now.maxHealth += extra.maxHealth ?? 0;
         now.healPerSecond += extra.healPerSecond ?? 0;
         now.speed *= extra.speed ?? 1;
-        now.revolutionSpeed += extra.revolutionSpeed ?? 0;
-        now.zoom += extra.zoom ?? 0;
 
         return now;
+    }
+
+    updateModifiers(): void {
+        let modifiersNow = GameConstants.defaultModifiers();
+
+        this.effects.effects.forEach(effect => {
+            if (effect.modifier) {
+                modifiersNow = this.calcModifiers(modifiersNow, effect.modifier);
+            }
+        })
+
+        this.otherModifiers.forEach(effect => {
+            modifiersNow = this.calcModifiers(modifiersNow, effect)
+        })
+
+        this.otherModifiers = [];
+
+        this.modifiers = modifiersNow;
     }
 
     abstract get data(): Required<EntitiesNetData[EntityType]>;

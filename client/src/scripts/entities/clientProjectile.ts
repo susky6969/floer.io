@@ -24,7 +24,7 @@ export class ClientProjectile extends ClientEntity {
     constructor(game: Game, id: number) {
         super(game, id);
 
-        this.container.zIndex = 1;
+        this.container.zIndex = 3;
 
         this.images.body.anchor.set(0.5);
 
@@ -35,13 +35,16 @@ export class ClientProjectile extends ClientEntity {
         );
     }
 
-    render(): void {
-        this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8)
+    render(dt: number): void {
+        super.render(dt);
+
+        this.updateContainerPosition(6);
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Projectile], _isNew: boolean): void {
+        super.updateFromData(data, _isNew);
+
         this.position = data.position;
-        this.render();
 
         if (_isNew){
             this.definition = data.definition;
@@ -53,7 +56,7 @@ export class ClientProjectile extends ClientEntity {
                 .setScaleByUnitRadius(data.hitboxRadius)
 
             if (data.definition.onGround) {
-                this.container.zIndex = -1;
+                this.container.zIndex = -2;
             }
 
             this.images.body.setRotation(Vec2.directionToRadians(data.direction));

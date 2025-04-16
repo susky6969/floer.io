@@ -6,6 +6,8 @@ import { Container, ColorMatrixFilter } from "pixi.js";
 import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { GameSprite } from "@/scripts/utils/pixi.ts";
 import { Tween } from "@tweenjs/tween.js";
+import { MathNumeric } from "@common/utils/math.ts";
+import { Camera } from "@/scripts/render/camera.ts";
 
 export abstract class ClientEntity implements GameEntity {
     readonly game: Game;
@@ -16,7 +18,27 @@ export abstract class ClientEntity implements GameEntity {
     container = new Container();
 
     oldPosition: Vector = Vec2.new(0, 0);
-    position: Vector = Vec2.new(0, 0);
+    _position: Vector = Vec2.new(0, 0);
+    get position(): Vector {
+        return this._position;
+    }
+
+    set position(position: Vector) {
+        this.oldPosition = this.position;
+        this._position = position;
+    }
+
+    oldDirection: Vector = Vec2.new(0, 0);
+    _direction: Vector = Vec2.new(0, 0);
+
+    get direction(): Vector {
+        return this._direction;
+    }
+
+    set direction(direction: Vector) {
+        this.oldDirection = this.direction;
+        this._direction = direction;
+    }
 
     lastGettingDamage: number = 0;
 
@@ -25,9 +47,37 @@ export abstract class ClientEntity implements GameEntity {
         this.id = id;
     }
 
-    updateFromData(_data: EntitiesNetData[EntityType], _isNew: boolean): void {}
+    updateFromData(_data: EntitiesNetData[EntityType], _isNew: boolean): void {
+        this.interpolationTick = 0;
+        if (_isNew) {
+            this.oldPosition = _data.position;
+            this._position = _data.position;
+        }
+    }
 
-    abstract render(): void;
+    interpolationTick = 0;
+    interpolationFactor = 0;
+
+    render(dt: number): void {
+        this.interpolationTick += dt;
+        this.interpolationFactor = MathNumeric.clamp(
+            this.interpolationTick / this.game.serverDt
+            , 0, 1
+        );
+    }
+
+    updateContainerPosition(n?: number): void {
+        if (n) {
+            this.container.position =
+                Vec2.targetEasing(this.container.position, Camera.vecToScreen(
+                    Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)
+                ), n)
+        } else {
+            this.container.position = Camera.vecToScreen(
+                Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)
+            );
+        }
+    }
 
     getDamageAnimation(image: GameSprite) {
         if (Date.now() - this.lastGettingDamage < 600) return

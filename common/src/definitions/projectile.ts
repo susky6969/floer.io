@@ -1,5 +1,5 @@
 import { Definitions, ObjectDefinition } from "../utils/definitions";
-import { Modifiers } from "../typings";
+import { Modifiers, PlayerModifiers } from "../typings";
 
 export type ProjectileDefinition = ObjectDefinition & {
     readonly onGround?: boolean;
@@ -34,8 +34,8 @@ export interface ProjectileParameters {
     definition: ProjectileDefinition;
     despawnTime: number
     speed: number
-    damage: number
-    health: number
+    damage?: number
+    health?: number
     hitboxRadius: number
     modifiers?: Partial<Modifiers>
     velocityAtFirst?: number

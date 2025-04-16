@@ -37,7 +37,7 @@ function drawPetal(petal_box: Container, petal: PetalDefinition) {
     const offsetX = petal.images?.centerXOffset ?? 0;
     const offsetY = petal.images?.centerYOffset ?? 0;
 
-    if (petal.isDuplicate) {
+    if (!petal.equipment && petal.isDuplicate) {
         let radiansNow = 0;
         const count = petal.pieceAmount;
         let degree = 0;
@@ -85,7 +85,7 @@ export class ClientLoot extends ClientEntity {
         this.game.camera.addObject(this.container);
     }
 
-    render(): void {
+    render(dt: number): void {
         this.container.position = Camera.vecToScreen(this.position);
     }
 

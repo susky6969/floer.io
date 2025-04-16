@@ -19,7 +19,7 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
     definition: ProjectileDefinition;
     parameters: ProjectileParameters;
 
-    health: number = 0;
+    health?: number;
     damage: number = 0;
 
     despawnTime: number = 0;
@@ -30,7 +30,7 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
     from?: ServerPetal;
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
-        if (this.definition.onGround) return false;
+        if (!this.health) return false;
         switch (source.type) {
             case EntityType.Player:
                 return source != this.source;
@@ -68,7 +68,7 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
         this.from = from;
 
         this.health = parameters.health;
-        this.damage = parameters.damage;
+        this.damage = parameters.damage ?? 0;
 
         this.game.grid.addEntity(this);
     }
@@ -117,6 +117,8 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
 
     receiveDamage(amount: number, source: damageSource, disableEvent?: boolean) {
         if (!this.isActive()) return;
+        if (!this.health) return;
+
         this.health -= amount;
 
         if (this.health <= 0) {

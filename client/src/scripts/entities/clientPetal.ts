@@ -42,7 +42,9 @@ export class ClientPetal extends ClientEntity {
         );
     }
 
-    render(): void {
+    render(dt: number): void {
+        super.render(dt);
+
         if (this.definition) {
             const owner = this.game.entityPool.get(this.ownerId);
 
@@ -53,6 +55,7 @@ export class ClientPetal extends ClientEntity {
                         Vec2.new(0, 25)
                     );
                 }
+                this.container.zIndex = 3;
                 return;
             }
 
@@ -86,7 +89,7 @@ export class ClientPetal extends ClientEntity {
         if (this.reloadAnimation) {
             this.reloadAnimation.update();
         } else {
-            this.container.position = Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), 8)
+            this.updateContainerPosition(6);
         }
     }
 
@@ -115,6 +118,10 @@ export class ClientPetal extends ClientEntity {
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Petal], _isNew: boolean): void {
+        super.updateFromData(data, _isNew);
+
+        this.oldPosition = this.position;
+
         this.position = data.position;
 
         if (_isNew){
@@ -127,8 +134,6 @@ export class ClientPetal extends ClientEntity {
                 .setScaleByUnitRadius(data.definition.hitboxRadius)
                 .setVisible(!data.isReloading);
         }
-
-        this.render();
 
         this.ownerId = data.ownerId;
 
