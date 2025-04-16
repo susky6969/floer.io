@@ -64,8 +64,8 @@ export class ClientPlayer extends ClientEntity {
         this.updateContainerPosition();
 
         this.actuallyPosition = Vec2.targetEasing(this.container.position, Camera.vecToScreen(
-            Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)
-        ), 6 * this.interpolationFactor)
+            this.position
+        ), 6)
     }
 
     drawHealthBar(): void {
