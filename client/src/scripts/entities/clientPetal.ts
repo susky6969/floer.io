@@ -88,8 +88,6 @@ export class ClientPetal extends ClientEntity {
 
         if (this.reloadAnimation) {
             this.reloadAnimation.update();
-        } else {
-            this.updateContainerPosition(12);
         }
     }
 
@@ -122,7 +120,7 @@ export class ClientPetal extends ClientEntity {
 
         this.position = data.position;
 
-        this.updateContainerPosition(12);
+        this.updateContainerPosition(6);
 
         if (_isNew){
             this.definition = data.definition;
