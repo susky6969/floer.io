@@ -25,6 +25,7 @@ import { Leaderboard } from "@/scripts/render/leaderboard.ts";
 import { Config } from "@/config.ts";
 import { LoggedInPacket } from "@common/packets/loggedInPacket.ts";
 import { ParticleManager } from "@/scripts/render/particle.ts";
+import { Vec2 } from "@common/utils/vector.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -395,7 +396,8 @@ export class Game {
         }
 
         if (this.activePlayer) {
-            this.camera.position = this.activePlayer.container.position;
+            this.camera.position = Vec2.targetEasing(this.camera.position,
+                this.activePlayer.container.position, 3);
         }
 
         this.camera.render();
