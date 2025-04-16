@@ -37,7 +37,8 @@ export const GameConstants = {
             healPerSecond: 0.1,
             speed: 1,
             revolutionSpeed: 2.4,
-            zoom: 45
+            zoom: 45,
+            damageAvoidanceChance: 0
         }),
     },
     petal: {

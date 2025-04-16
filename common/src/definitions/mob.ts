@@ -656,7 +656,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "triplet": 0.0012,
             "penta": 0.003,
             "dice": 0.05,
-            "powder": 0.01
+            "powder": 0.01,
+            "talisman": 0.056
         },
         rarity: RarityName.unusual,
         exp: 4,
@@ -681,7 +682,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "triplet": 0.0012,
             "penta": 0.003,
             "dice": 0.05,
-            "powder": 0.01
+            "powder": 0.01,
+            "talisman": 0.056
         },
         rarity: RarityName.unusual,
         exp: 4
