@@ -59,7 +59,7 @@ export class ClientPlayer extends ClientEntity {
 
         if( name ) this.name.text = name;
 
-        this.updateContainerPosition();
+        this.updateContainerPosition(4);
     }
 
     drawHealthBar(): void {
@@ -83,6 +83,8 @@ export class ClientPlayer extends ClientEntity {
         super.updateFromData(data, isNew);
 
         this.position = data.position;
+
+        this.updateContainerPosition(4);
 
         if (isNew){
             this.container.position = Camera.vecToScreen(this.position);

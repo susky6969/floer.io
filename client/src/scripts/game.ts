@@ -396,8 +396,7 @@ export class Game {
         }
 
         if (this.activePlayer) {
-            this.camera.position = Vec2.targetEasing(this.camera.position,
-                this.activePlayer.container.position, 3);
+            this.camera.position = this.activePlayer.container.position;
         }
 
         this.camera.render();
