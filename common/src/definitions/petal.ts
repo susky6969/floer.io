@@ -1228,7 +1228,7 @@ export const Petals = new Definitions<PetalDefinition>([
         health: 5,
         extendable: false,
         usable: true,
-        useTime: 0.1,
+        useTime: 0.2,
         attributes: {
             place_projectile: {
                 definition: Projectile.fromString("pollen"),
@@ -1240,7 +1240,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 velocityAtFirst: 20
             }
         },
-        reloadTime: 0.1,
+        reloadTime: 0.3,
         hitboxRadius: 0.3,
         isDuplicate: true,
         pieceAmount: 4,
