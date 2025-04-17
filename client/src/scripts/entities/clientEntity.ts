@@ -16,6 +16,9 @@ export abstract class ClientEntity implements GameEntity {
     abstract readonly type: EntityType;
 
     container = new Container();
+    staticContainer: Container = new Container();
+
+    lastReceivePacket: number = 0;
 
     oldPosition: Vector = Vec2.new(0, 0);
     _position: Vector = Vec2.new(0, 0);
@@ -53,6 +56,8 @@ export abstract class ClientEntity implements GameEntity {
             this.oldPosition = _data.position;
             this._position = _data.position;
         }
+        this.render((Date.now() - this.lastReceivePacket) / 1000);
+        this.lastReceivePacket = Date.now();
     }
 
     interpolationTick = 0;
@@ -75,6 +80,7 @@ export abstract class ClientEntity implements GameEntity {
                 Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)
             );
         }
+        this.staticContainer.position = this.container.position;
     }
 
     getDamageAnimation(image: GameSprite) {
@@ -111,5 +117,6 @@ export abstract class ClientEntity implements GameEntity {
 
     destroy() {
         this.game.camera.container.removeChild(this.container);
+        this.game.camera.container.removeChild(this.staticContainer);
     }
 }

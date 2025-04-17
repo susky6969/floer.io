@@ -117,14 +117,10 @@ export class ClientPetal extends ClientEntity {
         }
     }
 
-    updateFromData(data: EntitiesNetData[EntityType.Petal], _isNew: boolean): void {
-        super.updateFromData(data, _isNew);
-
+    updateFromData(data: EntitiesNetData[EntityType.Petal], isNew: boolean): void {
         this.position = data.position;
 
-        this.updateContainerPosition(10);
-
-        if (_isNew){
+        if (isNew){
             this.definition = data.definition;
 
             this.container.position = Camera.vecToScreen(this.position);
@@ -138,5 +134,7 @@ export class ClientPetal extends ClientEntity {
         this.ownerId = data.ownerId;
 
         this.changeVisibleTo(!data.isReloading);
+
+        super.updateFromData(data, isNew);
     }
 }

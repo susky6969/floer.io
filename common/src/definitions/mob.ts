@@ -20,6 +20,10 @@ export type MobDefinition = ObjectDefinition & {
     readonly images?: {
         width?: number
         height?: number
+        mouth?: boolean
+        mouthXPosition?: number
+        mouthYPosition?: number
+        spiderLeg?: boolean
     }
     readonly reachingAway?: boolean
     readonly hideInformation?: boolean
@@ -42,6 +46,7 @@ export type MobShootType = {
     readonly shootable: true
     readonly shoot: ProjectileParameters;
     readonly shootSpeed: number
+    readonly turningHead?: boolean
 }
 
 export type MobSegmentType = {
@@ -149,7 +154,6 @@ export const Mobs = new Definitions<MobDefinition>([
             "stinger": 0.14,
             "twin": 0.06,
             "triangle": 0.02,
-            "tri_triangle": 0.002,
             "bubble": 0.012,
             "leg_bubble": 0.0012,
             "wing": 0.006,
@@ -172,7 +176,6 @@ export const Mobs = new Definitions<MobDefinition>([
             "stinger": 0.28,
             "twin": 0.12,
             "triangle": 0.04,
-            "tri_triangle": 0.004,
             "bubble": 0.024,
             "leg_bubble": 0.0024,
             "wing": 0.012,
@@ -195,7 +198,6 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "sand": 0.66,
             "triangle": 0.02,
-            "tri_triangle": 0.002,
             "missile": 0.12,
             "big_missile": 0.01,
             "cactus": 0.06,
@@ -216,7 +218,6 @@ export const Mobs = new Definitions<MobDefinition>([
             "sand": 0.66,
             "stinger": 0.5,
             "triangle": 0.1,
-            "tri_triangle": 0.01,
             "missile": 0.66,
             "big_missile": 0.01,
             "cactus": 0.12,
@@ -268,6 +269,11 @@ export const Mobs = new Definitions<MobDefinition>([
         aggroRadius: 20,
         hitboxRadius: 2,
         speed: 3,
+        images: {
+            mouth: true,
+            mouthXPosition: 2.7,
+            mouthYPosition: 1.1
+        },
         lootTable: {
             "iris": 0.18,
             "salt": 0.12,
@@ -275,8 +281,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "tri_stinger": 0.0012,
             "wing": 0.006,
             "tri_wing": 0.0036,
-            "powder": 0.009,
-            "leg_egg": 0.01,
+            "powder": 0.009
         },
         rarity: RarityName.epic,
         exp: 5
@@ -288,6 +293,7 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Enemy,
         reachingAway: true,
         shootable: true,
+        turningHead: true,
         shoot: {
             hitboxRadius: 0.6,
             damage: 10,
@@ -324,6 +330,7 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Enemy,
         reachingAway: true,
         shootable: true,
+        turningHead: true,
         shoot: {
             hitboxRadius: 0.9,
             damage: 15,
@@ -392,13 +399,15 @@ export const Mobs = new Definitions<MobDefinition>([
         health: 25,
         category: MobCategory.Enemy,
         aggroRadius: 20,
-        hitboxRadius: 2,
+        hitboxRadius: 1.5,
         speed: 4,
+        images: {
+            spiderLeg: true
+        },
         lootTable: {
             "iris": 0.24,
             "stinger": 0.36,
             "triangle": 0.024,
-            "tri_triangle": 0.0024,
             "tri_stinger": 0.012,
             "web": 0.18,
             "pincer": 0.18,
@@ -412,46 +421,6 @@ export const Mobs = new Definitions<MobDefinition>([
         rarity: RarityName.rare,
         exp: 5
     },{
-        idString: "mega_spider",
-        displayName: "Spider",
-        damage: 20,
-        health: 250,
-        category: MobCategory.Enemy,
-        aggroRadius: 20,
-        hitboxRadius: 4,
-        shootable: true,
-        shoot: {
-            hitboxRadius: 4,
-            damage: 0,
-            health: 10,
-            despawnTime: 5,
-            speed: 0,
-            definition: Projectile.fromString("web"),
-            modifiers: {
-                speed: 0.6
-            }
-        },
-        shootSpeed: 0.7,
-        speed: 3,
-        lootTable: {
-            "iris": 0.48,
-            "stinger": 0.72,
-            "triangle": 0.08,
-            "tri_triangle": 0.008,
-            "tri_stinger": 0.02,
-            "web": 0.36,
-            "pincer": 0.36,
-            "tri_web": 0.01,
-            "faster": 0.6,
-            "dual_faster": 0.02,
-            "pinger": 0.002,
-            "myt_tri_web": 0.002,
-            "tri_faster": 0.002
-        },
-        rarity: RarityName.legendary,
-        exp: 5,
-        usingAssets: "spider"
-    },{
         idString: "soldier_ant",
         displayName: "Soldier Ant",
         damage: 10,
@@ -460,6 +429,10 @@ export const Mobs = new Definitions<MobDefinition>([
         aggroRadius: 20,
         hitboxRadius: 1.5,
         speed: 3,
+        images: {
+            mouth: true,
+            mouthYPosition: 1.1,
+        },
         lootTable: {
             "sand": 0.66,
             "fast": 0.44,
@@ -484,6 +457,10 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Passive,
         hitboxRadius: 1.5,
         speed: 3,
+        images: {
+            mouth: true,
+            mouthYPosition: 1.1,
+        },
         lootTable: {
             "sand": 0.66,
             "fast": 0.92,
@@ -505,6 +482,11 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Unactive,
         hitboxRadius: 1,
         speed: 3,
+        images: {
+            mouth: true,
+            mouthXPosition: 3.2,
+            mouthYPosition: 0.6,
+        },
         lootTable: {
             "sand": 0.66,
             "fast": 0.88,
@@ -711,6 +693,7 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Enemy,
         reachingAway: true,
         shootable: true,
+        turningHead: true,
         shoot: {
             hitboxRadius: 1.8,
             damage: 20,
@@ -748,6 +731,11 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Enemy,
         aggroRadius: 20,
         hitboxRadius: 3,
+        images: {
+            mouth: true,
+            mouthXPosition: 2.2,
+            mouthYPosition: 1.1
+        },
         speed: 3,
         lootTable: {
             "iris": 1,
@@ -755,8 +743,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "wing": 0.31,
             "triplet": 0.02,
             "tri_stinger": 0.0006,
-            "powder": 0.016,
-            "leg_egg": 0.05,
+            "powder": 0.016
         },
         rarity: RarityName.mythic,
         exp: 50,
@@ -782,5 +769,45 @@ export const Mobs = new Definitions<MobDefinition>([
         },
         rarity: RarityName.mythic,
         exp: 20
+    },{
+        idString: "mega_spider",
+        displayName: "Spider",
+        damage: 20,
+        health: 350,
+        category: MobCategory.Enemy,
+        aggroRadius: 20,
+        hitboxRadius: 4,
+        shootable: true,
+        images: {
+            spiderLeg: true
+        },
+        shoot: {
+            hitboxRadius: 6,
+            despawnTime: 5,
+            speed: 0,
+            definition: Projectile.fromString("web"),
+            modifiers: {
+                speed: 0.6
+            }
+        },
+        shootSpeed: 0.7,
+        speed: 3,
+        lootTable: {
+            "iris": 0.48,
+            "stinger": 0.72,
+            "triangle": 0.08,
+            "tri_stinger": 0.02,
+            "web": 0.36,
+            "pincer": 0.36,
+            "tri_web": 0.01,
+            "faster": 0.6,
+            "dual_faster": 0.02,
+            "pinger": 0.002,
+            "myt_tri_web": 0.002,
+            "tri_faster": 0.002
+        },
+        rarity: RarityName.mythic,
+        exp: 5,
+        usingAssets: "spider"
     }
 ] satisfies MobDefinition[]);

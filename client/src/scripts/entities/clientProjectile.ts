@@ -41,12 +41,10 @@ export class ClientProjectile extends ClientEntity {
         this.updateContainerPosition(3);
     }
 
-    updateFromData(data: EntitiesNetData[EntityType.Projectile], _isNew: boolean): void {
-        super.updateFromData(data, _isNew);
-
+    updateFromData(data: EntitiesNetData[EntityType.Projectile], isNew: boolean): void {
         this.position = data.position;
 
-        if (_isNew){
+        if (isNew){
             this.definition = data.definition;
 
             this.container.position = Camera.vecToScreen(this.position);
@@ -61,6 +59,8 @@ export class ClientProjectile extends ClientEntity {
 
             this.images.body.setRotation(Vec2.directionToRadians(data.direction));
         }
+
+        super.updateFromData(data, isNew);
     }
 
     destroy() {

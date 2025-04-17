@@ -109,8 +109,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
     }
 
     shoot(shoot: ProjectileParameters): void {
+        const position = shoot.definition.onGround ? this.position
+           : Vec2.add(this.position,Vec2.mul(this.direction, this.hitbox.radius))
+
         new ServerProjectile(this,
-            this.position,
+            position,
             this.direction, shoot);
     }
 
@@ -130,28 +133,49 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                 this.definition.hitboxRadius + this.lastSegment.definition.hitboxRadius,
                 this.lastSegment.position
             );
-        } else {
-            if (this.definition.category !== MobCategory.Fixed) {
-                if (this.aggroTarget) {
-                    if (this.aggroTarget.destroyed) {
-                        this.changeAggroTo();
-                    } else {
-                        if (Vec2.distance(this.aggroTarget.position, this.position) > 60) {
-                            return this.changeAggroTo();
-                        }
+        } else if (this.definition.category !== MobCategory.Fixed) {
+            if (this.aggroTarget) {
+                if (this.aggroTarget.destroyed) {
+                    this.changeAggroTo();
+                } else {
+                    if (Vec2.distance(this.aggroTarget.position, this.position) > 60) {
+                        return this.changeAggroTo();
+                    }
 
-                        this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
-
-                        if (this.definition.shootable) {
+                    if (this.definition.shootable) {
+                        if (Vec2.distance(this.position, this.aggroTarget.position) < 15 && this.definition.reachingAway) {
                             this.shootReload += this.game.dt;
                             if (this.shootReload >= this.definition.shootSpeed) {
-                                // Vec2.add(this.position,Vec2.mul(this.direction, this.hitbox.radius))
-                                this.shoot(this.definition.shoot)
+                                this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
+                                this.shoot(this.definition.shoot);
                                 this.shootReload = 0;
+                            } else if (this.shootReload >= this.definition.shootSpeed * 0.6 && this.definition.turningHead) {
+                                this.direction = Vec2.mul(
+                                    MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position),
+                                    -1
+                                );
+                            } else {
+                                this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
+                            }
+                        } else {
+                            this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
+
+                            this.setAcceleration(Vec2.mul(
+                                this.direction, this.speed
+                            ));
+
+                            if (!this.definition.reachingAway) {
+                                this.shootReload += this.game.dt;
+                                if (this.shootReload >= this.definition.shootSpeed) {
+                                    this.shoot(this.definition.shoot);
+                                    this.shootReload = 0;
+                                }
                             }
                         }
+                    } else {
+                        this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
                         if (this.definition.reachingAway) {
-                            if (Vec2.distance(this.position, this.aggroTarget.position) > 15){
+                            if (Vec2.distance(this.position, this.aggroTarget.position) > 15) {
                                 this.setAcceleration(Vec2.mul(
                                     this.direction, this.speed
                                 ));
@@ -162,35 +186,35 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                             ));
                         }
                     }
-                }else {
-                    this.walkingReload += this.game.dt;
-                    if (this.walkingReload >= GameConstants.mob.walkingReload) {
-                        if (this.walkingTime === 0) this.direction = Random.vector(-1, 1, -1, 1)
-                        this.setAcceleration(Vec2.mul(
-                            this.direction, this.speed * GameConstants.mob.walkingTime
-                        ))
+                }
+            } else {
+                this.walkingReload += this.game.dt;
+                if (this.walkingReload >= GameConstants.mob.walkingReload) {
+                    if (this.walkingTime === 0) this.direction = Random.vector(-1, 1, -1, 1)
+                    this.setAcceleration(Vec2.mul(
+                        this.direction, this.speed * GameConstants.mob.walkingTime
+                    ))
 
-                        this.walkingTime += this.game.dt;
+                    this.walkingTime += this.game.dt;
 
-                        if (this.walkingTime >= GameConstants.mob.walkingTime) {
-                            this.walkingReload = 0;
-                            this.walkingTime = 0;
-                        }
+                    if (this.walkingTime >= GameConstants.mob.walkingTime) {
+                        this.walkingReload = 0;
+                        this.walkingTime = 0;
                     }
+                }
 
-                    if (this.definition.category === MobCategory.Enemy && !this.aggroTarget) {
-                        const aggro = new CircleHitbox(
-                            this.definition.aggroRadius, this.position
-                        );
+                if (this.definition.category === MobCategory.Enemy && !this.aggroTarget) {
+                    const aggro = new CircleHitbox(
+                        this.definition.aggroRadius, this.position
+                    );
 
-                        const entities =
-                            this.game.grid.intersectsHitbox(aggro);
+                    const entities =
+                        this.game.grid.intersectsHitbox(aggro);
 
-                        for (const entity of entities) {
-                            if (!(isDamageSourceEntity(entity))) continue;
-                            if (aggro.collidesWith(entity.hitbox)) {
-                                this.changeAggroTo(entity);
-                            }
+                    for (const entity of entities) {
+                        if (!(isDamageSourceEntity(entity))) continue;
+                        if (aggro.collidesWith(entity.hitbox)) {
+                            this.changeAggroTo(entity);
                         }
                     }
                 }
