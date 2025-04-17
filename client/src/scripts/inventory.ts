@@ -190,6 +190,17 @@ const attributesShowingConfig: { [K in AttributeName] : AttributeShowingFunction
                 value: `${data.speedReduction * 100}%`,
                 color: "#9966ff"
             }]
+        },
+        area_poison: (data) => {
+            return [{
+                displayName: "Radiation Radius",
+                value: `${data.radius}`,
+                color: "#7FFF00"
+            }, {
+                displayName: "Radiation Damage",
+                value: `${data.damagePerSecond}/s`,
+                color: "#32CD32"
+            }]
         }
     }
 
