@@ -6,7 +6,7 @@ import { EntitiesNetData } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
 import { Text, Graphics, ColorMatrixFilter } from "pixi.js";
 import { MathGraphics, MathNumeric } from "@common/utils/math.ts";
-import { Vec2 } from "@common/utils/vector.ts";
+import { Vec2, Vector } from "@common/utils/vector.ts";
 import { Tween } from "@tweenjs/tween.js";
 
 export class ClientPlayer extends ClientEntity {
@@ -59,7 +59,7 @@ export class ClientPlayer extends ClientEntity {
 
         if( name ) this.name.text = name;
 
-        this.updateContainerPosition();
+        this.updateContainerPosition(4);
     }
 
     drawHealthBar(): void {
@@ -83,6 +83,8 @@ export class ClientPlayer extends ClientEntity {
         super.updateFromData(data, isNew);
 
         this.position = data.position;
+
+        this.updateContainerPosition(4);
 
         if (isNew){
             this.container.position = Camera.vecToScreen(this.position);

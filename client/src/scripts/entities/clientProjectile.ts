@@ -38,7 +38,7 @@ export class ClientProjectile extends ClientEntity {
     render(dt: number): void {
         super.render(dt);
 
-        this.updateContainerPosition(6);
+        this.updateContainerPosition(3);
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Projectile], _isNew: boolean): void {

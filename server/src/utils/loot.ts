@@ -10,7 +10,16 @@ export function spawnLoot(game: Game, loots: PetalDefinition[], position: Vector
     let spawnedLoots = loots.concat([]);
 
     loots.forEach(loot => {
-        if (Rarity.fromString(loot.rarity).isUnique && game.gameHas(loot)) {
+        const rarityDefinition = Rarity.fromString(loot.rarity);
+        if (rarityDefinition.isUnique && game.gameHas(loot)) {
+            spawnedLoots.splice(spawnedLoots.indexOf(loot), 1);
+        }
+
+        if (rarityDefinition.petalMaxCount
+            && (
+                game.rarityPetalCount(rarityDefinition.idString) +
+                spawnedLoots.filter(e => e.rarity === loot.rarity).length - 1)
+            > rarityDefinition.petalMaxCount) {
             spawnedLoots.splice(spawnedLoots.indexOf(loot), 1);
         }
     });
@@ -24,6 +33,7 @@ export function spawnLoot(game: Game, loots: PetalDefinition[], position: Vector
             new ServerLoot(game,
                 MathGraphics.getPositionOnCircle(radiansNow, GameConstants.loot.spawnRadius, position), loot
             )
+
             radiansNow += everyOccupiedRadians;
         })
     } else {

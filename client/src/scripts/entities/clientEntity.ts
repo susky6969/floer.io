@@ -69,9 +69,7 @@ export abstract class ClientEntity implements GameEntity {
     updateContainerPosition(n?: number): void {
         if (n) {
             this.container.position =
-                Vec2.targetEasing(this.container.position, Camera.vecToScreen(
-                    Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)
-                ), n)
+                Vec2.targetEasing(this.container.position, Camera.vecToScreen(this.position), n)
         } else {
             this.container.position = Camera.vecToScreen(
                 Vec2.lerp(this.oldPosition, this.position, this.interpolationFactor)

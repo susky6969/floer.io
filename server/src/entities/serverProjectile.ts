@@ -26,6 +26,7 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
     direction: Vector = Vec2.new(0, 0);
     source: damageSource;
     elasticity = 0;
+    knockback = 0.002;
 
     from?: ServerPetal;
 

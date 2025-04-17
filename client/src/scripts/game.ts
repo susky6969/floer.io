@@ -10,7 +10,7 @@ import { Inventory, PetalContainer } from "@/scripts/inventory.ts";
 import { ClientApplication } from "../main.ts";
 import { JoinPacket } from "@common/packets/joinPacket.ts";
 import { GameBitStream, Packet, PacketStream } from "@common/net.ts";
-import { UpdatePacket } from "@common/packets/updatePacket.ts";
+import { EntitiesNetData, UpdatePacket } from "@common/packets/updatePacket.ts";
 import { ClientPetal } from "@/scripts/entities/clientPetal.ts";
 import { Input } from "@/scripts/input.ts";
 import { InputPacket } from "@common/packets/inputPacket.ts";
@@ -25,6 +25,7 @@ import { Leaderboard } from "@/scripts/render/leaderboard.ts";
 import { Config } from "@/config.ts";
 import { LoggedInPacket } from "@common/packets/loggedInPacket.ts";
 import { ParticleManager } from "@/scripts/render/particle.ts";
+import { Vec2 } from "@common/utils/vector.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -148,6 +149,8 @@ export class Game {
         this.entityPool.clear();
         this.activePlayerID = -1;
         this.playerData.clear();
+        this.needUpdateEntities.clear();
+        this.tweens.clear();
 
         this.pixi.stop();
 
@@ -182,6 +185,8 @@ export class Game {
             }
         }
     }
+
+    needUpdateEntities = new Map<ClientEntity, EntitiesNetData[EntityType]>();
 
     updateFromPacket(packet: UpdatePacket): void {
         if (!this.running) return;
@@ -248,7 +253,7 @@ export class Game {
                 console.warn(`Unknown partial Entity with ID ${entityPartialData.id}`)
                 continue;
             }
-            entity.updateFromData(entityPartialData.data, false);
+            this.needUpdateEntities.set(entity, entityPartialData.data);
         }
 
         if (packet.mapDirty) {
@@ -381,6 +386,11 @@ export class Game {
         const dt = (Date.now() - this.lastRenderTime) / 1000;
         this.lastRenderTime = Date.now();
 
+        for (const needUpdateEntity of this.needUpdateEntities) {
+            if (!needUpdateEntity) continue;
+            needUpdateEntity[0].updateFromData(needUpdateEntity[1], false);
+        }
+
         for (const entity of this.entityPool) {
             entity.render(dt);
         }
@@ -403,6 +413,8 @@ export class Game {
         this.tweens.forEach(tween => {
             tween.update();
         })
+
+        this.needUpdateEntities.clear();
     }
 
     sendInput() {
