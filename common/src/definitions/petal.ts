@@ -411,7 +411,8 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 3,
         rarity: RarityName.mythic,
         usingAssets: "epic_rose"
-    },{
+    },
+    {
         idString: "triangle",
         displayName: "Triangle",
         description: "Slash your enemies with a powerful triangle that deals additional damage based on their current health",
@@ -433,7 +434,31 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic,
-        usingAssets: "stinger"
+    },
+    {
+        idString: "tri_triangle",
+        displayName: "Triangle",
+        description: "Slash your enemies with a powerful triangle that deals additional damage based on their current health",
+        damage: 5,
+        health: 15,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 25,
+            selfGameRotation: 0.01
+        },
+        attributes: {
+            health_percent_damage: {
+                percent: 0.3
+            }
+        },
+        reloadTime: 2.5,
+        hitboxRadius: 0.5,
+        isDuplicate: true,
+        pieceAmount: 3,
+        isShowedInOne: true,
+        rarity: RarityName.mythic,
+        usingAssets: "triangle"
     },
     {
         idString: "bubble",
@@ -1276,6 +1301,28 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic
+    },
+    {
+        idString: "leg_egg",
+        displayName: "Egg",
+        description: "Something interesting might pop out of this.",
+        damage: 1,
+        health: 50,
+        extendable: false,
+        usable: true,
+        images: {
+            slotDisplaySize: 45
+        },
+        useTime: 1,
+        attributes: {
+            spawner: Mobs.fromString("beetle")
+        },
+        reloadTime: 1,
+        hitboxRadius: 0.6,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.legendary,
+        usingAssets: "egg"
     },
     {
         idString: "myt_egg",
