@@ -11,7 +11,8 @@ export enum EntityType {
 export const GameConstants = {
     defaultModifiers: (): Modifiers => ({
         healPerSecond: 0,
-        speed: 1
+        speed: 1,
+        selfPoison: 0
     }),
     maxPosition: 2048,
     player: {
@@ -25,7 +26,7 @@ export const GameConstants = {
         spawnMaxY: 50,
         defaultSlot: 8,
         defaultPrepareSlot: 8,
-        defaultEquippedPetals: ["uranium", "uranium", "uranium", "uranium", "unstoppable_bubble", "epic_rose", "epic_rose", "myt_tri_rose"],
+        defaultEquippedPetals: ["basic", "basic", "basic", "basic", "basic", "basic", "basic", "basic"],
         defaultPreparationPetals: [],
         defaultPetalDistance: 3.5,
         defaultPetalAttackingDistance: 6.5,
@@ -38,7 +39,8 @@ export const GameConstants = {
             speed: 1,
             revolutionSpeed: 2.4,
             zoom: 45,
-            damageAvoidanceChance: 0
+            damageAvoidanceChance: 0,
+            selfPoison: 0
         }),
     },
     petal: {

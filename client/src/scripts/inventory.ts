@@ -100,6 +100,11 @@ const showingConfig: { [key: string] : showingConfig } =
             color: "#3399ff",
             percent: false,
             startsWith: ""
+        },
+        selfPoison: {
+            displayName: "Self Poison",
+            color: "#ce76db",
+            endsWith: "/s"
         }
     }
 

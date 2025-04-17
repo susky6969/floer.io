@@ -1393,7 +1393,7 @@ export const Petals = new Definitions<PetalDefinition>([
             }
         },
         modifiers: {
-            healPerSecond: -20
+            selfPoison: 20
         },
         reloadTime: 2.5,
         hitboxRadius: 0.5,

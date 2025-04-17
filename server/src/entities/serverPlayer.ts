@@ -173,6 +173,10 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             this.sendEvent(AttributeEvents.HEALING, undefined)
 
         this.heal(this.modifiers.healPerSecond * this.game.dt);
+        
+        if (this.modifiers.selfPoison > 0) {
+            this.receiveDamage(this.modifiers.selfPoison * this.game.dt, this, true);
+        }
 
         this.updateModifiers();
 
@@ -436,6 +440,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         now.speed *= extra.speed ?? 1;
         now.revolutionSpeed += extra.revolutionSpeed ?? 0;
         now.zoom += extra.zoom ?? 0;
+        now.damageAvoidanceChance += extra.damageAvoidanceChance ?? 0;
+        now.selfPoison += extra.selfPoison ?? 0;
 
         return now;
     }
