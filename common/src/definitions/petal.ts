@@ -748,12 +748,13 @@ export const Petals = new Definitions<PetalDefinition>([
             maxHealth: 40 / 3
         },
         reloadTime: 1,
-        hitboxRadius: 0.6,
+        hitboxRadius: 0.7,
         isDuplicate: true,
         isShowedInOne: true,
         pieceAmount: 3,
         rarity: RarityName.legendary,
-        usingAssets: "cactus"
+        usingAssets: "cactus",
+        moreExtendDistance: 5
     },{
         idString: "salt",
         displayName: "Salt",

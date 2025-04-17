@@ -154,6 +154,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "stinger": 0.14,
             "twin": 0.06,
             "triangle": 0.02,
+            "tri_triangle": 0.002,
             "bubble": 0.012,
             "leg_bubble": 0.0012,
             "wing": 0.006,
@@ -176,6 +177,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "stinger": 0.28,
             "twin": 0.12,
             "triangle": 0.04,
+            "tri_triangle": 0.004,
             "bubble": 0.024,
             "leg_bubble": 0.0024,
             "wing": 0.012,
@@ -198,6 +200,7 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "sand": 0.66,
             "triangle": 0.02,
+            "tri_triangle": 0.002,
             "missile": 0.12,
             "big_missile": 0.01,
             "cactus": 0.06,
@@ -218,6 +221,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "sand": 0.66,
             "stinger": 0.5,
             "triangle": 0.1,
+            "tri_triangle": 0.01,
             "missile": 0.66,
             "big_missile": 0.01,
             "cactus": 0.12,
@@ -255,7 +259,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "fast": 1,
             "twin": 0.48,
             "triplet": 0.04,
-            "penta": 0.012
+            "penta": 0.012,
+            "uranium": 0.012
         },
         rarity: RarityName.rare,
         exp: 20,
@@ -281,7 +286,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "tri_stinger": 0.0012,
             "wing": 0.006,
             "tri_wing": 0.0036,
-            "powder": 0.009
+            "powder": 0.009,
+            "leg_egg": 0.006,
         },
         rarity: RarityName.epic,
         exp: 5
@@ -408,6 +414,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "iris": 0.24,
             "stinger": 0.36,
             "triangle": 0.024,
+            "tri_triangle": 0.0024,
             "tri_stinger": 0.012,
             "web": 0.18,
             "pincer": 0.18,
@@ -743,6 +750,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "wing": 0.31,
             "triplet": 0.02,
             "tri_stinger": 0.0006,
+            "leg_egg": 0.06,
             "powder": 0.016
         },
         rarity: RarityName.mythic,
@@ -796,6 +804,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "iris": 0.48,
             "stinger": 0.72,
             "triangle": 0.08,
+            "tri_triangle": 0.008,
             "tri_stinger": 0.02,
             "web": 0.36,
             "pincer": 0.36,
