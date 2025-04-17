@@ -1389,16 +1389,17 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             area_poison: {
                 radius: 15,
-                damagePerSecond: 4,
+                damagePerSecond: 10,
             }
         },
         modifiers: {
-            healPerSecond: -4
+            healPerSecond: -20
         },
-        reloadTime: 1.25,
+        reloadTime: 2.5,
         hitboxRadius: 0.5,
         isDuplicate: false,
         pieceAmount: 1,
+        unstackable: true,
         rarity: RarityName.legendary
     }
 ] satisfies PetalDefinition[]);

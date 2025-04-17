@@ -25,7 +25,7 @@ export const GameConstants = {
         spawnMaxY: 50,
         defaultSlot: 8,
         defaultPrepareSlot: 8,
-        defaultEquippedPetals: ["basic", "basic", "basic", "basic", "basic", "basic", "basic", "basic"],
+        defaultEquippedPetals: ["uranium", "uranium", "uranium", "uranium", "unstoppable_bubble", "epic_rose", "epic_rose", "myt_tri_rose"],
         defaultPreparationPetals: [],
         defaultPetalDistance: 3.5,
         defaultPetalAttackingDistance: 6.5,
