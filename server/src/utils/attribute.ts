@@ -332,6 +332,7 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                     
                     for (const entity of nearbyEntities) {
                         if (entity === this || entity === this.owner) continue;
+                        if (entity.type === EntityType.Petal || entity.type === EntityType.Projectile) continue;
                         if (isDamageableEntity(entity) && entity.canReceiveDamageFrom(this.owner)) {
                             entity.receiveDamage(data.damagePerSecond * tickInterval, this.owner);
                         }
