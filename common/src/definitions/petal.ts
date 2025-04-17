@@ -421,7 +421,7 @@ export const Petals = new Definitions<PetalDefinition>([
         extendable: true,
         usable: false,
         images: {
-            slotDisplaySize: 25,
+            slotDisplaySize: 40,
             selfGameRotation: 0.01
         },
         attributes: {
@@ -444,7 +444,7 @@ export const Petals = new Definitions<PetalDefinition>([
         extendable: true,
         usable: false,
         images: {
-            slotDisplaySize: 25,
+            slotDisplaySize: 35,
             selfGameRotation: 0.01
         },
         attributes: {
