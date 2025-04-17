@@ -80,11 +80,7 @@ export class ClientPlayer extends ClientEntity {
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Player], isNew: boolean): void {
-        super.updateFromData(data, isNew);
-
         this.position = data.position;
-
-        this.updateContainerPosition(4);
 
         if (isNew){
             this.container.position = Camera.vecToScreen(this.position);
@@ -108,6 +104,8 @@ export class ClientPlayer extends ClientEntity {
             this.healthPercent = data.full.healthPercent;
             this.drawHealthBar();
         }
+
+        super.updateFromData(data, isNew);
     }
 
     destroy() {

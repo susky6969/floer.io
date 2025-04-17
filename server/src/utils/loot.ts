@@ -19,7 +19,7 @@ export function spawnLoot(game: Game, loots: PetalDefinition[], position: Vector
             && (
                 game.rarityPetalCount(rarityDefinition.idString) +
                 spawnedLoots.filter(e => e.rarity === loot.rarity).length - 1)
-            > rarityDefinition.petalMaxCount) {
+            >= rarityDefinition.petalMaxCount) {
             spawnedLoots.splice(spawnedLoots.indexOf(loot), 1);
         }
     });
