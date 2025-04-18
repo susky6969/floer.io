@@ -81,7 +81,7 @@ export class ClientPlayer extends ClientEntity {
         this.updateContainerPosition(4);
 
         const mouthX = 7;
-        const mouthY = 10.3;
+        const mouthY = 10;
 
         this.mouthTopPosition = MathNumeric.targetEasing(
             this.mouthTopPosition, this.getMouthTopPosition() + mouthY
