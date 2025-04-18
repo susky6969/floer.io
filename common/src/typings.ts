@@ -11,4 +11,5 @@ export type PlayerModifiers = Modifiers & {
 export interface Modifiers {
     healPerSecond: number;
     speed: number;
+    selfPoison: number;
 }

@@ -11,6 +11,7 @@ import { ServerFriendlyMob, ServerMob } from "../entities/serverMob";
 import { ServerProjectile } from "../entities/serverProjectile";
 import { Projectile } from "../../../common/src/definitions/projectile";
 import { isDamageableEntity } from "../typings";
+import { CircleHitbox } from "../../../common/src/utils/hitbox";
 
 export enum AttributeEvents {
     HEALING = "HEALING",
@@ -275,6 +276,7 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 AttributeEvents.PETAL_DEAL_DAMAGE,
                 (entity) => {
                     if (!entity || !data) return;
+                    
                     new Effect({
                         effectedTarget: entity,
                         source: petal.owner,
@@ -303,6 +305,40 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                     }).start();
                 }
             );
+        }
+    },
+    
+    area_poison: {
+        callback: (on, petal, data) => {
+            if (!data) return;
+            const originalTick = petal.tick;
+            let timeSinceLastTick = 0;
+            const tickInterval = data.tickInterval || 1;
+            
+            petal.tick = function() {
+                originalTick.call(this);
+                
+                if (this.isReloading || this.destroyed) return;
+                
+                timeSinceLastTick += this.game.dt;
+                
+                if (timeSinceLastTick >= tickInterval) {
+                    timeSinceLastTick = 0;
+                    
+                    const circleHitbox = new CircleHitbox(data.radius);
+                    circleHitbox.position = this.position;
+                    
+                    const nearbyEntities = this.game.grid.intersectsHitbox(circleHitbox);
+                    
+                    for (const entity of nearbyEntities) {
+                        if (entity === this || entity === this.owner) continue;
+                        if (entity.type === EntityType.Petal || entity.type === EntityType.Projectile) continue;
+                        if (isDamageableEntity(entity) && entity.canReceiveDamageFrom(this.owner)) {
+                            entity.receiveDamage(data.damagePerSecond * tickInterval, this.owner);
+                        }
+                    }
+                }
+            };
         }
     },
 } as const;

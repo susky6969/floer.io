@@ -90,6 +90,11 @@ export type AttributeParameters = {
         duration: number
         speedReduction: number
     }
+    area_poison?: {
+        radius: number
+        damagePerSecond: number
+        tickInterval?: number
+    }
 })
 
 export function getDisplayedPieces(petal: PetalDefinition): number {
@@ -727,7 +732,8 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic,
-    }, {
+    },
+    {
         idString: "tri_cactus",
         displayName: "Cactus",
         description: "Not very strong, but somehow increases your maximum health",
@@ -742,12 +748,13 @@ export const Petals = new Definitions<PetalDefinition>([
             maxHealth: 40 / 3
         },
         reloadTime: 1,
-        hitboxRadius: 0.6,
+        hitboxRadius: 0.7,
         isDuplicate: true,
         isShowedInOne: true,
         pieceAmount: 3,
         rarity: RarityName.legendary,
-        usingAssets: "cactus"
+        usingAssets: "cactus",
+        moreExtendDistance: 5
     },{
         idString: "salt",
         displayName: "Salt",
@@ -1367,5 +1374,33 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.rare,
+    },
+    {
+        idString: "uranium",
+        displayName: "Uranium",
+        description: "Highly radioactive material that poisons enemies and the wearer. Handle with care!",
+        damage: 1,
+        health: 32,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 40,
+            selfGameRotation: 0.02
+        },
+        attributes: {
+            area_poison: {
+                radius: 15,
+                damagePerSecond: 10,
+            }
+        },
+        modifiers: {
+            selfPoison: 20
+        },
+        reloadTime: 2.5,
+        hitboxRadius: 0.5,
+        isDuplicate: false,
+        pieceAmount: 1,
+        unstackable: true,
+        rarity: RarityName.legendary
     }
 ] satisfies PetalDefinition[]);

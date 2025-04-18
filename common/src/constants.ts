@@ -11,7 +11,8 @@ export enum EntityType {
 export const GameConstants = {
     defaultModifiers: (): Modifiers => ({
         healPerSecond: 0,
-        speed: 1
+        speed: 1,
+        selfPoison: 0
     }),
     maxPosition: 2048,
     player: {
@@ -38,7 +39,8 @@ export const GameConstants = {
             speed: 1,
             revolutionSpeed: 2.4,
             zoom: 45,
-            damageAvoidanceChance: 0
+            damageAvoidanceChance: 0,
+            selfPoison: 0
         }),
     },
     petal: {

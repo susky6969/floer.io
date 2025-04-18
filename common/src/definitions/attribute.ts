@@ -54,7 +54,12 @@ const AttributeDefinitions = [
     {
         idString: "paralyze",
         displayName: "Paralyze"
-    },{
+    },
+    {
+        idString: "area_poison",
+        displayName: "Area Poison"
+    },
+    {
         idString: "spawner",
         displayName: "Spawner"
     }
