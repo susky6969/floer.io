@@ -3,7 +3,7 @@ import { ServerEntity } from "./serverEntity";
 import { Vec2 } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
-import { type EntitiesNetData, UpdatePacket } from "../../../common/src/packets/updatePacket";
+import { type EntitiesNetData, PlayerState, UpdatePacket } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, RectHitbox } from "../../../common/src/utils/hitbox";
 import { Random } from "../../../common/src/utils/random";
 import { MathNumeric } from "../../../common/src/utils/math";
@@ -205,13 +205,13 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     receiveDamage(amount: number, source: damageSource, disableEvent?: boolean) {
         if (!this.isActive()) return;
-        
+
         // 闪避
         if (this.modifiers.damageAvoidanceChance > 0 && Math.random() < this.modifiers.damageAvoidanceChance) {
             //console.log(`Player ${this.name} avoided damage from ${source.type}`);
             return;
         }
-        
+
         this.health -= amount;
 
         if (!disableEvent) {
@@ -415,14 +415,19 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.inventory.eventManager.sendEventByPetal<T>(petal, event, data);
     }
 
+    get playerState(): PlayerState {
+        if (this.state.poison) return PlayerState.Poisoned;
+        if (this.modifiers.healing < 1) return PlayerState.Danded;
+        if (this.isAttacking) return PlayerState.Attacking;
+        if (this.isDefending) return PlayerState.Defending;
+        return PlayerState.Normal
+    }
+
     get data(): Required<EntitiesNetData[EntityType.Player]> {
         return {
             position: this.position,
             direction: this.direction,
-            state: {
-                poisoned: !!this.state.poison,
-                danded: this.modifiers.healing < 1
-            },
+            state: this.playerState,
             full: {
                 healthPercent: this.health / this.maxHealth
             }
@@ -444,7 +449,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         let modifiersNow = GameConstants.player.defaultModifiers();
 
         let effectedPetals: PetalDefinition[] = []
-        
+
         // 闪避
         let avoidanceFailureChance = 1;
 
@@ -456,12 +461,12 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
                     avoidanceFailureChance *= (1 - modifier.damageAvoidanceChance);
                     const modifierWithoutAvoidance = {...modifier};
                     delete modifierWithoutAvoidance.damageAvoidanceChance;
-                    
+
                     modifiersNow = this.calcModifiers(modifiersNow, modifierWithoutAvoidance);
                 } else {
                     modifiersNow = this.calcModifiers(modifiersNow, modifier);
                 }
-                
+
                 effectedPetals.push(petal.definition)
             }
         }
@@ -491,9 +496,9 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         })
 
         this.otherModifiers = [];
-        
+
         modifiersNow.damageAvoidanceChance = 1 - avoidanceFailureChance;
-        
+
         this.modifiers = modifiersNow;
 
         this.maxHealth = this.modifiers.maxHealth;

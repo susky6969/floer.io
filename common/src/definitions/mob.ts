@@ -272,7 +272,7 @@ export const Mobs = new Definitions<MobDefinition>([
         images: {
             mouth: true,
             mouthXPosition: 2.7,
-            mouthYPosition: 1.1
+            mouthYPosition: 1.3
         },
         lootTable: {
             "iris": 0.18,
@@ -733,8 +733,8 @@ export const Mobs = new Definitions<MobDefinition>([
         hitboxRadius: 3,
         images: {
             mouth: true,
-            mouthXPosition: 2.2,
-            mouthYPosition: 1.1
+            mouthXPosition: 2,
+            mouthYPosition: 1.5
         },
         speed: 3,
         lootTable: {

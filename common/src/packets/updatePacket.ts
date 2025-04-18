@@ -5,14 +5,19 @@ import { PetalDefinition, Petals, SavedPetalDefinitionData } from "../definition
 import { MobDefinition, Mobs } from "../definitions/mob";
 import { Projectile, ProjectileDefinition } from "../definitions/projectile";
 
+export enum PlayerState {
+    Attacking,
+    Defending,
+    Danded,
+    Poisoned,
+    Normal
+}
+
 export interface EntitiesNetData {
     [EntityType.Player]: {
         position: Vector
         direction: Vector
-        state: {
-            poisoned: boolean
-            danded: boolean
-        }
+        state: PlayerState
 
         full?: {
             healthPercent: number
@@ -74,8 +79,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         serializePartial(stream, data): void {
             stream.writePosition(data.position);
             stream.writeUnit(data.direction, 16);
-            stream.writeBoolean(data.state.poisoned);
-            stream.writeBoolean(data.state.danded)
+            stream.writeUint8(data.state);
         },
         serializeFull(stream, data): void {
             stream.writeFloat(data.healthPercent, 0.0, 1.0, 16);
@@ -84,10 +88,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             return {
                 position: stream.readPosition(),
                 direction: stream.readUnit(16),
-                state: {
-                    poisoned: stream.readBoolean(),
-                    danded: stream.readBoolean()
-                }
+                state: stream.readUint8()
             };
         },
         deserializeFull(stream) {
@@ -297,7 +298,7 @@ export class UpdatePacket implements Packet {
             stream.writeArray(this.players, 8, player => {
                 stream.writeUint16(player.id);
                 stream.writeASCIIString(player.name, GameConstants.player.maxNameLength);
-                stream.writeUint16(player.exp)
+                stream.writeUint32(player.exp)
             });
 
             flags |= UpdateFlags.NewPlayers;
@@ -402,7 +403,7 @@ export class UpdatePacket implements Packet {
                 return {
                     id: stream.readUint16(),
                     name: stream.readASCIIString(GameConstants.player.maxNameLength),
-                    exp: stream.readUint16()
+                    exp: stream.readUint32()
                 };
             });
         }
