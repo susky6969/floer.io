@@ -155,9 +155,9 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "wing",
         displayName: "Wing",
         description: "It comes and goes.",
-        damage: 15,
+        damage: 20,
         health: 15,
-        moreExtendDistance: 2,
+        moreExtendDistance: 2.6,
         images:{
             slotDisplaySize: 45,
             selfGameRotation: 2
@@ -176,7 +176,7 @@ export const Petals = new Definitions<PetalDefinition>([
         description: "They come and go.",
         damage: 20,
         health: 15,
-        moreExtendDistance: 2.5,
+        moreExtendDistance: 2.6,
         images:{
             slotDisplaySize: 45,
             selfGameRotation: 2
