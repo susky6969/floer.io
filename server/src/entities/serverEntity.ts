@@ -183,11 +183,16 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
 
     collideWith(collision: CollisionResponse, entity: collideableEntity): void{
         if (!entity.canCollideWith(this) || !this.canCollideWith(entity)) return;
+        const knockbackBetween: { [K in collideableEntity["type"]]: number} = {
+            [EntityType.Mob]: 0,
+            [EntityType.Petal]: 0,
+            [EntityType.Player]: 1.5
+        }
         if (collision) {
             this.addVelocity(
                 Vec2.mul(
                     collision.dir,
-                    (collision.pen + (entity.type !== this.type ? entity.knockback : 0))
+                    (collision.pen + (entity.type !== this.type ? entity.knockback : knockbackBetween[entity.type]))
                     * entity.weight
                     * (-1)
                     / (this.weight + entity.weight)
