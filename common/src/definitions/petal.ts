@@ -174,9 +174,9 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "tri_wing",
         displayName: "Wing",
         description: "They come and go.",
-        damage: 15,
+        damage: 20,
         health: 15,
-        moreExtendDistance: 2,
+        moreExtendDistance: 2.5,
         images:{
             slotDisplaySize: 45,
             selfGameRotation: 2
@@ -263,7 +263,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "leaf",
         displayName: "Leaf",
         description: "Gathers energy from the sun to heal your flower passively",
-        damage: 8,
+        damage: 10,
         health: 10,
         extendable: true,
         images: {
@@ -283,7 +283,7 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "tri_leaf",
         displayName: "Leaf",
         description: "Gathers energy from the sun to heal your flower passively",
-        damage: 8,
+        damage: 10,
         health: 10,
         extendable: true,
         images: {
@@ -553,10 +553,10 @@ export const Petals = new Definitions<PetalDefinition>([
             },
             shoot: {
                 hitboxRadius: 0.6,
-                damage: 10,
-                health: 10,
+                damage: 5,
+                health: 20,
                 despawnTime: 3,
-                speed: 6.25,
+                speed: 7,
                 definition: Projectile.fromString("dandelion")
             }
         },
@@ -589,7 +589,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 40,
                 health: 10,
                 despawnTime: 3,
-                speed: 5.25,
+                speed: 6.5,
                 definition: Projectile.fromString("missile")
             }
         },
@@ -622,7 +622,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 40,
                 health: 20,
                 despawnTime: 3,
-                speed: 5.25,
+                speed: 6.5,
                 definition: Projectile.fromString("missile")
             }
         },
@@ -656,13 +656,13 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 50,
                 health: 20,
                 despawnTime: 3,
-                speed: 5.25,
+                speed: 8,
                 definition: Projectile.fromString("missile")
             }
         },
         useTime: 0.1,
         reloadTime: 0.5,
-        hitboxRadius: 1,
+        hitboxRadius: 0.6,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.mythic,
@@ -698,10 +698,10 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 52,
         },
         modifiers: {
-            maxHealth: 20
+            maxHealth: 25
         },
         reloadTime: 1,
-        hitboxRadius: 0.6,
+        hitboxRadius: 0.7,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.rare,
@@ -727,10 +727,10 @@ export const Petals = new Definitions<PetalDefinition>([
             }
         },
         modifiers: {
-            maxHealth: 20
+            maxHealth: 25
         },
         reloadTime: 1,
-        hitboxRadius: 0.6,
+        hitboxRadius: 0.7,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic,
@@ -747,7 +747,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 52
         },
         modifiers: {
-            maxHealth: 40 / 3
+            maxHealth: 20
         },
         reloadTime: 1,
         hitboxRadius: 0.7,
@@ -1247,7 +1247,7 @@ export const Petals = new Definitions<PetalDefinition>([
             place_projectile: {
                 definition: Projectile.fromString("pollen"),
                 speed: 0,
-                damage: 8,
+                damage: 11,
                 health: 5,
                 hitboxRadius: 0.3,
                 despawnTime: 5,
@@ -1274,7 +1274,7 @@ export const Petals = new Definitions<PetalDefinition>([
             place_projectile: {
                 definition: Projectile.fromString("pollen"),
                 speed: 0,
-                damage: 8,
+                damage: 11,
                 health: 5,
                 hitboxRadius: 0.3,
                 despawnTime: 5,
