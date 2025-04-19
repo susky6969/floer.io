@@ -754,7 +754,6 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 3,
         rarity: RarityName.legendary,
         usingAssets: "cactus",
-        moreExtendDistance: 5
     },{
         idString: "salt",
         displayName: "Salt",
@@ -1324,7 +1323,7 @@ export const Petals = new Definitions<PetalDefinition>([
         attributes: {
             spawner: Mobs.fromString("beetle")
         },
-        reloadTime: 1,
+        reloadTime: 1.5,
         hitboxRadius: 0.6,
         isDuplicate: false,
         pieceAmount: 1,
