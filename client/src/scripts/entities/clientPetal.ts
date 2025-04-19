@@ -120,9 +120,9 @@ export class ClientPetal extends ClientEntity {
     updateFromData(data: EntitiesNetData[EntityType.Petal], isNew: boolean): void {
         this.position = data.position;
 
-        if (isNew){
-            this.definition = data.definition;
+        this.definition = data.definition;
 
+        if (isNew){
             this.container.position = Camera.vecToScreen(this.position);
 
             this.images.body

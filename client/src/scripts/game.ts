@@ -124,8 +124,6 @@ export class Game {
     startGame(loggedInPacket: LoggedInPacket): void {
         if (this.running) return;
 
-        this.pixi.renderer.resolution = this.app.settings.data.lowResolution ? 1 : 2;
-
         this.running = true;
 
         this.ui.inGameScreen.css("display", "block");
