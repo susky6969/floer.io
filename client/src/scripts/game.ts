@@ -424,7 +424,7 @@ export class Game {
         inputPacket.isAttacking = this.input.isInputDown("Mouse0")
             || this.input.isInputDown("Key ");
         inputPacket.isDefending = this.input.isInputDown("Mouse2")
-            || this.input.isInputDown("KeyShift");
+            || this.input.isInputDown("KeySHIFT");
 
         const direction = this.input.moveDirection;
         inputPacket.direction = direction ?? this.lastDirection;
