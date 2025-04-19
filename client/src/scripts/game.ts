@@ -99,6 +99,7 @@ export class Game {
             resizeTo: window,
             resolution: this.app.settings.data.lowResolution ? 1 : 2,
             antialias: true,
+            preference: "webgl",
             autoDensity: true,
             canvas: document.getElementById("canvas") as HTMLCanvasElement
         });
