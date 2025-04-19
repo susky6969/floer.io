@@ -220,6 +220,7 @@ export class ClientPlayer extends ClientEntity {
 
         if (isNew){
             this.container.position = Camera.vecToScreen(this.position);
+            if (data.isAdmin) this.name.style.fill = "#FF0000"
         }
 
         if (data.gotDamage) {

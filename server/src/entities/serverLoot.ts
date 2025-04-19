@@ -49,10 +49,10 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
                     if (this.game.activePlayers.size >= 20) {
                         content += `by ${collidedEntity.name}`
                     }
-                    this.game.sendGlobalMessage(
-                         content + "!",
-                        parseInt(rarity.color.split("#")[1], 16)
-                    )
+                    this.game.sendGlobalMessage({
+                        content: content +"!",
+                        color: parseInt(rarity.color.substring(1), 16)
+                    })
                 }
             }
         }

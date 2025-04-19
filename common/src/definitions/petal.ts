@@ -500,7 +500,8 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         modifiers: {
             maxHealth: 66666,
-            healPerSecond: 66666
+            healPerSecond: 66666,
+            zoom: 50
         },
         reloadTime: 0,
         hitboxRadius: 0.6,
@@ -508,7 +509,8 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: true,
         pieceAmount: 2,
         rarity: RarityName.super,
-        usingAssets: "bubble"
+        usingAssets: "bubble",
+        undroppable: true
     },
     {
         idString: "basic",

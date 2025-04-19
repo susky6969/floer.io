@@ -19,6 +19,7 @@ export interface EntitiesNetData {
         direction: Vector
         state: PlayerState
         gotDamage: boolean
+        isAdmin: boolean
 
         full?: {
             healthPercent: number
@@ -82,7 +83,8 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             stream.writePosition(data.position);
             stream.writeUnit(data.direction, 16);
             stream.writeUint8(data.state);
-            stream.writeBoolean(data.gotDamage)
+            stream.writeBoolean(data.gotDamage);
+            stream.writeBoolean(data.isAdmin)
         },
         serializeFull(stream, data): void {
             stream.writeFloat(data.healthPercent, 0.0, 1.0, 16);
@@ -92,7 +94,8 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
                 position: stream.readPosition(),
                 direction: stream.readUnit(16),
                 state: stream.readUint8(),
-                gotDamage: stream.readBoolean()
+                gotDamage: stream.readBoolean(),
+                isAdmin: stream.readBoolean()
             };
         },
         deserializeFull(stream) {

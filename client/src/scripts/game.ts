@@ -26,6 +26,7 @@ import { Config } from "@/config.ts";
 import { LoggedInPacket } from "@common/packets/loggedInPacket.ts";
 import { ParticleManager } from "@/scripts/render/particle.ts";
 import { Vec2, Vector } from "@common/utils/vector.ts";
+import { Petals, SavedPetalDefinitionData } from "@common/definitions/petal.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -383,6 +384,15 @@ export class Game {
         const joinPacket = new JoinPacket();
         const name = this.ui.nameInput.val();
         joinPacket.name = name ? name : GameConstants.player.defaultName;
+        joinPacket.secret = localStorage.getItem("secret") ?? "";
+        const petals = JSON.parse(localStorage.getItem("petals") ?? "[]");
+        if (petals instanceof Array && petals.length > 0) {
+            let petalData: SavedPetalDefinitionData[] = [];
+            for (const petal of petals) {
+                petalData.push(Petals.fromStringData(petal));
+            }
+            joinPacket.petals = petalData;
+        }
         this.sendPacket(joinPacket);
     }
 

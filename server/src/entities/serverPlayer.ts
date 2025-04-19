@@ -13,7 +13,7 @@ import { EntityType, GameConstants } from "../../../common/src/constants";
 import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
 import { ServerPetal } from "./serverPetal";
-import { PetalDefinition, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
+import { PetalDefinition, Petals, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { AttributeEvents } from "../utils/attribute";
 import { PlayerModifiers } from "../../../common/src/typings";
@@ -22,6 +22,7 @@ import { getLevelExpCost, getLevelInformation } from "../../../common/src/utils/
 import { damageableEntity, damageSource } from "../typings";
 import { LoggedInPacket } from "../../../common/src/packets/loggedInPacket";
 import { ServerFriendlyMob } from "./serverMob";
+import { Config } from "../config";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
@@ -119,6 +120,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     chatMessagesToSend: ChatData[] = [];
 
     killedBy?: ServerPlayer;
+
+    isAdmin: boolean = false;
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
         switch (source.type) {
@@ -383,6 +386,10 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         console.log(`"${this.name}" joined the game`);
 
+        if (packet.secret && packet.secret === Config.adminSecret) {
+            this.isAdmin = true;
+        }
+
         this.updateModifiers();
 
         const loggedIn = new LoggedInPacket();
@@ -397,6 +404,14 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             this.inventory.loadConfigByData(this.inventory.inventory);
         } else {
             this.inventory.loadDefaultConfig();
+        }
+
+        if (this.isAdmin && packet.petals.length > 0) {
+            let index = 0
+            for (const petal of packet.petals) {
+                this.inventory.updateInventory(index, petal);
+                index ++;
+            }
         }
     }
 
@@ -444,6 +459,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             direction: this.direction,
             state: this.playerState,
             gotDamage: this.gotDamage,
+            isAdmin: this.isAdmin,
             full: {
                 healthPercent: this.health / this.maxHealth
             }
@@ -534,7 +550,10 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             if (this.killedBy) {
                 content += ` by ${this.killedBy.name}`
             }
-            this.game.sendGlobalMessage(content + `!`, 0x9f5c4b);
+            this.game.sendGlobalMessage({
+                content: content + `!`,
+                color: 0x9f5c4b
+            });
         }
 
         super.destroy();
@@ -560,14 +579,24 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         const collided =
             this.game.grid.intersectsHitbox(new CircleHitbox(radius, this.position));
 
-        const modifiedMessage: ChatData = {
+        let modifiedMessage: ChatData = {
             color: 0xffffff,
             content: `[Local] ${this.name}: ${message}`
         };
 
-        for (const collidedElement of collided) {
-            if (!(collidedElement instanceof ServerPlayer)) continue;
-            collidedElement.chatMessagesToSend.push(modifiedMessage);
+        if (this.isAdmin && message.startsWith("!")) {
+            modifiedMessage = {
+                color: 0xff0000,
+                content: `[Global] ${this.name}: ${message.substring(1)}`
+            }
+            this.game.sendGlobalMessage(modifiedMessage);
+        } else {
+            for (const collidedElement of collided) {
+                if (!(collidedElement instanceof ServerPlayer)) continue;
+                collidedElement.chatMessagesToSend.push(modifiedMessage);
+            }
         }
+
+
     }
 }

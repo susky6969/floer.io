@@ -23,6 +23,7 @@ import { PetalDefinition } from "../../common/src/definitions/petal";
 import { P2 } from "../../common/src/utils/math";
 import { spawnSegmentMobs } from "./utils/mob";
 import { RarityName } from "../../common/src/definitions/rarity";
+import { ChatData } from "../../common/src/packets/updatePacket";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -309,12 +310,9 @@ export class Game {
         return num
     }
 
-    sendGlobalMessage(message: string, color: number = 0xffffff): void {
+    sendGlobalMessage(message: ChatData): void {
         for (const player of this.players) {
-            player.chatMessagesToSend.push({
-                content: message,
-                color
-            })
+            player.chatMessagesToSend.push(message)
         }
     }
 

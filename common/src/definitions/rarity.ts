@@ -82,6 +82,8 @@ export const Rarity = new Definitions<RarityDefinition>([
         color: "#2bffa3",
         border: "#23cf84",
         expWhenAbsorb: 10000,
-        level: 7
+        level: 7,
+        showParticle: true,
+        petalMaxCount: 0
     }
 ] as RarityDefinition[]);
