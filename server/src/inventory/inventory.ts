@@ -188,6 +188,7 @@ export class Inventory {
 
         this.absorbedBefore.forEach(e => {
             if ((Date.now() - e.time) / 1000 < 30) {
+                if (e.definition.undroppable) return;
                 fullDroppable.push({ fromInventory: false, item: e.definition});
             }
         })

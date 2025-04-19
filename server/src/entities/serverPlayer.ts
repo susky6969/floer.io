@@ -123,6 +123,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     isAdmin: boolean = false;
 
+    knockback: number = 3;
+
     canReceiveDamageFrom(source: damageableEntity): boolean {
         switch (source.type) {
             case EntityType.Player:
