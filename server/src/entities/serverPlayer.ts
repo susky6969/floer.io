@@ -530,7 +530,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         if (this.destroyed) return;
 
         if (this.game.leaderboard()[0] == this){
-            let content = `The Leader ${this.name} with ${this.exp} scores was killed`
+            let content = `The Leader ${this.name} with ${this.exp.toFixed(0)} scores was killed`
             if (this.killedBy) {
                 content += ` by ${this.killedBy.name}`
             }

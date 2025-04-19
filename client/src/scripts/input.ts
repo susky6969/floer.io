@@ -130,16 +130,17 @@ export class Input {
 
         if (down) {
             if (["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(event.key)) {
+                const index = event.key === "0" ? 9 : +event.key - 1;
                 if (this.game.app.settings.data.newControl) {
                     if (this.isInputDown("KeyT")) {
                         this.game.inventory.deleteSlot(
-                            this.game.inventory.equippedPetals.length + (+event.key) - 1
+                            this.game.inventory.equippedPetals.length + index
                         );
                     } else {
-                        this.game.inventory.switchSlot(+event.key - 1);
+                        this.game.inventory.switchSlot(index);
                     }
                 }else {
-                    this.game.inventory.switchSelectingSlotTo(+event.key - 1);
+                    this.game.inventory.switchSelectingSlotTo(index);
                 }
             }
 

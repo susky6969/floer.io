@@ -241,7 +241,9 @@ export class ClientPlayer extends ClientEntity {
     }
 
     destroy() {
-        this.game.camera.screenShake();
+        if (this.id == this.game.activePlayerID) {
+            this.game.camera.screenShake();
+        }
 
         this.game.addTween(
             new Tween({ scale: 1, alpha: 1 },)
