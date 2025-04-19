@@ -97,11 +97,8 @@ export class Game {
     async init() {
         await this.pixi.init({
             resizeTo: window,
-            resolution: 1.2,
             antialias: true,
             autoDensity: true,
-            preference: "webgl",
-            backgroundColor: "#29ca77",
             canvas: document.getElementById("canvas") as HTMLCanvasElement
         });
 

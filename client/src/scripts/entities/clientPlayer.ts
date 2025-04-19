@@ -4,7 +4,7 @@ import { GameSprite, getGameAssetsPath } from "@/scripts/utils/pixi";
 import { Game } from "@/scripts/game";
 import { EntitiesNetData, PlayerState } from "@common/packets/updatePacket.ts";
 import { Camera } from "@/scripts/render/camera.ts";
-import { Graphics, Text } from "pixi.js";
+import { Graphics, Text, Container } from "pixi.js";
 import { MathNumeric } from "@common/utils/math.ts";
 import { Tween } from "@tweenjs/tween.js";
 import { Vec2 } from "@common/utils/vector.ts";
@@ -38,7 +38,8 @@ export class ClientPlayer extends ClientEntity {
                 fontSize: 14,
                 fill: "#fff",
                 stroke: {color: "#000", width: 2}
-            }
+            },
+            resolution: 1.5,
         });
 
         this.name.anchor.set(0.5);
@@ -62,13 +63,13 @@ export class ClientPlayer extends ClientEntity {
             case PlayerState.Poisoned:
                 return -1;
             case PlayerState.Attacking:
-                return -3.5;
+                return -3;
             case PlayerState.Defending:
                 return -2;
             case PlayerState.Danded:
                 return -1;
         }
-        return 3.5;
+        return 3;
     }
 
     render(dt: number): void {
@@ -80,8 +81,8 @@ export class ClientPlayer extends ClientEntity {
 
         this.updateContainerPosition(4);
 
-        const mouthX = 7;
-        const mouthY = 10;
+        const mouthX = 6;
+        const mouthY = 9;
 
         this.mouthTopPosition = MathNumeric.targetEasing(
             this.mouthTopPosition, this.getMouthTopPosition() + mouthY
@@ -89,13 +90,13 @@ export class ClientPlayer extends ClientEntity {
 
         const radius = Camera.unitToScreen(GameConstants.player.radius);
 
-        const firstEyeCenter = Vec2.new(-7.2,-5.8);
-        const eyeWidth = 3.5;
-        const eyeHeight = 7.5;
+        const firstEyeCenter = Vec2.new(-6.2,-4.8);
+        const eyeWidth = 3;
+        const eyeHeight = 6.5;
         const eyeStroke = 4;
 
         this.eyeTrianglePosition = MathNumeric.targetEasing(
-            this.eyeTrianglePosition, (this.state === PlayerState.Attacking ? -2.5 : -8) + firstEyeCenter.y
+            this.eyeTrianglePosition, (this.state === PlayerState.Attacking ? -3.5 : -8) + firstEyeCenter.y
         )
 
         const eyeInsideWidth = 2;

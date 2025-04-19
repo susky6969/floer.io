@@ -134,7 +134,7 @@ export async function loadAssets(): Promise<void> {
 
         promises.push(Assets.load({
             alias: name,
-            src: file.replace("/public", "")
+            src: file.replace("/public", ""),
         }));
     }
 

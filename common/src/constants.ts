@@ -16,7 +16,7 @@ export const GameConstants = {
     }),
     maxPosition: 2048,
     player: {
-        radius: 1.3,
+        radius: 1.2,
         defaultBodyDamage: 25,
         defaultHealth: 125,
         maxSpeed: 3.5,

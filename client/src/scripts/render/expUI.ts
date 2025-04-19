@@ -12,7 +12,8 @@ export class ExpUI {
             fontSize: 16,
             fill: "#fff",
             stroke: {color: "#000", width: 2}
-        }
+        },
+        resolution: 2,
     });
 
     exp: number = 0;

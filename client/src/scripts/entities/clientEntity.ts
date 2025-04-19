@@ -116,7 +116,21 @@ export abstract class ClientEntity implements GameEntity {
     }
 
     destroy() {
+        const removed = this.container.removeChildren(0, this.container.children.length);
+        removed.forEach((c) => {
+            c.destroy({
+                children: true,
+                texture: false
+            });
+        })
         this.game.camera.container.removeChild(this.container);
+        const removedStatic = this.staticContainer.removeChildren(0, this.staticContainer.children.length);
+        removedStatic.forEach((c) => {
+            c.destroy({
+                children: true,
+                texture: false
+            });
+        })
         this.game.camera.container.removeChild(this.staticContainer);
     }
 }
