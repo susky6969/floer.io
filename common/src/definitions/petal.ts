@@ -1366,8 +1366,10 @@ export const Petals = new Definitions<PetalDefinition>([
             selfGameRotation: 0.01
         },
         modifiers: {
-            damageAvoidanceChance: 0.12
+            // damageAvoidanceChance: 0.12
+			damageAvoidanceByDamage: true
         },
+		// unstackable: true,
         reloadTime: 2.5,
         hitboxRadius: 0.45,
         isDuplicate: false,
