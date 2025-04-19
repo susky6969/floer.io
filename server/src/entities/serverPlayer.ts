@@ -3,7 +3,7 @@ import { ServerEntity } from "./serverEntity";
 import { Vec2 } from "../../../common/src/utils/vector";
 import { GameBitStream, type Packet, PacketStream } from "../../../common/src/net";
 import { type Game } from "../game";
-import { type EntitiesNetData, PlayerState, UpdatePacket } from "../../../common/src/packets/updatePacket";
+import { ChatData, type EntitiesNetData, PlayerState, UpdatePacket } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox, RectHitbox } from "../../../common/src/utils/hitbox";
 import { Random } from "../../../common/src/utils/random";
 import { MathNumeric } from "../../../common/src/utils/math";
@@ -116,7 +116,9 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     overleveled: boolean = false;
     overleveledTimeRemains: number = GameConstants.player.overleveledTime;
 
-    chatMessagesToSend: string[] = [];
+    chatMessagesToSend: ChatData[] = [];
+
+    killedBy?: ServerPlayer;
 
     canReceiveDamageFrom(source: damageableEntity): boolean {
         switch (source.type) {
@@ -232,13 +234,16 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.gotDamage = true;
 
         if (this.health <= 0) {
-            this.destroy();
-
-            if (source instanceof ServerPlayer){
-                source.addExp(this.exp / 2)
+            if (source instanceof ServerPlayer) {
+                source.kills++;
+                this.killedBy = source;
             }
 
-            if (source instanceof ServerPlayer) source.kills++;
+            this.destroy();
+
+            if (source instanceof ServerPlayer) {
+                source.addExp(this.exp / 2)
+            }
 
             const gameOverPacket = new GameOverPacket();
             gameOverPacket.kills = this.kills;
@@ -523,6 +528,15 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     destroy() {
         if (this.destroyed) return;
+
+        if (this.game.leaderboard()[0] == this){
+            let content = `The Leader ${this.name} with ${this.exp} scores was killed`
+            if (this.killedBy) {
+                content += ` by ${this.killedBy.name}`
+            }
+            this.game.sendGlobalMessage(content + `!`, 0x9f5c4b);
+        }
+
         super.destroy();
         for (const i of this.petalEntities){
             i.destroy();
@@ -546,7 +560,10 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         const collided =
             this.game.grid.intersectsHitbox(new CircleHitbox(radius, this.position));
 
-        const modifiedMessage = `[Local] ${this.name}: ${message}`;
+        const modifiedMessage: ChatData = {
+            color: 0xffffff,
+            content: `[Local] ${this.name}: ${message}`
+        };
 
         for (const collidedElement of collided) {
             if (!(collidedElement instanceof ServerPlayer)) continue;

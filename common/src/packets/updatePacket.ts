@@ -208,6 +208,11 @@ export interface Explosion {
     radius: number
 }
 
+export interface ChatData {
+    content: string
+    color: number
+}
+
 enum UpdateFlags {
     DeletedEntities = 1 << 0,
     FullEntities = 1 << 1,
@@ -255,7 +260,7 @@ export class UpdatePacket implements Packet {
     };
 
     chatDirty = false;
-    chatMessages: string[] = []
+    chatMessages: ChatData[] = []
 
     mapDirty = false;
     map = {
@@ -356,7 +361,8 @@ export class UpdatePacket implements Packet {
 
         if (this.chatDirty) {
             stream.writeArray(this.chatMessages, 8, msg => {
-                stream.writeUTF8String(msg);
+                stream.writeUint32(msg.color);
+                stream.writeUTF8String(msg.content);
             })
 
             flags |= UpdateFlags.ChatMessage;
@@ -467,7 +473,10 @@ export class UpdatePacket implements Packet {
             this.chatDirty = true;
 
             stream.readArray(this.chatMessages, 8, () => {
-                return stream.readUTF8String();
+                return {
+                    color: stream.readUint32(),
+                    content: stream.readUTF8String()
+                }
             })
         }
 

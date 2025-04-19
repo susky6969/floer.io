@@ -5,6 +5,7 @@ import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
 import { Tween } from "@tweenjs/tween.js"
 import { Game } from "@/scripts/game.ts";
 import { Settings, SettingsData } from "@/settings.ts";
+import { ChatData } from "@common/packets/updatePacket.ts";
 
 export class UI {
     readonly app: ClientApplication;
@@ -158,9 +159,15 @@ export class UI {
 
     chatMessages: ChatMessage[] = [];
 
-    addChatMessage(msg: string) {
+    addChatMessage(msg: ChatData) {
         const jq = $(
-            `<div class="chat-message" textStroke="${msg}">${msg}</div>`
+            `<div
+                class="chat-message"
+                textStroke="${msg.content}"
+                style="color: #${msg.color.toString(16)};"
+            >
+                ${msg.content}
+            </div>`
         );
 
         this.chatMessagesBox.append(jq)
@@ -204,7 +211,7 @@ export class UI {
 }
 
 class ChatMessage {
-    constructor(public content: string, public jq: JQuery, public createdTime: number) {}
+    constructor(public content: ChatData, public jq: JQuery, public createdTime: number) {}
 
     getOpacity() {
         if ((Date.now() - this.createdTime) / 1000 > 10) return 0;

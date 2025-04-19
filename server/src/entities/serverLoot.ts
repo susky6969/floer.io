@@ -6,6 +6,7 @@ import { EntityType, GameConstants } from "../../../common/src/constants";
 import { PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
 import { Game } from "../game";
+import { Rarity } from "../../../common/src/definitions/rarity";
 
 export class ServerLoot extends ServerEntity<EntityType.Loot> {
     type: EntityType.Loot = EntityType.Loot;
@@ -42,6 +43,17 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
 
             if (collidedEntity.inventory.pickUp(this.definition)){
                 this.destroy();
+                const rarity = Rarity.fromString(this.definition.rarity);
+                if (rarity.globalMessage) {
+                    let content = `A ${rarity.displayName} ${this.definition.displayName} has been found`
+                    if (this.game.activePlayers.size >= 20) {
+                        content += `by ${collidedEntity.name}`
+                    }
+                    this.game.sendGlobalMessage(
+                         content + "!",
+                        parseInt(rarity.color.split("#")[1], 16)
+                    )
+                }
             }
         }
     }

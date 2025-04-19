@@ -308,6 +308,19 @@ export class Game {
 
         return num
     }
+
+    sendGlobalMessage(message: string, color: number = 0xffffff): void {
+        for (const player of this.players) {
+            player.chatMessagesToSend.push({
+                content: message,
+                color
+            })
+        }
+    }
+
+    leaderboard(): ServerPlayer[] {
+        return Array.from(this.activePlayers).sort((a, b) => b.exp - a.exp);
+    }
 }
 
 interface CollisionTask {
