@@ -94,16 +94,6 @@ export class ClientMob extends ClientEntity {
 
         this.container.rotation =
             Vec2.directionToRadians(Vec2.targetEasing(Vec2.radiansToDirection(this.container.rotation), this.direction, 6));
-
-        if (this.definition.hideInformation) {
-            this.name.visible = false;
-            this.rarity.visible = false;
-        }
-
-        this.name.text = this.definition.displayName;
-        const rarity = Rarity.fromString(this.definition.rarity);
-        this.rarity.text = rarity.displayName;
-        this.rarity.style.fill = rarity.color;
     }
 
     updateFromData(data: EntitiesNetData[EntityType.Mob], isNew: boolean): void {
@@ -213,6 +203,16 @@ export class ClientMob extends ClientEntity {
         }
 
         this.container.scale = GameSprite.getScaleByUnitRadius(hitboxRadius);
+
+        if (this.definition.hideInformation) {
+            this.name.visible = false;
+            this.rarity.visible = false;
+        }
+
+        this.name.text = this.definition.displayName;
+        const rarity = Rarity.fromString(this.definition.rarity);
+        this.rarity.text = rarity.displayName;
+        this.rarity.style.fill = rarity.color;
     }
 
     lastMovementAnimation: number = 0;
