@@ -4,6 +4,7 @@ import { Config } from "@/config.ts";
 import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
 import { Tween } from "@tweenjs/tween.js"
 import { Game } from "@/scripts/game.ts";
+import { Settings, SettingsData } from "@/settings.ts";
 
 export class UI {
     readonly app: ClientApplication;
@@ -41,8 +42,11 @@ export class UI {
         $<HTMLDivElement>("<div id='petal-information'></div>");
 
     readonly settingsButton = $<HTMLDivElement>("#btn-settings");
-
     readonly settingsDialog = $<HTMLDivElement>("#settings-dialog");
+
+    readonly keyboardMovement = $<HTMLDivElement>("#keyboard-movement");
+    readonly newControl = $<HTMLDivElement>("#new-control");
+    readonly lowResolution = $<HTMLDivElement>("#low-resolution");
 
     openedDialog?: JQuery<HTMLDivElement>;
     game: Game;
@@ -60,13 +64,37 @@ export class UI {
         });
 
         this.settingsButton.on("click", (e: Event) => {
-            this.toggleSettings();
+            this.toggleSettingsDialog();
+        })
+
+        this.nameInput.val(this.app.settings.data.playerName);
+
+        this.nameInput.on("input", (e: Event) => {
+            this.app.settings.changeSettings("playerName", this.nameInput.val() ?? "");
         })
 
         this.gameOverScreen.css("display", "none");
+
+        this.initSettingsDialog();
     }
 
-    toggleSettings(): void {
+    initSettingsDialog() {
+        this.initCheckbox(this.keyboardMovement, "keyboardMovement");
+        this.initCheckbox(this.newControl, "newControl");
+        this.initCheckbox(this.lowResolution, "lowResolution");
+    }
+
+    initCheckbox(jq: JQuery, key: keyof SettingsData) {
+        jq.prop("checked", this.app.settings.data[key]);
+
+        jq.on("click", (e: Event) => {
+            this.app.settings.changeSettings(
+                key, jq.prop("checked")
+            );
+        })
+    }
+
+    toggleSettingsDialog(): void {
         if (this.openedDialog === this.settingsDialog) {
             this.settingsDialog.css("animation", "close_dialog 1s forwards");
         } else {

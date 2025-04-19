@@ -25,7 +25,7 @@ import { Leaderboard } from "@/scripts/render/leaderboard.ts";
 import { Config } from "@/config.ts";
 import { LoggedInPacket } from "@common/packets/loggedInPacket.ts";
 import { ParticleManager } from "@/scripts/render/particle.ts";
-import { Vec2 } from "@common/utils/vector.ts";
+import { Vec2, Vector } from "@common/utils/vector.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -97,7 +97,7 @@ export class Game {
     async init() {
         await this.pixi.init({
             resizeTo: window,
-            resolution: 2,
+            resolution: this.app.settings.data.lowResolution ? 1 : 2,
             antialias: true,
             autoDensity: true,
             canvas: document.getElementById("canvas") as HTMLCanvasElement
@@ -123,6 +123,8 @@ export class Game {
 
     startGame(loggedInPacket: LoggedInPacket): void {
         if (this.running) return;
+
+        this.pixi.renderer.resolution = this.app.settings.data.lowResolution ? 1 : 2;
 
         this.running = true;
 
@@ -415,14 +417,19 @@ export class Game {
         this.needUpdateEntities.clear();
     }
 
+    lastDirection: Vector = Vec2.new(0, 0);
+
     sendInput() {
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0")
             || this.input.isInputDown("Key ");
         inputPacket.isDefending = this.input.isInputDown("Mouse2")
             || this.input.isInputDown("KeyShift");
-        inputPacket.direction = this.input.mouseDirection;
-        inputPacket.mouseDistance = this.input.mouseDistance;
+
+        const direction = this.input.moveDirection;
+        inputPacket.direction = direction ?? this.lastDirection;
+        this.lastDirection = inputPacket.direction;
+        inputPacket.mouseDistance = this.input.moveDistance;
 
         inputPacket.switchedPetalIndex = this.inventory.switchedPetalIndex;
         inputPacket.switchedToPetalIndex = this.inventory.switchedToPetalIndex;

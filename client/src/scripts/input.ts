@@ -1,5 +1,6 @@
-import { Vec2 } from "@common/utils/vector.ts";
+import { Vec2, Vector } from "@common/utils/vector.ts";
 import { type Game } from "./game";
+import { halfPI, P2, PI } from "@common/utils/math.ts";
 
 export class Input {
     readonly game: Game;
@@ -25,6 +26,48 @@ export class Input {
      */
     isInputDown(input: string): boolean {
         return this._inputsDown[input] ?? false;
+    }
+
+    get moveDirection(): Vector | undefined {
+        if (this.game.app.settings.data.keyboardMovement) {
+            let hMove = 0;
+            let vMove = 0;
+            if (this.isInputDown("KeyD")) hMove += 1;
+            if (this.isInputDown("KeyA")) hMove -= 1;
+            if (this.isInputDown("KeyW")) vMove += 1;
+            if (this.isInputDown("KeyS")) vMove -= 1;
+
+            const hRad = -halfPI * hMove + halfPI;
+            const vRad = PI / 2 * vMove + PI / 2 + halfPI;
+            const hDir = Vec2.radiansToDirection(hRad);
+            const vDir = Vec2.radiansToDirection(vRad);
+
+            if (hMove != 0 && vMove != 0) {
+                return Vec2.add(hDir, vDir);
+            } else if (hMove != 0) {
+                return hDir;
+            } else if (vMove != 0) {
+                return vDir;
+            }
+
+            return;
+        }else {
+            return this.mouseDirection;
+        }
+    }
+
+    get moveDistance(): number {
+        const maxDistance = 255;
+        let distance: number;
+        if (this.game.app.settings.data.keyboardMovement) {
+            if (this.moveDirection) distance = maxDistance;
+            else distance = 0;
+        }else {
+            distance = this.mouseDistance;
+        }
+
+        if (distance > maxDistance) return maxDistance;
+        return distance;
     }
 
     constructor(game: Game) {
@@ -54,16 +97,11 @@ export class Input {
                 Math.sin(rotation)
             );
 
-            const distance = Vec2.length(
+            this.mouseDistance = Vec2.length(
                 Vec2.new(
                     e.clientY - window.innerHeight / 2, e.clientX - window.innerWidth / 2
                 )
             );
-
-            this.mouseDistance = distance;
-
-            if (distance > 255)
-                this.mouseDistance = 255;
         });
     }
 
@@ -79,25 +117,40 @@ export class Input {
         const key = this.getKeyFromInputEvent(event);
 
         if (down) {
-
             if (["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(event.key)) {
-                this.game.inventory.switchSlot(+event.key);
+                if (this.game.app.settings.data.newControl) {
+                    if (this.isInputDown("KeyT")) {
+                        this.game.inventory.deleteSlot(
+                            this.game.inventory.equippedPetals.length + (+event.key) - 1
+                        );
+                    } else {
+                        this.game.inventory.switchSlot(+event.key - 1);
+                    }
+                }else {
+                    this.game.inventory.switchSelectingSlotTo(+event.key - 1);
+                }
             }
 
-            if (event.key === "q") {
-                this.game.inventory.moveSelectSlot(-1);
+            if (!this.game.app.settings.data.newControl) {
+                if (event.key === "q") {
+                    this.game.inventory.moveSelectSlot(-1);
+                }
+
+                if (event.key === "e") {
+                    this.game.inventory.moveSelectSlot(1);
+                }
+
+                if (event.key === "t") {
+                    this.game.inventory.deleteSelectingSlot();
+                }
             }
 
-            if (event.key === "e") {
-                this.game.inventory.moveSelectSlot(1);
+            if (event.key === "k") {
+                this.game.ui.keyboardMovement.trigger("click")
             }
 
-            if (event.key === "t") {
-                this.game.inventory.deleteSelectSlot();
-            }
-
-            if (event.key === "x") {
-                this.game.inventory.transformSlot();
+            if (event.key === "x" || event.key === "r") {
+                this.game.inventory.transformAllSlot();
             }
         }
 
@@ -111,7 +164,7 @@ export class Input {
         }
 
         if (event instanceof KeyboardEvent) {
-            key = `Key${event.key}`;
+            key = `Key${event.key.toUpperCase()}`;
         }
 
         return key;

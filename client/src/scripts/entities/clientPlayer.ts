@@ -57,6 +57,7 @@ export class ClientPlayer extends ClientEntity {
 
     mouthTopPosition: number = 0;
     eyeTrianglePosition: number = 0;
+    eyeDirection: number = 0;
 
     getMouthTopPosition(): number {
         switch (this.state) {
@@ -99,10 +100,13 @@ export class ClientPlayer extends ClientEntity {
             this.eyeTrianglePosition, (this.state === PlayerState.Attacking ? -3.5 : -8) + firstEyeCenter.y
         )
 
+        this.eyeDirection =
+            MathNumeric.targetEasing(this.eyeDirection, Vec2.directionToRadians(this.direction))
+
         const eyeInsideWidth = 2;
         const eyeInsideHeight = 5;
 
-        const radians = Vec2.directionToRadians(this.direction)
+        const radians = this.eyeDirection;
 
         const ellRadius = Math.sqrt(
             (eyeInsideWidth * Math.sin(radians)) ** 2 + (eyeInsideHeight * Math.cos(radians)) ** 2

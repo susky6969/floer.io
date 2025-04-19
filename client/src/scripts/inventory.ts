@@ -322,7 +322,6 @@ export class Inventory{
     }
 
     moveSelectSlot(offset: number) {
-
         const allActiveSlot = this.preparationPetals.filter((v) => v.petalDefinition);
         const lastestSlot = allActiveSlot[allActiveSlot.length - 1];
 
@@ -374,12 +373,22 @@ export class Inventory{
         this.keyboardSelectingPetal.ui_slot?.addClass("selecting-petal");
     }
 
-    transformSlot() {
+    transformAllSlot() {
         for (let i = 0; i < this.equippedPetals.length; i++) {
-            this.switchedPetalIndex = i;
-            this.switchedToPetalIndex = i + this.equippedPetals.length;
+            this.switchSlot(i)
             this.game.sendInput();
         }
+    }
+
+    switchSlot(slot: number) {
+        if (slot < 0 || slot >= this.equippedPetals.length) return;
+        this.switchedPetalIndex = slot;
+        this.switchedToPetalIndex = slot + this.equippedPetals.length;
+    }
+
+    deleteSlot(slot: number) {
+        if (slot < 0 || slot >= this.inventory.length) return;
+        this.deletedPetalIndex = slot;
     }
 
     setSlotAmount(slot: number, prepare: number){
@@ -539,23 +548,23 @@ export class Inventory{
     }
 
 
-    switchSlot(slot: number) {
-        if (slot < 0 || slot - 1 >= this.equippedPetals.length) return;
+    switchSelectingSlotTo(slot: number) {
+        if (slot < 0 || slot >= this.equippedPetals.length) return;
         if (this.keyboardSelectingPetal) {
             this.switchedPetalIndex = this.inventory.indexOf(this.keyboardSelectingPetal);
-            this.switchedToPetalIndex = slot - 1;
+            this.switchedToPetalIndex = slot;
             return;
         }
-        if (!this.preparationPetals[slot - 1].petalDefinition) return;
-        this.switchedPetalIndex = slot - 1;
-        this.switchedToPetalIndex = slot + this.equippedPetals.length - 1;
-        this.keyboardSelectingPetal = this.preparationPetals[slot - 1];
+        if (!this.preparationPetals[slot].petalDefinition) return;
+        this.switchedPetalIndex = slot;
+        this.switchedToPetalIndex = slot + this.equippedPetals.length;
+        this.keyboardSelectingPetal = this.preparationPetals[slot];
         this.moveSelectSlot(0);
     }
 
-    deleteSelectSlot() {
+    deleteSelectingSlot() {
         if (!this.keyboardSelectingPetal) return;
-        this.deletedPetalIndex = this.inventory.indexOf(this.keyboardSelectingPetal);
+        this.deleteSlot(this.inventory.indexOf(this.keyboardSelectingPetal))
         this.moveSelectSlot(1);
     }
 
