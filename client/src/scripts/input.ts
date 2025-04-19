@@ -112,6 +112,8 @@ export class Input {
         if (!this.game.running) return;
         const key = this.getKeyFromInputEvent(event);
 
+        const upperCaseKey = event.key.toUpperCase();
+
         if (down) {
             if (["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(event.key)) {
                 if (this.game.app.settings.data.newControl) {
@@ -128,24 +130,24 @@ export class Input {
             }
 
             if (!this.game.app.settings.data.newControl) {
-                if (event.key === "q") {
+                if (upperCaseKey === "Q") {
                     this.game.inventory.moveSelectSlot(-1);
                 }
 
-                if (event.key === "e") {
+                if (upperCaseKey === "E") {
                     this.game.inventory.moveSelectSlot(1);
                 }
 
-                if (event.key === "t") {
+                if (upperCaseKey === "T") {
                     this.game.inventory.deleteSelectingSlot();
                 }
             }
 
-            if (event.key === "k") {
-                this.game.ui.keyboardMovement.trigger("click")
+            if (upperCaseKey === "K") {
+                this.game.ui.keyboardMovement.trigger("click");
             }
 
-            if (event.key === "x" || event.key === "r") {
+            if (upperCaseKey === "X" || upperCaseKey === "R") {
                 this.game.inventory.transformAllSlot();
             }
         }

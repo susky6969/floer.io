@@ -2,6 +2,7 @@ import { Container } from "pixi.js";
 import { Vec2, type Vector } from "@common/utils/vector";
 import { type Game } from "@/scripts/game";
 import { MathNumeric } from "@common/utils/math.ts";
+import { Tween } from "@tweenjs/tween.js"
 
 export class Camera {
     readonly container = new Container({
@@ -67,6 +68,9 @@ export class Camera {
         // this.render();
     }
 
+    XOffset: number = 0;
+    YOffset: number = 0;
+
     render(): void {
         this.resize();
 
@@ -74,7 +78,7 @@ export class Camera {
         const cameraPos = Vec2.add(
             Vec2.mul(position, this.container.scale.x),
             Vec2.new(-this.width / 2, -this.height / 2));
-        this.container.position.set(-cameraPos.x, -cameraPos.y);
+        this.container.position.set(-cameraPos.x + this.XOffset, -cameraPos.y + this.YOffset);
     }
 
     addObject(object: Container): void {
@@ -83,5 +87,39 @@ export class Camera {
 
     clear(): void {
         this.container.removeChildren();
+    }
+
+    screenShake(): void {
+        const tick = 50;
+        const force = 8;
+
+        this.game.addTween(
+            new Tween({ x: 0, y: 0 })
+                .to({ x: force, y: force }, tick)
+                .onUpdate(d => {
+                    this.game.camera.XOffset = d.x;
+                    this.game.camera.YOffset = d.y;
+                })
+        )
+
+        this.game.addTween(
+            new Tween({ x: force, y: force })
+                .delay(tick)
+                .to({ x: -force, y: -force }, tick)
+                .onUpdate(d => {
+                    this.XOffset = d.x;
+                    this.YOffset = d.y;
+                })
+        )
+
+        this.game.addTween(
+            new Tween({ x: -force, y: -force })
+                .delay(tick * 2)
+                .to({ x: 0, y: 0}, tick)
+                .onUpdate(d => {
+                    this.XOffset = d.x;
+                    this.YOffset = d.y;
+                })
+        )
     }
 }

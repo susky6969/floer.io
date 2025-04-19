@@ -44,9 +44,6 @@ export class ClientMob extends ClientEntity {
 
         this.healthBar.position.set(0, 50);
 
-        this.game.camera.addObject(this.staticContainer);
-        this.game.camera.addObject(this.container);
-
         this.name = new Text({
             text: "",
             style: {
@@ -136,7 +133,7 @@ export class ClientMob extends ClientEntity {
         } else {
             if (data.full) {
                 if (this.healthPercent > data.full.healthPercent) {
-                    this.getDamageAnimation(this.images.body)
+                    this.getDamageAnimation()
                 }
             }
         }

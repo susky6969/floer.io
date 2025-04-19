@@ -48,6 +48,9 @@ export abstract class ClientEntity implements GameEntity {
     protected constructor(game: Game, id: number) {
         this.game = game;
         this.id = id;
+
+        this.game.camera.addObject(this.container);
+        this.game.camera.addObject(this.staticContainer);
     }
 
     updateFromData(_data: EntitiesNetData[EntityType], _isNew: boolean): void {
@@ -83,23 +86,37 @@ export abstract class ClientEntity implements GameEntity {
         this.staticContainer.position = this.container.position;
     }
 
-    getDamageAnimation(image: GameSprite) {
-        if (Date.now() - this.lastGettingDamage < 600) return
-        const filter = new ColorMatrixFilter();
-        image.filters = filter;
+    getDamageAnimation(disableFilter?: boolean) {
+        if (Date.now() - this.lastGettingDamage < 200) return
+
         this.lastGettingDamage = Date.now();
+        const tick = 30;
+
+        if (disableFilter){
+            this.game.addTween(
+                new Tween({ color: { r: 255, g: 0, b: 0 } })
+                    .to({ color: { r: 255, g: 255, b: 255 } }, tick * 2 )
+                    .onUpdate(d => {
+                        this.container.tint = d.color;
+                    })
+            )
+            return;
+        }
+        const filter = new ColorMatrixFilter();
+        this.container.filters = [filter];
+
         this.game.addTween(
             new Tween({ color: { r: 255, g: 0, b: 0 } })
-                .to({ color: { r: 255, g: 255, b: 255 } }, 30 )
+                .to({ color: { r: 255, g: 255, b: 255 } }, tick )
                 .onUpdate(d => {
-                    image.setTint(d.color);
+                    this.container.tint = d.color;
                 })
         )
 
         this.game.addTween(
             new Tween({ brightness: 1 })
-                .delay(30)
-                .to({ brightness: 3 }, 30 )
+                .delay(tick)
+                .to({ brightness: 3 }, tick )
                 .onUpdate(d => {
                     filter.brightness(d.brightness, false);
                 })
@@ -107,22 +124,16 @@ export abstract class ClientEntity implements GameEntity {
 
         this.game.addTween(
             new Tween({ brightness: 3 })
-                .delay(60)
-                .to({ brightness: 1 }, 30 )
+                .delay(tick * 2)
+                .to({ brightness: 1 }, tick )
                 .onUpdate(d => {
                     filter.brightness(d.brightness, false);
                 })
+            ,() => this.container.filters = []
         )
     }
 
     destroy() {
-        // const removed = this.container.removeChildren(0, this.container.children.length);
-        // removed.forEach((c) => {
-        //     c.destroy({
-        //         children: true,
-        //         texture: false
-        //     });
-        // })
         this.game.camera.container.removeChild(this.container);
 
         this.game.camera.container.removeChild(this.staticContainer);

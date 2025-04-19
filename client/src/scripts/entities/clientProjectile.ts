@@ -28,8 +28,6 @@ export class ClientProjectile extends ClientEntity {
 
         this.images.body.anchor.set(0.5);
 
-        this.game.camera.addObject(this.container);
-
         this.container.addChild(
             this.images.body
         );

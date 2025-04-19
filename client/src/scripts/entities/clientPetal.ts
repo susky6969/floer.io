@@ -35,8 +35,6 @@ export class ClientPetal extends ClientEntity {
 
         this.images.body.anchor.set(0.5);
 
-        this.game.camera.addObject(this.container);
-
         this.container.addChild(
             this.images.body
         );
@@ -105,8 +103,8 @@ export class ClientPetal extends ClientEntity {
                 this.images.body.setScaleByUnitRadius(this.definition.hitboxRadius);
             } else {
                 this.reloadAnimation = new Tween({ alpha: 1, scale: this.definition.hitboxRadius })
-                    .to({ alpha: 0, scale: this.definition.hitboxRadius * 4 }
-                        , Math.min(100, this.definition.reloadTime ? this.definition.reloadTime * 1000 : 100))
+                    .to({ alpha: 0, scale: this.definition.hitboxRadius * 3 }
+                        , Math.min(200, this.definition.reloadTime ? this.definition.reloadTime * 1000 : 100))
                     .easing(EasingFunctions.sineOut)
                     .onUpdate((obj) => {
                         this.images.body.alpha = obj.alpha;
@@ -131,6 +129,10 @@ export class ClientPetal extends ClientEntity {
                 .setFrame(getGameAssetsPath("petal", this.definition))
                 .setScaleByUnitRadius(data.definition.hitboxRadius)
                 .setVisible(!data.isReloading);
+        }
+
+        if (data.gotDamage) {
+            this.getDamageAnimation(true);
         }
 
         this.ownerId = data.ownerId;

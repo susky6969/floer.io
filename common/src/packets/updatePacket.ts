@@ -28,6 +28,7 @@ export interface EntitiesNetData {
         definition: PetalDefinition
         isReloading: boolean
         ownerId: number
+        gotDamage: boolean
 
         full?: {
 
@@ -103,7 +104,8 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         serializePartial(stream, data): void {
             Petals.writeToStream(stream, data.definition);
             stream.writePosition(data.position);
-            stream.writeBoolean(data.isReloading)
+            stream.writeBoolean(data.isReloading);
+            stream.writeBoolean(data.gotDamage);
             stream.writeUint16(data.ownerId);
         },
         serializeFull(stream, data): void {
@@ -114,6 +116,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
                 definition: Petals.readFromStream(stream),
                 position: stream.readPosition(),
                 isReloading: stream.readBoolean(),
+                gotDamage: stream.readBoolean(),
                 ownerId: stream.readUint16()
             };
         },

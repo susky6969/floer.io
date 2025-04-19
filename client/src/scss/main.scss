@@ -360,13 +360,30 @@ img {
 
 #qq-box {
     position: absolute;
+    padding: 2px;
     top: 35px;
     left: 5px;
-    width: 80px;
+    width: 250px;
+    text-align: center;
     height: 30px;
     border-radius: 5px;
     background: rgb(0, 202, 252);
     border: rgb(0, 164, 204) 5px solid;
+    text-decoration: none;
+    color: white;
+}
+
+#discord-box {
+    position: absolute;
+    padding: 2px;
+    top: 90px;
+    left: 5px;
+    width: 250px;
+    text-align: center;
+    height: 30px;
+    border-radius: 5px;
+    background: #5c68f1;
+    border: #4a55cc 5px solid;
     text-decoration: none;
     color: white;
 }

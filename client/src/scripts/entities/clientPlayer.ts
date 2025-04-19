@@ -12,11 +12,6 @@ import { Vec2 } from "@common/utils/vector.ts";
 export class ClientPlayer extends ClientEntity {
     type = EntityType.Player;
 
-    images = {
-        body: new GameSprite(getGameAssetsPath("flower","body"))
-            .setScaleByUnitRadius(GameConstants.player.radius)
-    };
-
     body: Graphics = new Graphics();
 
     name: Text;
@@ -48,11 +43,12 @@ export class ClientPlayer extends ClientEntity {
 
         this.container.addChild(
             this.body,
-            this.name,
-            this.healthBar,
         );
 
-        this.game.camera.addObject(this.container);
+        this.staticContainer.addChild(
+            this.name,
+            this.healthBar,
+        )
     }
 
     mouthTopPosition: number = 0;
@@ -62,15 +58,25 @@ export class ClientPlayer extends ClientEntity {
     getMouthTopPosition(): number {
         switch (this.state) {
             case PlayerState.Poisoned:
-                return -1;
+                return -3;
             case PlayerState.Attacking:
                 return -3;
             case PlayerState.Defending:
                 return -2;
             case PlayerState.Danded:
-                return -1;
+                return -3;
         }
         return 3;
+    }
+
+    getBodyColor(): [number, number] {
+        switch (this.state) {
+            case PlayerState.Poisoned:
+                return [0xcc77db, 0xa95fb5];
+            case PlayerState.Danded:
+                return [0xffee92, 0xd2c374];
+        }
+        return [0xffe862, 0xd2bd47];
     }
 
     render(dt: number): void {
@@ -90,6 +96,10 @@ export class ClientPlayer extends ClientEntity {
         )
 
         const radius = Camera.unitToScreen(GameConstants.player.radius);
+
+        const colors = this.getBodyColor();
+        const bodyColor = colors[0];
+        const borderColor = colors[1];
 
         const firstEyeCenter = Vec2.new(-6.2,-4.8);
         const eyeWidth = 3;
@@ -120,8 +130,8 @@ export class ClientPlayer extends ClientEntity {
 
         this.body.clear()
             .circle(0, 0, radius)
-            .fill(0xffe862)
-            .stroke({ width: 3, color: 0xb9b74f })
+            .fill(bodyColor)
+            .stroke({ width: 3, color: borderColor })
             .moveTo(-mouthX, mouthY)
             .bezierCurveTo(0,
                 this.mouthTopPosition,
@@ -162,11 +172,11 @@ export class ClientPlayer extends ClientEntity {
             .ellipse(
                 firstEyeCenter.x,
                 firstEyeCenter.y, eyeWidth + eyeStroke / 2, eyeHeight + eyeStroke / 2)
-            .stroke({ width: eyeStroke, color: 0xffe862 })
+            .stroke({ width: eyeStroke, color: bodyColor })
             .ellipse(
                 -firstEyeCenter.x,
                 firstEyeCenter.y, eyeWidth + eyeStroke / 2, eyeHeight + eyeStroke / 2)
-            .stroke({ width: eyeStroke, color: 0xffe862 })
+            .stroke({ width: eyeStroke, color: bodyColor })
             .poly([firstEyeCenter.x + eyeWidth,
                 firstEyeCenter.y + this.eyeTrianglePosition,
                 firstEyeCenter.x + eyeWidth,
@@ -174,7 +184,7 @@ export class ClientPlayer extends ClientEntity {
                 firstEyeCenter.x - eyeWidth * 2,
                 firstEyeCenter.y + this.eyeTrianglePosition,
             ], true)
-            .fill(0xffe862)
+            .fill(bodyColor)
             .poly([-firstEyeCenter.x - eyeWidth,
                 firstEyeCenter.y + this.eyeTrianglePosition,
                 -firstEyeCenter.x - eyeWidth,
@@ -182,7 +192,7 @@ export class ClientPlayer extends ClientEntity {
                 -firstEyeCenter.x + eyeWidth * 2,
                 firstEyeCenter.y + this.eyeTrianglePosition,
             ], true)
-            .fill(0xffe862);
+            .fill(bodyColor);
     }
 
     drawHealthBar(): void {
@@ -213,18 +223,14 @@ export class ClientPlayer extends ClientEntity {
         } else {
             if (data.full) {
                 if (this.healthPercent > data.full.healthPercent) {
-                    this.getDamageAnimation(this.images.body)
+                    this.getDamageAnimation(true)
+
+                    if (this.id == this.game.activePlayerID) {
+                        this.game.camera.screenShake();
+                    }
                 }
             }
         }
-
-        // if (data.state.poisoned) {
-        //     this.images.body.setFrame(getGameAssetsPath("flower","poisoned_body"))
-        // } else if (data.state.danded) {
-        //     this.images.body.setFrame(getGameAssetsPath("flower","danded_body"))
-        // } else {
-        //     this.images.body.setFrame(getGameAssetsPath("flower","body"))
-        // }
 
         if (data.full) {
             this.healthPercent = data.full.healthPercent;
@@ -237,12 +243,14 @@ export class ClientPlayer extends ClientEntity {
     }
 
     destroy() {
+        this.game.camera.screenShake();
+
         this.game.addTween(
-            new Tween({ scale: this.images.body.scale.x, alpha: 1 },)
-                .to({ scale: this.images.body.scale.x * 3, alpha: 0 }, 200 )
+            new Tween({ scale: 1, alpha: 1 },)
+                .to({ scale: 3, alpha: 0 }, 100 )
                 .onUpdate(d => {
-                    this.images.body.setScale(d.scale);
-                    this.images.body.setAlpha(d.alpha);
+                    this.container.scale = d.scale;
+                    this.container.alpha = d.alpha;
                 }),
             super.destroy.bind(this)
         )

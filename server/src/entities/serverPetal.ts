@@ -147,6 +147,8 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         }
     }
 
+    gotDamage: boolean = false;
+
     startUsing(animation: PetalUsingAnimations, func?: Function): void{
         this.isUsing = animation;
 
@@ -182,6 +184,8 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
 
         this.health -= amount;
 
+        this.gotDamage = true;
+
         if (this.health <= 0) {
             this.isReloading = true;
         }
@@ -190,15 +194,18 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
     collideWith(collision: CollisionResponse, entity: damageableEntity): void{}
 
     get data(): Required<EntitiesNetData[EntityType]>{
-        return {
+        const data = {
             position: this.position,
             definition: this.definition,
             isReloading: this.isReloading || this.hidden,
+            gotDamage: this.gotDamage,
             ownerId: this.owner.id,
             full: {
 
             }
         };
+        this.gotDamage = false
+        return data;
     };
 
     destroy() {
