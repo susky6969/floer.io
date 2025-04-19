@@ -44,9 +44,7 @@ export class Input {
             const vDir = Vec2.radiansToDirection(vRad);
 
             if (hMove != 0 && vMove != 0) {
-                const res = Vec2.directionToRadians(Vec2.add(vDir, hDir));
-                if (res < 0) return res + P2;
-                return res
+                return Vec2.directionToRadians(Vec2.add(vDir, hDir));
             } else if (hMove != 0) {
                 return hRad;
             } else if (vMove != 0) {
