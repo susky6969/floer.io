@@ -535,7 +535,7 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Dandelion",
         description: "It's interesting properties prevent healing effects on affected units",
         damage: 5,
-        health: 5,
+        health: 20,
         extendable: true,
         images: {
             selfGameRotation: 0.02,
@@ -677,7 +677,7 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: false,
         attributes: {
             poison: {
-                damagePerSecond: 9,
+                damagePerSecond: 10,
                 duration: 6.5
             }
         },
