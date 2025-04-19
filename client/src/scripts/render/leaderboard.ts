@@ -71,7 +71,7 @@ export class Leaderboard {
 
     render(){
         const number = this.game.playerData.size;
-        this.flowerNumber.text = number + ` Flower${number > 1 ? "s" : ""}`;
+        this.flowerNumber.text = number + ` Flower${number === 1 ? "" : "s"}`;
 
         let array =
             Array.from(this.game.playerData.values()).sort(
