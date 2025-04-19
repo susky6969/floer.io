@@ -1,9 +1,10 @@
 import { type GameBitStream, type Packet } from "../net";
 import { Vec2 } from "../utils/vector";
 import { Petals, SavedPetalDefinitionData } from "../definitions/petal";
+import { P2 } from "../utils/math";
 
 export class InputPacket implements Packet {
-    direction = Vec2.new(0, 0);
+    direction = 0;
     mouseDistance: number = 0;
     isAttacking = false;
     isDefending = false;
@@ -14,7 +15,7 @@ export class InputPacket implements Packet {
     serialize(stream: GameBitStream): void {
         stream.writeBoolean(this.isAttacking);
         stream.writeBoolean(this.isDefending);
-        stream.writeUnit(this.direction, 16);
+        stream.writeFloat(this.direction, 0, P2, 8);
         stream.writeUint8(this.mouseDistance);
 
         stream.writeUint8(this.switchedPetalIndex);
@@ -25,7 +26,7 @@ export class InputPacket implements Packet {
     deserialize(stream: GameBitStream): void {
         this.isAttacking = stream.readBoolean();
         this.isDefending = stream.readBoolean();
-        this.direction = stream.readUnit(16);
+        this.direction = stream.readFloat(0, P2, 8);
         this.mouseDistance = stream.readUint8();
 
         this.switchedPetalIndex = stream.readUint8();

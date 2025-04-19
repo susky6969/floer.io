@@ -31,7 +31,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
     name = "";
     direction = Vec2.new(0, 0);
-    mouseDistance: number = 0;
+    distance: number = 0;
     isAttacking = false;
     isDefending = false;
 
@@ -152,7 +152,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         this.setAcceleration(Vec2.mul(
             this.direction,
-            MathNumeric.remap(this.mouseDistance, 0, 150, 0, GameConstants.player.maxSpeed) * this.modifiers.speed
+            MathNumeric.remap(this.distance, 0, 150, 0, GameConstants.player.maxSpeed) * this.modifiers.speed
         ));
 
         this.inventory.range = GameConstants.player.defaultPetalDistance;
@@ -173,7 +173,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             this.sendEvent(AttributeEvents.HEALING, undefined)
 
         this.heal(this.modifiers.healPerSecond * this.game.dt);
-        
+
         if (this.modifiers.selfPoison > 0) {
             this.receiveDamage(this.modifiers.selfPoison * this.game.dt, this, true);
         }
@@ -399,11 +399,11 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         if (!this.isActive()) return;
 
         // if the direction changed set to dirty
-        if (!Vec2.equals(this.direction, packet.direction)) {
+        if (!Vec2.equals(this.direction, Vec2.radiansToDirection(packet.direction))) {
             this.setDirty();
         }
-        this.direction = packet.direction;
-        this.mouseDistance = packet.mouseDistance;
+        this.direction = Vec2.radiansToDirection(packet.direction);
+        this.distance = packet.mouseDistance;
         this.isAttacking = packet.isAttacking;
         this.isDefending = packet.isDefending;
         this.inventory.switchPetal(packet.switchedPetalIndex, packet.switchedToPetalIndex);

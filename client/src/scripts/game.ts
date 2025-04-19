@@ -415,7 +415,7 @@ export class Game {
         this.needUpdateEntities.clear();
     }
 
-    lastDirection: Vector = Vec2.new(0, 0);
+    lastDirection: number = 0;
 
     sendInput() {
         const inputPacket = new InputPacket();

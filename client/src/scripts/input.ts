@@ -10,7 +10,7 @@ export class Input {
     /**
      * The angle between the mouse pointer and the screen center
      */
-    mouseDirection = Vec2.new(0, 0);
+    mouseDirection = 0;
 
     /**
      * The distance between the mouse pointer and the screen center
@@ -28,7 +28,7 @@ export class Input {
         return this._inputsDown[input] ?? false;
     }
 
-    get moveDirection(): Vector | undefined {
+    get moveDirection(): number | undefined {
         if (this.game.app.settings.data.keyboardMovement) {
             let hMove = 0;
             let vMove = 0;
@@ -39,15 +39,18 @@ export class Input {
 
             const hRad = -halfPI * hMove + halfPI;
             const vRad = PI / 2 * vMove + PI / 2 + halfPI;
+
             const hDir = Vec2.radiansToDirection(hRad);
             const vDir = Vec2.radiansToDirection(vRad);
 
             if (hMove != 0 && vMove != 0) {
-                return Vec2.add(hDir, vDir);
+                const res = Vec2.directionToRadians(Vec2.add(vDir, hDir));
+                if (res < 0) return res + P2;
+                return res
             } else if (hMove != 0) {
-                return hDir;
+                return hRad;
             } else if (vMove != 0) {
-                return vDir;
+                return vRad;
             }
 
             return;
@@ -60,7 +63,7 @@ export class Input {
         const maxDistance = 255;
         let distance: number;
         if (this.game.app.settings.data.keyboardMovement) {
-            if (this.moveDirection) distance = maxDistance;
+            if (this.moveDirection != undefined) distance = maxDistance;
             else distance = 0;
         }else {
             distance = this.mouseDistance;
@@ -90,12 +93,7 @@ export class Input {
             this.handleKeyboardEvent.bind(this, false))
 
         window.addEventListener("mousemove", e => {
-            const rotation = Math.atan2(e.clientY - window.innerHeight / 2, e.clientX - window.innerWidth / 2);
-
-            this.mouseDirection = Vec2.new(
-                Math.cos(rotation),
-                Math.sin(rotation)
-            );
+            this.mouseDirection = Math.atan2(e.clientY - window.innerHeight / 2, e.clientX - window.innerWidth / 2);
 
             this.mouseDistance = Vec2.length(
                 Vec2.new(
