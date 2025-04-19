@@ -22,7 +22,7 @@ export class ClientPetal extends ClientEntity {
     angle: number = 0;
     ownerId: number = -1;
 
-    definition!: PetalDefinition;
+    definition?: PetalDefinition;
 
     reloadAnimation?: Tween;
 
@@ -94,10 +94,12 @@ export class ClientPetal extends ClientEntity {
     }
 
     changeVisibleTo(visible: boolean): void {
+        if (!this.definition) return;
         if (this.visible !== visible) {
             this.visible = visible;
             if (visible || this.definition.equipment) {
                 this.reloadAnimation = undefined;
+                this.images.body.setFrame(getGameAssetsPath("petal", this.definition))
                 this.images.body.setVisible(visible);
                 this.images.body.setAlpha(1);
                 this.images.body.setScaleByUnitRadius(this.definition.hitboxRadius);

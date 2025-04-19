@@ -31,7 +31,7 @@ export class ClientMob extends ClientEntity {
     name: Text;
     rarity: Text;
 
-    definition!: MobDefinition;
+    definition?: MobDefinition;
 
     lastGettingDamage: number = 0;
 
@@ -151,6 +151,8 @@ export class ClientMob extends ClientEntity {
     }
 
     init(): void {
+        if (!this.definition) return;
+
         const hitboxRadius = this.definition.hitboxRadius;
 
         if (this.definition.images?.mouth) {
@@ -219,6 +221,7 @@ export class ClientMob extends ClientEntity {
     lastMovementAnimationTime: number = 0;
 
     playMovementAnimation(size: number): void {
+        if (!this.definition) return;
         if (Date.now() - this.lastMovementAnimation < this.lastMovementAnimationTime * 2) return;
         let time = 150;
 
@@ -276,7 +279,7 @@ export class ClientMob extends ClientEntity {
         const healthbarWidth = width;
         const fillWidth = healthbarWidth * this.healthPercent;
 
-        if (this.definition.hideInformation) this.healthBar.visible = this.healthPercent < 0.999;
+        if (this.definition && this.definition.hideInformation) this.healthBar.visible = this.healthPercent < 0.999;
 
         this.healthBar.clear()
             .roundRect((-healthbarWidth - 5) / 2, 0, healthbarWidth + 5, 10)
