@@ -91,7 +91,7 @@ export class Camera {
 
     screenShake(): void {
         const tick = 50;
-        const force = 8;
+        const force = 6;
 
         this.game.addTween(
             new Tween({ x: 0, y: 0 })

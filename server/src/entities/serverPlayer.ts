@@ -116,6 +116,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     overleveled: boolean = false;
     overleveledTimeRemains: number = GameConstants.player.overleveledTime;
 
+    chatMessagesToSend: string[] = [];
+
     canReceiveDamageFrom(source: damageableEntity): boolean {
         switch (source.type) {
             case EntityType.Player:
@@ -227,6 +229,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             )
         }
 
+        this.gotDamage = true;
+
         if (this.health <= 0) {
             this.destroy();
 
@@ -304,20 +308,16 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         updatePacket.map.height = this.game.height;
         updatePacket.mapDirty = this.firstPacket ?? this.game.mapDirty;
 
+
+        updatePacket.chatDirty = this.chatMessagesToSend.length > 0;
+        updatePacket.chatMessages = this.chatMessagesToSend.concat([]);
+
         this.firstPacket = false;
 
-        // this.packetStream.stream.index = 0;
-        // this.packetStream.serializeServerPacket(updatePacket);
-        //
-        // for (const packet of this.packetsToSend) {
-        //     this.packetStream.serializeServerPacket(packet);
-        // }
-        //
-        // this.packetsToSend.length = 0;
-        // const buffer = this.packetStream.getBuffer();
-        // this.sendData(buffer);
         this.addPacketToSend(updatePacket);
         this.send();
+
+        this.chatMessagesToSend = [];
     }
 
     packetStream = new PacketStream(GameBitStream.create(1 << 16));
@@ -408,6 +408,10 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.isDefending = packet.isDefending;
         this.inventory.switchPetal(packet.switchedPetalIndex, packet.switchedToPetalIndex);
         this.inventory.delete(packet.deletedPetalIndex);
+
+        if (packet.chat) {
+            this.sendChatMessage(packet.chat)
+        }
     }
 
     sendEvent<T extends AttributeEvents>(
@@ -427,15 +431,21 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         return PlayerState.Normal
     }
 
+    gotDamage: boolean = false;
+
     get data(): Required<EntitiesNetData[EntityType.Player]> {
-        return {
+        const data = {
             position: this.position,
             direction: this.direction,
             state: this.playerState,
+            gotDamage: this.gotDamage,
             full: {
                 healthPercent: this.health / this.maxHealth
             }
         };
+
+        this.gotDamage = false;
+        return data;
     }
 
     calcModifiers(now: PlayerModifiers, extra: Partial<PlayerModifiers>): PlayerModifiers {
@@ -529,5 +539,18 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.dirty.exp = true;
 
         this.game.activePlayers.delete(this);
+    }
+
+    sendChatMessage(message: string): void {
+        const radius = 50;
+        const collided =
+            this.game.grid.intersectsHitbox(new CircleHitbox(radius, this.position));
+
+        const modifiedMessage = `[Local] ${this.name}: ${message}`;
+
+        for (const collidedElement of collided) {
+            if (!(collidedElement instanceof ServerPlayer)) continue;
+            collidedElement.chatMessagesToSend.push(modifiedMessage);
+        }
     }
 }

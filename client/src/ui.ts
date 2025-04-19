@@ -48,12 +48,16 @@ export class UI {
     readonly newControl = $<HTMLDivElement>("#new-control");
     readonly lowResolution = $<HTMLDivElement>("#low-resolution");
 
+    readonly chatInput = $<HTMLDivElement>("#chat-input");
+    readonly chatMessagesBox = $<HTMLDivElement>("#chat-messages");
+
     openedDialog?: JQuery<HTMLDivElement>;
-    game: Game;
+    get game(): Game {
+        return this.app.game;
+    }
 
     constructor(app: ClientApplication) {
         this.app = app;
-        this.game = app.game;
 
         this.readyButton.on("click", (e: Event) => {
             this.app.game.sendJoin();
@@ -72,6 +76,32 @@ export class UI {
         this.nameInput.on("input", (e: Event) => {
             this.app.settings.changeSettings("playerName", this.nameInput.val() ?? "");
         })
+
+        this.chatInput.on("focus", (e: Event) => {
+            this.chatMessagesBox.addClass("opened")
+            for (const chatMessage of this.chatMessages) {
+                chatMessage.updateOpacity(1)
+            }
+        })
+
+        this.chatInput.on("blur", (e: Event) => {
+            this.chatMessagesBox.removeClass("opened")
+            this.scrollToEnd(this.chatMessagesBox);
+            for (const chatMessage of this.chatMessages) {
+                chatMessage.updateOpacity()
+            }
+        })
+
+        $(document).ready(function() {
+            $("input").on({
+                focus: function() {
+                    $(this).addClass("focused");
+                },
+                blur: function() {
+                    $(this).removeClass("focused");
+                }
+            });
+        });
 
         this.gameOverScreen.css("display", "none");
 
@@ -124,5 +154,68 @@ export class UI {
         this.moveRight.css("display", "block");
         this.moveRightTime.attr("textStroke", content);
         this.moveRightTime.text(content);
+    }
+
+    chatMessages: ChatMessage[] = [];
+
+    addChatMessage(msg: string) {
+        const jq = $(
+            `<div class="chat-message" textStroke="${msg}">${msg}</div>`
+        );
+
+        this.chatMessagesBox.append(jq)
+
+        this.chatMessages.push(new ChatMessage(msg, jq, Date.now()));
+
+        if (this.chatMessages.length > 20) {
+            this.chatMessages.shift()?.jq.remove();
+        }
+
+        this.scrollToEnd(this.chatMessagesBox);
+    }
+
+    openChat(): void {
+        this.chatInput.focus();
+    }
+
+    sendChat(): void {
+        const content = this.chatInput.val();
+        if (content && typeof content === "string") {
+            this.app.game.sendChat(content);
+        }
+        this.chatInput.val("");
+        this.chatInput.trigger("blur");
+    }
+
+    scrollToEnd(jq: JQuery<HTMLDivElement>) {
+        let scrollHeight = jq[0].scrollHeight;
+        let height = jq.height() ?? scrollHeight;
+        let scrollPosition = scrollHeight - height;
+        jq.scrollTop(scrollPosition);
+    }
+
+    render(): void {
+        if (!this.chatInput.hasClass("focused")) {
+            for (const chatMessage of this.chatMessages) {
+                chatMessage.updateOpacity()
+            }
+        }
+    }
+}
+
+class ChatMessage {
+    constructor(public content: string, public jq: JQuery, public createdTime: number) {}
+
+    getOpacity() {
+        if ((Date.now() - this.createdTime) / 1000 > 10) return 0;
+        return 1;
+    }
+
+    updateOpacity(force?: number) {
+        if (!force) {
+            this.jq.css("opacity", this.getOpacity());
+            return
+        }
+        this.jq.css("opacity", force);
     }
 }

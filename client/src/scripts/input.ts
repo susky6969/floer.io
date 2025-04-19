@@ -110,9 +110,23 @@ export class Input {
 
     handleKeyboardEvent(down: boolean, event: KeyboardEvent): void {
         if (!this.game.running) return;
+
         const key = this.getKeyFromInputEvent(event);
 
         const upperCaseKey = event.key.toUpperCase();
+
+        const input = document.querySelector("input.focused");
+
+        if (upperCaseKey === "ENTER" && down) {
+            if (this.game.ui.chatInput.hasClass("focused")) {
+                this.game.ui.sendChat();
+            } else {
+                this.game.ui.openChat();
+            }
+            return;
+        }
+
+        if (input) return;
 
         if (down) {
             if (["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(event.key)) {

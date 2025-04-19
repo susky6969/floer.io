@@ -85,6 +85,8 @@ export class Game {
 
     serverDt: number = 0;
 
+    chatMessage: string = "";
+
     addTween(tween: Tween, doFunc?: Function): void {
         this.tweens.add(tween);
         tween.start();
@@ -255,6 +257,12 @@ export class Game {
             this.needUpdateEntities.set(entity, entityPartialData.data);
         }
 
+        if (packet.chatDirty) {
+            packet.chatMessages.forEach((msg) => {
+                this.ui.addChatMessage(msg)
+            })
+        }
+
         if (packet.mapDirty) {
             this.width = packet.map.width;
             this.height = packet.map.height;
@@ -407,6 +415,8 @@ export class Game {
         this.leaderboard.render();
         this.particleManager.render(dt);
 
+        this.ui.render();
+
         this.sendInput();
 
         this.tweens.forEach(tween => {
@@ -433,12 +443,14 @@ export class Game {
         inputPacket.switchedPetalIndex = this.inventory.switchedPetalIndex;
         inputPacket.switchedToPetalIndex = this.inventory.switchedToPetalIndex;
         inputPacket.deletedPetalIndex = this.inventory.deletedPetalIndex;
+        inputPacket.chat = this.chatMessage;
 
         this.sendPacket(inputPacket);
 
         this.inventory.switchedPetalIndex = -1;
         this.inventory.switchedToPetalIndex = -1;
         this.inventory.deletedPetalIndex = -1;
+        this.chatMessage = "";
     }
 
     resize() {
@@ -446,5 +458,9 @@ export class Game {
         this.miniMap.resize();
         this.exp.resize();
         this.leaderboard.resize();
+    }
+
+    sendChat(msg: string): void {
+        this.chatMessage = msg;
     }
 }

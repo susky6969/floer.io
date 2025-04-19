@@ -18,6 +18,7 @@ export interface EntitiesNetData {
         position: Vector
         direction: Vector
         state: PlayerState
+        gotDamage: boolean
 
         full?: {
             healthPercent: number
@@ -75,12 +76,13 @@ interface EntitySerialization<T extends EntityType> {
 
 export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> } = {
     [EntityType.Player]: {
-        partialSize: 9,
+        partialSize: 10,
         fullSize: 2,
         serializePartial(stream, data): void {
             stream.writePosition(data.position);
             stream.writeUnit(data.direction, 16);
             stream.writeUint8(data.state);
+            stream.writeBoolean(data.gotDamage)
         },
         serializeFull(stream, data): void {
             stream.writeFloat(data.healthPercent, 0.0, 1.0, 16);
@@ -89,7 +91,8 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             return {
                 position: stream.readPosition(),
                 direction: stream.readUnit(16),
-                state: stream.readUint8()
+                state: stream.readUint8(),
+                gotDamage: stream.readBoolean()
             };
         },
         deserializeFull(stream) {
@@ -209,7 +212,8 @@ enum UpdateFlags {
     DeletedEntities = 1 << 0,
     FullEntities = 1 << 1,
     PartialEntities = 1 << 2,
-    NewPlayers = 1 << 3,
+    Players = 1 << 3,
+    ChatMessage = 1 << 4,
     PlayerData = 1 << 5,
     Map = 1 << 8
 }
@@ -231,7 +235,7 @@ export class UpdatePacket implements Packet {
         inventory: false,
         slot: false,
         exp: false,
-        overleveled: false,
+        overleveled: false
     };
 
     playerData: {
@@ -249,6 +253,9 @@ export class UpdatePacket implements Packet {
         exp: 0,
         overleveled: 0
     };
+
+    chatDirty = false;
+    chatMessages: string[] = []
 
     mapDirty = false;
     map = {
@@ -304,7 +311,7 @@ export class UpdatePacket implements Packet {
                 stream.writeUint32(player.exp)
             });
 
-            flags |= UpdateFlags.NewPlayers;
+            flags |= UpdateFlags.Players;
         }
 
         if (Object.values(this.playerDataDirty).includes(true)) {
@@ -342,10 +349,17 @@ export class UpdatePacket implements Packet {
                 else stream.writeUint16(this.playerData.overleveled);
             }
 
-
             stream.writeAlignToNextByte();
 
             flags |= UpdateFlags.PlayerData;
+        }
+
+        if (this.chatDirty) {
+            stream.writeArray(this.chatMessages, 8, msg => {
+                stream.writeUTF8String(msg);
+            })
+
+            flags |= UpdateFlags.ChatMessage;
         }
 
         if (this.mapDirty) {
@@ -401,7 +415,7 @@ export class UpdatePacket implements Packet {
             });
         }
 
-        if (flags & UpdateFlags.NewPlayers) {
+        if (flags & UpdateFlags.Players) {
             stream.readArray(this.players, 8, () => {
                 return {
                     id: stream.readUint16(),
@@ -447,6 +461,14 @@ export class UpdatePacket implements Packet {
             }
 
             stream.readAlignToNextByte();
+        }
+
+        if (flags & UpdateFlags.ChatMessage) {
+            this.chatDirty = true;
+
+            stream.readArray(this.chatMessages, 8, () => {
+                return stream.readUTF8String();
+            })
         }
 
         if (flags & UpdateFlags.Map) {

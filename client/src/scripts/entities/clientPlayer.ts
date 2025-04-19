@@ -220,15 +220,13 @@ export class ClientPlayer extends ClientEntity {
 
         if (isNew){
             this.container.position = Camera.vecToScreen(this.position);
-        } else {
-            if (data.full) {
-                if (this.healthPercent > data.full.healthPercent) {
-                    this.getDamageAnimation(true)
+        }
 
-                    if (this.id == this.game.activePlayerID) {
-                        this.game.camera.screenShake();
-                    }
-                }
+        if (data.gotDamage) {
+            this.getDamageAnimation(true)
+
+            if (this.id == this.game.activePlayerID) {
+                this.game.camera.screenShake();
             }
         }
 
