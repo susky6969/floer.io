@@ -89,13 +89,13 @@ export class ClientPlayer extends ClientEntity {
 
         const radius = Camera.unitToScreen(GameConstants.player.radius);
 
-        const firstEyeCenter = Vec2.new(-7.4,-6);
+        const firstEyeCenter = Vec2.new(-7.2,-5.8);
         const eyeWidth = 3.5;
         const eyeHeight = 7.5;
         const eyeStroke = 4;
 
         this.eyeTrianglePosition = MathNumeric.targetEasing(
-            this.eyeTrianglePosition, (this.state === PlayerState.Attacking ? -4 : -8) + firstEyeCenter.y
+            this.eyeTrianglePosition, (this.state === PlayerState.Attacking ? -2.5 : -8) + firstEyeCenter.y
         )
 
         const eyeInsideWidth = 2;
