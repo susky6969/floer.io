@@ -2,6 +2,8 @@ import $ from "jquery";
 import { ClientApplication } from "@/main.ts";
 import { Config } from "@/config.ts";
 import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
+import { Tween } from "@tweenjs/tween.js"
+import { Game } from "@/scripts/game.ts";
 
 export class UI {
     readonly app: ClientApplication;
@@ -38,8 +40,16 @@ export class UI {
     readonly petalInformation =
         $<HTMLDivElement>("<div id='petal-information'></div>");
 
+    readonly settingsButton = $<HTMLDivElement>("#btn-settings");
+
+    readonly settingsDialog = $<HTMLDivElement>("#settings-dialog");
+
+    openedDialog?: JQuery<HTMLDivElement>;
+    game: Game;
+
     constructor(app: ClientApplication) {
         this.app = app;
+        this.game = app.game;
 
         this.readyButton.on("click", (e: Event) => {
             this.app.game.sendJoin();
@@ -49,7 +59,20 @@ export class UI {
             this.app.game.endGame();
         });
 
+        this.settingsButton.on("click", (e: Event) => {
+            this.toggleSettings();
+        })
+
         this.gameOverScreen.css("display", "none");
+    }
+
+    toggleSettings(): void {
+        if (this.openedDialog === this.settingsDialog) {
+            this.settingsDialog.css("animation", "close_dialog 1s forwards");
+        } else {
+            this.settingsDialog.css("animation", "open_dialog 1s forwards");
+        }
+        this.openedDialog = this.openedDialog === this.settingsDialog ? undefined : this.settingsDialog
     }
 
     showGameOverScreen(packet: GameOverPacket) {

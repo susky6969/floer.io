@@ -97,6 +97,7 @@ export class Game {
     async init() {
         await this.pixi.init({
             resizeTo: window,
+            resolution: 2,
             antialias: true,
             autoDensity: true,
             canvas: document.getElementById("canvas") as HTMLCanvasElement

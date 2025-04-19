@@ -42,9 +42,28 @@
                 <div class="preparation-petals-row"></div>
             </div>
         </div>
+        <div id="dialog-container">
+            <div class="dialog" id="settings-dialog">
+                <div class="dialog-content">
+                    <input type="checkbox" id="keyboard-movement"/>
+                    <div textStroke="Keyboard Movement">Keyboard Movement</div>
+                </div>
+
+                <div class="dialog-content">
+                    <input type="checkbox" id="new-control"/>
+                    <div textStroke="Enable New Control System">Enable New Control System</div>
+                </div>
+
+                <div class="dialog-content">
+                    <input type="checkbox" id="low-resolution"/>
+                    <div textStroke="Low Resolution Graphics">Low Resolution Graphics</div>
+                </div>
+            </div>
+        </div>
         <div id="bottom-left-buttons">
             <button id="btn-craft" class="btn btn-craft-color btn-big-block"></button>
             <button id="btn-inventory" class="btn btn-blue btn-big-block"></button>
+            <button id="btn-settings" class="btn btn-gray btn-big-block"></button>
         </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

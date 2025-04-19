@@ -100,7 +100,7 @@ export class ClientPlayer extends ClientEntity {
         )
 
         const eyeInsideWidth = 2;
-        const eyeInsideHeight = 6;
+        const eyeInsideHeight = 5;
 
         const radians = Vec2.directionToRadians(this.direction)
 

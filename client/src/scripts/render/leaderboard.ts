@@ -15,8 +15,7 @@ class LeaderboardContent {
             fontSize: 12,
             fill: "#fff",
             stroke: {color: "#000", width: 2}
-        },
-        resolution: 2,
+        }
     });
 
     constructor() {
@@ -37,8 +36,7 @@ export class Leaderboard {
             fontSize: 16,
             fill: "#fff",
             stroke: {color: "#000", width: 2}
-        },
-        resolution: 1.5,
+        }
     })
 
     container = new Container();

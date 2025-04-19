@@ -1,5 +1,6 @@
 @use './utils/button.scss';
 @use './utils/rarity.scss';
+@use './utils/dialogs.scss';
 
 $none_bg: #fff;
 $none_bd: #ccc;
@@ -144,6 +145,11 @@ body {
 #btn-craft {
   background-image: url('../../public/img/ui/craft.svg');
   margin-bottom: 5px;
+}
+
+#btn-settings {
+    background-image: url('../../public/img/ui/settings.svg');
+    margin-bottom: 5px;
 }
 
 #in-game-screen {
