@@ -99,8 +99,11 @@ export class Leaderboard {
                 if (isActivePlayer) hasActivePlayer = true;
 
                 if (index === this.leaderboardContents.length - 1 && !hasActivePlayer) {
-                    data = this.game.playerData.get(this.game.activePlayerID) ?? data;
-                    isActivePlayer = true;
+                    const cache = this.game.playerData.get(this.game.activePlayerID);
+                    if (cache) {
+                        isActivePlayer = true;
+                        data = cache;
+                    }
                 }
 
                 leaderboard.graphics
