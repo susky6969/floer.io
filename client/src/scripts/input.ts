@@ -175,8 +175,6 @@ export class Input {
         }
 
         this._inputsDown[key] = down;
-
-        event.preventDefault();
     }
 
     getKeyFromInputEvent(event: MouseEvent | KeyboardEvent): string {
