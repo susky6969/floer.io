@@ -93,8 +93,8 @@ export const Zones:
             "boulder": 1,
             "massive_ladybug": 0.1,
             "bee": 10,
-            "baby_ant": 5,
-            "soldier_ant": 20,
+            "baby_ant": 20,
+            "soldier_ant": 1,
             "centipede": 1,
         }
     },
