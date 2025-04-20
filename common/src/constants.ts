@@ -27,7 +27,7 @@ export const GameConstants = {
         spawnMaxY: 50,
         defaultSlot: 10,
         defaultPrepareSlot: 10,
-        defaultEquippedPetals: ["basic", "basic", "basic", "basic", "basic"],
+        defaultEquippedPetals: ["talisman", "basic", "basic", "basic", "basic"],
         defaultPreparationPetals: [],
         defaultPetalDistance: 3.5,
         defaultPetalAttackingDistance: 6.5,
@@ -111,7 +111,7 @@ export const Zones:
         spawning: {
             "ladybug": 10,
             "shiny_ladybug": 1,
-            "massive_shiny_ladybug": 0.1,
+            "massive_shiny_ladybug": 0.01,
             "beetle": 5,
             "cactus": 35,
             "mega_cactus": 5,

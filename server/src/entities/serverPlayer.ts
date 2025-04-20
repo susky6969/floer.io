@@ -26,6 +26,32 @@ import { Config } from "../config";
 import { Rarity } from "../../../common/src/definitions/rarity";
 import { ServerLoot } from "./serverLoot";
 
+// 闪避
+enum curveType {
+    LINEAR,
+    SINE,
+    CBRT,
+}
+
+function curve(x: number, curve: curveType) {
+    let res: number = 0;
+    x = Math.max(0, Math.min(1, x));
+    switch (curve) {
+        case curveType.LINEAR:
+            res = x;
+            break;
+        case curveType.SINE:
+            res = x * Math.sin(2 * x) / Math.sin(2);
+            break;
+        case curveType.CBRT:
+            res = Math.cbrt(2) / 2 * Math.cbrt(x - 0.5) + 0.5;
+            break;
+        default:
+            res = x;
+    }
+    return Math.max(0, Math.min(1, res));
+}
+
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;
     socket: WebSocket;
@@ -221,36 +247,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     receiveDamage(amount: number, source: damageSource, disableEvent?: boolean) {
         if (!this.isActive()) return;
 
-        // 闪避
-		enum curveType {
-			LINEAR,
-			SINE,
-			CBRT,
-		}
-
-		function curve(x: number, curve: curveType) {
-			let res: number = 0;
-			x = Math.max(0, Math.min(1, x));
-			switch (curve) {
-				case curveType.LINEAR:
-					res = x;
-					break;
-				case curveType.SINE:
-					res = x * Math.sin(2 * x) / Math.sin(2);
-					break;
-				case curveType.CBRT:
-					res = Math.cbrt(2) / 2 * Math.cbrt(x - 0.5) + 0.5;
-					break;
-				default:
-					res = x;
-			}
-			return Math.max(0, Math.min(1, res));
-		}
-
-		console.log(this.modifiers.damageAvoidanceByDamage);
         if ( (this.modifiers.damageAvoidanceChance > 0 && Math.random() < this.modifiers.damageAvoidanceChance)
 			|| (this.modifiers.damageAvoidanceByDamage && Math.random() < curve(amount / 100, curveType.CBRT)) ) {
-            //console.log(`Player ${this.name} avoided damage from ${source.type}`);
             return;
         }
 
