@@ -167,7 +167,7 @@ export const Zones:
             "massive_dark_ladybug": 0.0002,
             "massive_shiny_ladybug": 0.00001,
             "hornet": 20,
-            "leg_hornet": 0.001,
+            "leg_hornet": 0.01,
             "mega_hornet": 0.00018,
             "spider": 15,
             "mega_spider": 0.00012,
