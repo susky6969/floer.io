@@ -170,7 +170,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "big_missile": 0.001,
             "cactus": 0.06,
             "poison_cactus": 0.002,
-            "tri_cactus": 0.001,
+            "tri_cactus": 0.00005,
         },
         rarity: RarityName.unusual,
         exp: 2
@@ -297,7 +297,7 @@ export const Mobs = new Definitions<MobDefinition>([
             speed: 6,
             definition: Projectile.fromString("missile")
         },
-        shootSpeed: 1.5,
+        shootSpeed: 1.25,
         aggroRadius: 30,
         hitboxRadius: 2 * 0.9 / 0.6,
         speed: 4,
@@ -315,7 +315,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "myt_antennae": 0.000005
         },
         rarity: RarityName.legendary,
-        exp: 20,
+        exp: 200,
         usingAssets: "hornet"
     },{
         idString: "mantis",
@@ -363,7 +363,6 @@ export const Mobs = new Definitions<MobDefinition>([
             "iris": 0.22,
             "stinger": 0.36,
             "triangle": 0.024,
-            "tri_stinger": 0.012,
             "web": 0.09,
             "pincer": 0.09,
             "faster": 0.04,
@@ -634,7 +633,7 @@ export const Mobs = new Definitions<MobDefinition>([
             speed: 12,
             definition: Projectile.fromString("peas")
         },
-        shootSpeed: 1.5,
+        shootSpeed: 1,
         aggroRadius: 30,
         hitboxRadius: 4 * 2 / 0.7,
         speed: 4,
@@ -675,17 +674,17 @@ export const Mobs = new Definitions<MobDefinition>([
             "dandelion": 1,
             "bubble": 0.8,
             "missile": 0.9,
-            "big_missile": 0.5,
-            "myt_big_missile": 0.05,
+            "big_missile": 0.75,
+            "myt_big_missile": 0.5,
             "leg_bubble": 0.6,
             "wing": 0.3,
-            "tri_wing": 0.05,
-            "myt_egg": 0.05,
+            "tri_wing": 0.07,
+            "myt_egg": 0.08,
             "antennae": 0.001,
-            "myt_antennae": 0.15
+            "myt_antennae": 0.35
         },
         rarity: RarityName.mythic,
-        exp: 20,
+        exp: 2000,
         usingAssets: "hornet"
     },{
         idString: "mega_beetle",
@@ -704,9 +703,9 @@ export const Mobs = new Definitions<MobDefinition>([
             "iris": 1,
             "salt": 0.24,
             "triplet": 0.012,
-            "wing": 0.012,
+            "wing": 0.52,
             "tri_wing": 0.2,
-            "powder": 0.018,
+            "powder": 0.18,
             "leg_egg": 0.2,
         },
         rarity: RarityName.mythic,
@@ -807,7 +806,7 @@ export const Mobs = new Definitions<MobDefinition>([
         category: MobCategory.Enemy,
         aggroRadius: 20,
         hitboxRadius: 5,
-        speed: 3,
+        speed: 3.25,
         images: {
             mouth: true
         },
@@ -845,13 +844,13 @@ export const Mobs = new Definitions<MobDefinition>([
             "leaf": 0.56,
             "twin": 0.24,
             "rice": 0.01,
-            "tri_leaf": 0.004,
-            "triplet": 0.0012,
-            "penta": 0.01,
+            "tri_leaf": 0.04,
+            "triplet": 0.52,
+            "penta": 0.005,
             "corn": 0.5
         },
         rarity: RarityName.mythic,
-        exp: 40,
+        exp: 400,
         usingAssets: "worker_ant"
     },{
         idString: "myt_queen_ant",
@@ -869,7 +868,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "pinger": 0.5
         },
         rarity: RarityName.mythic,
-        exp: 400,
+        exp: 7000,
         usingAssets: "queen_ant"
     },{
         idString: "myt_baby_ant",
@@ -888,9 +887,9 @@ export const Mobs = new Definitions<MobDefinition>([
             "leaf": 0.52,
             "twin": 0.24,
             "rice": 0.6,
-            "tri_leaf": 0.04,
-            "triplet": 0.012,
-            "penta": 0.03
+            "tri_leaf": 0.03,
+            "triplet": 0.12,
+            "penta": 0.01
         },
         rarity: RarityName.mythic,
         exp: 40,
