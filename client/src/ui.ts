@@ -39,7 +39,7 @@ export class UI {
     readonly deletePetal = $<HTMLDivElement>("<div id='delete-petal'></div>");
 
     readonly petalInformation =
-        $<HTMLDivElement>("<div id='petal-information'></div>");
+        $<HTMLDivElement>("<div class='petal-information'></div>");
 
     readonly settingsButton = $<HTMLDivElement>("#btn-settings");
     readonly settingsDialog = $<HTMLDivElement>("#settings-dialog");
@@ -51,6 +51,8 @@ export class UI {
     readonly chatInput = $<HTMLInputElement>("#chat-input");
     readonly chatMessagesBox = $<HTMLDivElement>("#chat-messages");
     readonly chatChannel = $<HTMLDivElement>("#chat-channel");
+
+    readonly loader = $<HTMLDivElement>("#loader");
 
     openedDialog?: JQuery<HTMLDivElement>;
     get game(): Game {
@@ -107,6 +109,8 @@ export class UI {
         this.gameOverScreen.css("display", "none");
 
         this.initSettingsDialog();
+
+        this.loader.css("display", "none");
     }
 
     initSettingsDialog() {
@@ -127,9 +131,9 @@ export class UI {
 
     toggleSettingsDialog(): void {
         if (this.openedDialog === this.settingsDialog) {
-            this.settingsDialog.css("animation", "close_dialog 1s forwards");
+            this.settingsDialog.css("animation", "close_dialog 0.5s cubic-bezier(0,0,.2,1) forwards");
         } else {
-            this.settingsDialog.css("animation", "open_dialog 1s forwards");
+            this.settingsDialog.css("animation", "open_dialog 0.5s cubic-bezier(0,.85,0,1) forwards");
         }
         this.openedDialog = this.openedDialog === this.settingsDialog ? undefined : this.settingsDialog
     }
