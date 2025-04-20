@@ -6,7 +6,7 @@ import { PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
 import { CollisionResponse } from "../../../common/src/utils/collision";
 import { AttributeEvents, PetalUsingAnimations, } from "../utils/attribute";
-import { damageableEntity, damageSource } from "../typings";
+import { collideableEntity, damageableEntity, damageSource } from "../typings";
 import { PetalBunch } from "../inventory/petalBunch";
 import { ServerFriendlyMob, ServerMob } from "./serverMob";
 
@@ -191,7 +191,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
         }
     }
 
-    collideWith(collision: CollisionResponse, entity: damageableEntity): void{}
+    collideWith(collision: CollisionResponse, entity: collideableEntity): void{}
 
     get data(): Required<EntitiesNetData[EntityType]>{
         const data = {

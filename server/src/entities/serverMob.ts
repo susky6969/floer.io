@@ -11,7 +11,13 @@ import { Random } from "../../../common/src/utils/random";
 import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { ServerProjectile } from "./serverProjectile";
-import { collideableEntity, damageableEntity, damageSource, isDamageSourceEntity } from "../typings";
+import {
+    collideableEntity,
+    damageableEntity,
+    damageSource,
+    isDamageableEntity,
+    isDamageSourceEntity
+} from "../typings";
 import { ProjectileParameters } from "../../../common/src/definitions/projectile";
 import { Modifiers } from "../../../common/src/typings";
 import { Rarity, RarityName } from "../../../common/src/definitions/rarity";
@@ -151,7 +157,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                     }
 
                     if (this.definition.shootable) {
-                        if (Vec2.distance(this.position, this.aggroTarget.position) < 15 && this.definition.reachingAway) {
+                        if (Vec2.distance(this.position, this.aggroTarget.position) < 15 * this.definition.hitboxRadius && this.definition.reachingAway) {
                             this.shootReload += this.game.dt;
                             if (this.shootReload >= this.definition.shootSpeed) {
                                 this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
@@ -257,7 +263,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
         this.health -= amount;
 
-        if (this.definition.category === MobCategory.Fixed && this.definition.pop) {
+        if (amount > 0 && this.definition.category === MobCategory.Fixed && this.definition.pop) {
             const percent = this.health / this.definition.health;
             const pop = this.definition.pop;
             const lastPopped = this.lastPopped;
@@ -351,7 +357,8 @@ export class ServerFriendlyMob extends ServerMob {
     }
 
     canCollideWith(entity: collideableEntity): boolean {
-        return this.owner.canReceiveDamageFrom(entity);
+        if(isDamageableEntity(entity)) return this.owner.canReceiveDamageFrom(entity)
+        else return false;
     }
 
     shoot(shoot: ProjectileParameters) {

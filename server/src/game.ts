@@ -15,7 +15,7 @@ import { Mobs } from "../../common/src/definitions/mob";
 import { CollisionResponse } from "../../common/src/utils/collision";
 import { Random } from "../../common/src/utils/random";
 import { CircleHitbox, type Hitbox, RectHitbox } from "../../common/src/utils/hitbox";
-import { isCollideableEntity, isDamageableEntity } from "./typings";
+import { collideableEntity, isCollideableEntity, isDamageableEntity } from "./typings";
 import { PacketStream } from "../../common/src/net";
 import { JoinPacket } from "../../common/src/packets/joinPacket";
 import { InputPacket } from "../../common/src/packets/inputPacket";
@@ -157,20 +157,22 @@ export class Game {
                         entity.dealDamageTo(collidedEntity);
                     }
 
-                    const task: CollisionTask = {
-                        source: entity,
-                        target: collidedEntity,
-                        collision
-                    }
+                    if (isCollideableEntity(entity) && isCollideableEntity(collidedEntity)) {
+                        const task: CollisionTask = {
+                            source: entity,
+                            target: collidedEntity,
+                            collision
+                        }
 
-                    collisionTasks.add(task)
+                        collisionTasks.add(task)
+                    }
                 }
             }
         }
 
         for (const collisionTask of collisionTasks) {
             const { source, target, collision } = collisionTask;
-            if (collision && isCollideableEntity(source) && isCollideableEntity(target)) {
+            if (collision) {
                 source.collideWith(collision, target);
             }
         }
@@ -330,7 +332,7 @@ export class Game {
 }
 
 interface CollisionTask {
-    source: ServerEntity;
-    target: ServerEntity;
+    source: collideableEntity;
+    target: collideableEntity;
     collision: CollisionResponse;
 }

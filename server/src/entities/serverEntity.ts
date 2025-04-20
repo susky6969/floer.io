@@ -186,7 +186,9 @@ export abstract class ServerEntity<T extends EntityType = EntityType> implements
         const knockbackBetween: { [K in collideableEntity["type"]]: number} = {
             [EntityType.Mob]: 0,
             [EntityType.Petal]: 0,
-            [EntityType.Player]: 1.5
+            [EntityType.Player]: 1.5,
+            [EntityType.Projectile]: 0,
+            [EntityType.Loot]: 0
         }
         if (collision) {
             this.addVelocity(

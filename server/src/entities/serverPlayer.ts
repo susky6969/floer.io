@@ -23,6 +23,8 @@ import { damageableEntity, damageSource } from "../typings";
 import { LoggedInPacket } from "../../../common/src/packets/loggedInPacket";
 import { ServerFriendlyMob } from "./serverMob";
 import { Config } from "../config";
+import { Rarity } from "../../../common/src/definitions/rarity";
+import { ServerLoot } from "./serverLoot";
 
 export class ServerPlayer extends ServerEntity<EntityType.Player> {
     type: EntityType.Player = EntityType.Player;

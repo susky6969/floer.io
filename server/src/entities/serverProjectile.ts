@@ -6,7 +6,7 @@ import { EntityType } from "../../../common/src/constants";
 import { ProjectileDefinition, ProjectileParameters } from "../../../common/src/definitions/projectile";
 import { AttributeEvents } from "../utils/attribute";
 import { ServerPetal } from "./serverPetal";
-import { collideableEntity, damageableEntity, damageSource } from "../typings";
+import { collideableEntity, damageableEntity, damageSource, isDamageableEntity } from "../typings";
 import { Effect } from "../utils/effects";
 import { ServerFriendlyMob, ServerMob } from "./serverMob";
 import { Config } from "../config";
@@ -47,8 +47,9 @@ export class ServerProjectile extends ServerEntity<EntityType.Projectile> {
         }
     }
 
-    canCollideWith(source: collideableEntity): boolean {
-        return this.canReceiveDamageFrom(source);
+    canCollideWith(source: ServerEntity): boolean {
+        if(isDamageableEntity(source)) return this.canReceiveDamageFrom(source)
+        else return false;
     }
 
     constructor(source: damageSource,

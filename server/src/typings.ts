@@ -4,8 +4,9 @@ import { ServerPlayer } from "./entities/serverPlayer";
 import { ServerMob } from "./entities/serverMob";
 import { EntityType } from "../../common/src/constants";
 import { ServerProjectile } from "./entities/serverProjectile";
+import { ServerLoot } from "./entities/serverLoot";
 
-export type collideableEntity = ServerPetal | ServerPlayer | ServerMob;
+export type collideableEntity = ServerPetal | ServerPlayer | ServerMob | ServerProjectile | ServerLoot;
 export type damageSource = ServerPlayer | ServerMob;
 export type damageableEntity = ServerPetal | ServerPlayer | ServerMob | ServerProjectile;
 
@@ -13,7 +14,8 @@ export function isCollideableEntity(entity: ServerEntity): entity is collideable
     return entity.type === EntityType.Petal
         || entity.type === EntityType.Player
         || entity.type === EntityType.Mob
-        || entity.type === EntityType.Projectile;
+        || entity.type === EntityType.Projectile
+        || entity.type === EntityType.Loot;
 }
 
 export function isDamageSourceEntity(entity: ServerEntity): entity is damageSource {

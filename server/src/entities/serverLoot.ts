@@ -7,6 +7,8 @@ import { PetalDefinition } from "../../../common/src/definitions/petal";
 import { ServerPlayer } from "./serverPlayer";
 import { Game } from "../game";
 import { Rarity } from "../../../common/src/definitions/rarity";
+import { CollisionResponse } from "../../../common/src/utils/collision";
+import { collideableEntity } from "../typings";
 
 export class ServerLoot extends ServerEntity<EntityType.Loot> {
     type: EntityType.Loot = EntityType.Loot;
@@ -15,6 +17,10 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
     definition: PetalDefinition;
 
     despawnTime: number = 0;
+
+    canCollideWith(entity: ServerEntity): boolean {
+        return false
+    }
 
     constructor(game: Game, position: Vector, definition: PetalDefinition) {
         super(game, position);
@@ -32,28 +38,22 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
         if (this.despawnTime >= GameConstants.loot.despawnTime) {
             this.destroy();
         }
+    }
 
-        const collidedEntities =
-            this.game.grid.intersectsHitbox(this.hitbox);
-
-        for (const collidedEntity of collidedEntities) {
-            if (collidedEntity === this) continue;
-            if (!(collidedEntity instanceof ServerPlayer)) continue;
-            if (!collidedEntity.hitbox.collidesWith(this.hitbox)) continue;
-
-            if (collidedEntity.inventory.pickUp(this.definition)){
-                this.destroy();
-                const rarity = Rarity.fromString(this.definition.rarity);
-                if (rarity.globalMessage) {
-                    let content = `The ${rarity.displayName} ${this.definition.displayName} has been found`
-                    if (this.game.activePlayers.size >= 20) {
-                        content += `by ${collidedEntity.name}`
-                    }
-                    this.game.sendGlobalMessage({
-                        content: content +"!",
-                        color: parseInt(rarity.color.substring(1), 16)
-                    })
+    collideWith(collision: CollisionResponse, entity: collideableEntity) {
+        if (!(entity.type === EntityType.Player)) return
+        if (entity.inventory.pickUp(this.definition)){
+            this.destroy();
+            const rarity = Rarity.fromString(this.definition.rarity);
+            if (rarity.globalMessage) {
+                let content = `The ${rarity.displayName} ${this.definition.displayName} has been found`
+                if (this.game.activePlayers.size >= 20) {
+                    content += `by ${entity.name}`
                 }
+                this.game.sendGlobalMessage({
+                    content: content +"!",
+                    color: parseInt(rarity.color.substring(1), 16)
+                })
             }
         }
     }
