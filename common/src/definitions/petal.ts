@@ -1321,11 +1321,11 @@ export const Petals = new Definitions<PetalDefinition>([
         images: {
             slotDisplaySize: 45
         },
-        useTime: 1,
+        useTime: 1.5,
         attributes: {
             spawner: Mobs.fromString("beetle")
         },
-        reloadTime: 1.5,
+        reloadTime: 1,
         hitboxRadius: 1,
         isDuplicate: false,
         pieceAmount: 1,
