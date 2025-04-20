@@ -184,7 +184,7 @@ export class ServerPetal extends ServerEntity<EntityType.Petal> {
 
         this.health -= amount;
 
-        this.gotDamage = true;
+        if (amount > 0) this.gotDamage = true;
 
         if (this.health <= 0) {
             this.isReloading = true;

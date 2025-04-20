@@ -161,18 +161,18 @@ export class ClientMob extends ClientEntity {
             this.images.left_mouth
                 .setFrame(getGameAssetsPath("animation", this.definition))
                 .setZIndex(-1)
-                .setAnchor(Vec2.new(0.5, 0.5));
+                .setAnchor(Vec2.new(0, 0.5));
             this.images.right_mouth
                 .setFrame(getGameAssetsPath("animation", this.definition))
                 .setZIndex(-1)
-                .setAnchor(Vec2.new(0.5, 0.5));
+                .setAnchor(Vec2.new(0, 0.5));
             this.images.right_mouth.scale.y = -1;
 
-            this.images.right_mouth.position.x = Camera.unitToScreen(hitboxRadius * (this.definition.images?.mouthXPosition ?? 2.5));
-            this.images.right_mouth.position.y = Camera.unitToScreen(hitboxRadius / (this.definition.images?.mouthYPosition ?? 1.5));
+            this.images.right_mouth.position.x = Camera.unitToScreen(hitboxRadius) * (this.definition.images?.mouthXPosition ?? 0.6 * 1.5 / hitboxRadius);
+            this.images.right_mouth.position.y = Camera.unitToScreen(hitboxRadius) * (this.definition.images?.mouthYPosition ?? 0.9 * 1.5 / hitboxRadius);
 
-            this.images.left_mouth.position.x = Camera.unitToScreen(hitboxRadius * (this.definition.images?.mouthXPosition ?? 2.5));
-            this.images.left_mouth.position.y = Camera.unitToScreen(-hitboxRadius / (this.definition.images?.mouthYPosition ?? 1.5));
+            this.images.left_mouth.position.x = Camera.unitToScreen(hitboxRadius) * (this.definition.images?.mouthXPosition ?? 0.6 * 1.5 / hitboxRadius);
+            this.images.left_mouth.position.y = Camera.unitToScreen(-hitboxRadius) * (this.definition.images?.mouthYPosition ?? 0.9 * 1.5 / hitboxRadius);
         }
 
         if (this.definition.images?.spiderLeg) {

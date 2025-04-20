@@ -4,17 +4,17 @@ import { type EntitiesNetData } from "../../../common/src/packets/updatePacket";
 import { CircleHitbox } from "../../../common/src/utils/hitbox";
 import { EntityType, GameConstants } from "../../../common/src/constants";
 import { Game } from "../game";
-import { MobCategory, MobDefinition } from "../../../common/src/definitions/mob";
-import { MathGraphics, MathNumeric } from "../../../common/src/utils/math";
+import { MobCategory, MobDefinition, Mobs } from "../../../common/src/definitions/mob";
+import { MathGraphics, MathNumeric, P2 } from "../../../common/src/utils/math";
 import { ServerPlayer } from "./serverPlayer";
 import { Random } from "../../../common/src/utils/random";
 import { PetalDefinition, Petals } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { ServerProjectile } from "./serverProjectile";
-import { PlayerModifiers } from "../../../common/src/typings";
 import { collideableEntity, damageableEntity, damageSource, isDamageSourceEntity } from "../typings";
-import { CollisionResponse } from "../../../common/src/utils/collision";
 import { ProjectileParameters } from "../../../common/src/definitions/projectile";
+import { Modifiers } from "../../../common/src/typings";
+import { RarityName } from "../../../common/src/definitions/rarity";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
@@ -71,6 +71,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
         if (entity instanceof ServerFriendlyMob)
             return true
         return !(entity instanceof ServerMob);
+    }
+
+    canCollideWith(entity: ServerEntity): boolean {
+        return !(this.definition.category === MobCategory.Fixed && this.definition.onGround && entity.type === this.type)
+            && entity != this;
     }
 
     lastSegment?: ServerMob;
@@ -229,12 +234,43 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
             to.receiveDamage(this.damage, this);
     }
 
+    calcModifiers(now: Modifiers, extra: Partial<Modifiers>): Modifiers {
+        now.healPerSecond += extra.healPerSecond ?? 0;
+        if (this.definition.rarity === RarityName.mythic && extra.speed) {
+            now.speed *= (1 - (1 - extra.speed) / 2);
+        } else {
+            now.speed *= extra.speed ?? 1;
+        }
+
+        return now;
+    }
+
+    lastPopped: number = 1;
+
     receiveDamage(amount: number, source: damageSource, disableEvent?: boolean): void {
         if (!this.isActive()) return;
 
         this.changeAggroTo(source)
 
         this.health -= amount;
+
+        if (this.definition.category === MobCategory.Fixed && this.definition.pop) {
+            const percent = this.health / this.definition.health;
+            const pop = this.definition.pop;
+            const lastPopped = this.lastPopped;
+            for (const popKey in pop) {
+                const popPercents = pop[popKey];
+                popPercents.forEach((popPercent) => {
+                    if (popPercent >= percent && lastPopped >= popPercent) {
+                        new ServerMob(this.game,
+                            MathGraphics.getPositionOnCircle(Random.float(-P2, P2), 4,this.position),
+                            this.direction,
+                            Mobs.fromString(popKey)).changeAggroTo(source)
+                        if (this.lastPopped > percent) this.lastPopped = percent;
+                    }
+                })
+            }
+        }
 
         if (this.health <= 0) {
             this.destroy();

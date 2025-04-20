@@ -236,7 +236,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             )
         }
 
-        this.gotDamage = true;
+        if (amount > 0) this.gotDamage = true;
 
         if (this.health <= 0) {
             if (source instanceof ServerPlayer) {

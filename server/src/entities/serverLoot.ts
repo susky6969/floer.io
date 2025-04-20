@@ -45,7 +45,7 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
                 this.destroy();
                 const rarity = Rarity.fromString(this.definition.rarity);
                 if (rarity.globalMessage) {
-                    let content = `A ${rarity.displayName} ${this.definition.displayName} has been found`
+                    let content = `The ${rarity.displayName} ${this.definition.displayName} has been found`
                     if (this.game.activePlayers.size >= 20) {
                         content += `by ${collidedEntity.name}`
                     }

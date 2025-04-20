@@ -88,14 +88,13 @@ export const Zones:
         levelAtHighest: 15,
         density: 0.8,
         spawning: {
-            "ladybug": 10,
+            "myt_ant_hole": 100,
             "rock": 20,
             "boulder": 1,
             "massive_ladybug": 0.1,
             "bee": 10,
-            "worker_ant": 10,
-            "baby_ant": 5,
-            "soldier_ant": 2,
+            "baby_ant": 50,
+            "soldier_ant": 200,
             "centipede": 1
         }
     },
