@@ -90,18 +90,16 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
         },
         serializeFull(stream, data): void {
             stream.writeFloat(data.healthPercent, 0.0, 1.0, 16);
-            // 序列化护盾数据
-            stream.writeAlignToNextByte(); // 确保字节对齐
+            stream.writeAlignToNextByte();
             const hasShield = data.shield !== undefined && data.maxShield !== undefined;
             stream.writeBoolean(hasShield);
             if (hasShield && typeof data.shield === 'number' && typeof data.maxShield === 'number') {
-                // 限制最大护盾值为100
                 const limitedMaxShield = Math.min(data.maxShield, 100);
                 const limitedShield = Math.min(data.shield, limitedMaxShield);
                 stream.writeFloat(limitedMaxShield, 0.0, 100.0, 16);
                 stream.writeFloat(limitedShield, 0.0, limitedMaxShield, 16);
             }
-            stream.writeAlignToNextByte(); // 确保结束时字节对齐
+            stream.writeAlignToNextByte(); 
         },
         deserializePartial(stream) {
             return {
@@ -116,8 +114,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
             const healthPercent = stream.readFloat(0.0, 1.0, 16);
             const result: any = { healthPercent };
             
-            // 反序列化护盾数据
-            stream.readAlignToNextByte(); // 确保字节对齐
+            stream.readAlignToNextByte();
             const hasShieldData = stream.readBoolean();
             if (hasShieldData) {
                 const maxShield = stream.readFloat(0.0, 100.0, 16);
@@ -125,7 +122,7 @@ export const EntitySerializations: { [K in EntityType]: EntitySerialization<K> }
                 result.shield = shield;
                 result.maxShield = maxShield;
             }
-            stream.readAlignToNextByte(); // 确保结束时字节对齐
+            stream.readAlignToNextByte();
             
             return result;
         }

@@ -102,7 +102,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     set shield(shield: number) {
-        // 限制护盾最大值为最大生命值的20%
         const maxShield = this.maxHealth * 0.2;
         this._shield = MathNumeric.clamp(shield, 0, maxShield);
         this.dirty.shield = true;
@@ -230,7 +229,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         // 护盾每秒自动消失5%
         if (this._shield > 0) {
-            // 计算每帧应该减少的护盾量（5%/秒）
             const shieldDecay = this._shield * 0.05 * this.game.dt;
             this.shield = this._shield - shieldDecay;
         }
