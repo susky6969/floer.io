@@ -454,7 +454,7 @@ export const Petals = new Definitions<PetalDefinition>([
         },
         attributes: {
             health_percent_damage: {
-                percent: 0.3
+                percent: 0.5
             }
         },
         reloadTime: 2.5,
@@ -863,7 +863,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 35,
         },
         modifiers: {
-            speed: 1.098
+            speed: 1.118
         },
         reloadTime: 2,
         hitboxRadius: 0.5,
@@ -1305,7 +1305,7 @@ export const Petals = new Definitions<PetalDefinition>([
             spawner: Mobs.fromString("soldier_ant")
         },
         reloadTime: 1,
-        hitboxRadius: 0.6,
+        hitboxRadius: 0.88,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic
@@ -1326,7 +1326,7 @@ export const Petals = new Definitions<PetalDefinition>([
             spawner: Mobs.fromString("beetle")
         },
         reloadTime: 1.5,
-        hitboxRadius: 0.6,
+        hitboxRadius: 1,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.legendary,
@@ -1348,7 +1348,7 @@ export const Petals = new Definitions<PetalDefinition>([
             spawner: Mobs.fromString("leg_hornet")
         },
         reloadTime: 3.1,
-        hitboxRadius: 0.6,
+        hitboxRadius: 1.375,
         isDuplicate: true,
         pieceAmount: 2,
         isShowedInOne: false,
