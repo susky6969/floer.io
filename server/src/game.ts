@@ -22,7 +22,7 @@ import { InputPacket } from "../../common/src/packets/inputPacket";
 import { PetalDefinition } from "../../common/src/definitions/petal";
 import { P2 } from "../../common/src/utils/math";
 import { spawnSegmentMobs } from "./utils/mob";
-import { RarityName } from "../../common/src/definitions/rarity";
+import { Rarity, RarityName } from "../../common/src/definitions/rarity";
 import { ChatData } from "../../common/src/packets/updatePacket";
 
 export class Game {
@@ -222,7 +222,7 @@ export class Game {
             let position = Random.vector(data.x, data.x + data.width, 0, this.height);
             do {
                 collidedNumber = 0;
-                const hitbox = new CircleHitbox(definition.hitboxRadius, position);
+                const hitbox = new CircleHitbox(definition.hitboxRadius + 2, position);
                 const collided =
                     this.grid.intersectsHitbox(hitbox);
                 for (const collidedElement of collided) {
@@ -258,6 +258,14 @@ export class Game {
                         Vec2.radiansToDirection(Random.float(-P2, P2)),
                         definition
                     );
+                }
+                const rarity = Rarity.fromString(definition.rarity);
+                if (rarity.globalMessage) {
+                    let content = `A ${rarity.displayName} ${definition.displayName} has spawned somewhere`
+                    this.sendGlobalMessage({
+                        content: content +"!",
+                        color: parseInt(rarity.color.substring(1), 16)
+                    })
                 }
             }
         }

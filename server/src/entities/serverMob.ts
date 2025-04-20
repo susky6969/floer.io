@@ -14,7 +14,7 @@ import { ServerProjectile } from "./serverProjectile";
 import { collideableEntity, damageableEntity, damageSource, isDamageSourceEntity } from "../typings";
 import { ProjectileParameters } from "../../../common/src/definitions/projectile";
 import { Modifiers } from "../../../common/src/typings";
-import { RarityName } from "../../../common/src/definitions/rarity";
+import { Rarity, RarityName } from "../../../common/src/definitions/rarity";
 
 export class ServerMob extends ServerEntity<EntityType.Mob> {
     type: EntityType.Mob = EntityType.Mob;
@@ -80,12 +80,15 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
 
     lastSegment?: ServerMob;
 
+    damageFrom = new Map<ServerPlayer, number>;
+
     constructor(game: Game
                 , position: Vector
                 , direction: Vector
                 , definition: MobDefinition
                 , lastSegment?: ServerMob) {
         super(game, position);
+
         this.definition = definition;
         this.hitbox = new CircleHitbox(definition.hitboxRadius);
         this.damage = definition.damage;
@@ -272,6 +275,11 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
             }
         }
 
+        if (source instanceof ServerPlayer) {
+            const get = this.damageFrom.get(source)
+            this.damageFrom.set(source, (get ?? 0) + amount)
+        }
+
         if (this.health <= 0) {
             this.destroy();
 
@@ -309,7 +317,20 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
             }
         }
 
-        spawnLoot(this.game, loots, this.position)
+        spawnLoot(this.game, loots, this.position);
+
+        const rarity = Rarity.fromString(this.definition.rarity);
+        if (rarity.globalMessage) {
+            const highestPlayer =
+                Array.from(this.damageFrom).sort(
+                    (a, b) => b[1] - a[1])[0]
+            let content = `The ${rarity.displayName} ${this.definition.displayName} has been defeated`
+            content += ` by ${highestPlayer[0].name}`;
+            this.game.sendGlobalMessage({
+                content: content +"!",
+                color: parseInt(rarity.color.substring(1), 16)
+            })
+        }
     }
 }
 

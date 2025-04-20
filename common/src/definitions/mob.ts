@@ -693,7 +693,7 @@ export const Mobs = new Definitions<MobDefinition>([
         shootable: true,
         turningHead: true,
         shoot: {
-            hitboxRadius: 2.4,
+            hitboxRadius: 3,
             damage: 15,
             health: 100,
             despawnTime: 3,
@@ -702,7 +702,7 @@ export const Mobs = new Definitions<MobDefinition>([
         },
         shootSpeed: 1.5,
         aggroRadius: 30,
-        hitboxRadius: 4 / 0.6,
+        hitboxRadius: 5 / 0.6,
         speed: 4,
         lootTable:  {
             "dandelion": 1,
@@ -727,7 +727,7 @@ export const Mobs = new Definitions<MobDefinition>([
         health: 1800,
         category: MobCategory.Enemy,
         aggroRadius: 20,
-        hitboxRadius: 5,
+        hitboxRadius: 8,
         images: {
             mouth: true,
             mouthXPosition: 1.2 / 2 / 1.5
@@ -751,20 +751,20 @@ export const Mobs = new Definitions<MobDefinition>([
         damage: 10,
         health: 400,
         category: MobCategory.Passive,
-        hitboxRadius: 4,
+        hitboxRadius: 6,
         speed: 3,
         lootTable: {
             "rose": 1,
-            "twin": 0.78,
-            "tri_rose": 0.68,
-            "bubble": 0.32,
-            "wing": 0.32,
-            "tri_wing": 0.03,
-            "leg_bubble": 0.0012,
-            "epic_rose": 0.1,
-            "triplet": 0.04,
-            "penta": 0.05,
-            "myt_tri_rose": 0.05
+            "twin": 1,
+            "tri_rose": 1,
+            "bubble": 1,
+            "wing": 1,
+            "tri_wing": 0.6,
+            "leg_bubble": 0.12,
+            "epic_rose": 0.9,
+            "triplet": 1,
+            "penta": 0.5,
+            "myt_tri_rose": 0.5
         },
         rarity: RarityName.mythic,
         exp: 10,
@@ -776,7 +776,7 @@ export const Mobs = new Definitions<MobDefinition>([
         damage: 20,
         health: 1000,
         category: MobCategory.Passive,
-        hitboxRadius: 6,
+        hitboxRadius: 8,
         speed: 3,
         usingAssets: "dark_ladybug",
         lootTable: {
@@ -798,7 +798,7 @@ export const Mobs = new Definitions<MobDefinition>([
         health: 1050,
         category: MobCategory.Enemy,
         aggroRadius: 20,
-        hitboxRadius: 4,
+        hitboxRadius: 7,
         shootable: true,
         images: {
             spiderLeg: true
@@ -839,7 +839,7 @@ export const Mobs = new Definitions<MobDefinition>([
         health: 800,
         category: MobCategory.Enemy,
         aggroRadius: 20,
-        hitboxRadius: 3,
+        hitboxRadius: 5,
         speed: 3,
         images: {
             mouth: true
@@ -892,7 +892,7 @@ export const Mobs = new Definitions<MobDefinition>([
         damage: 60,
         health: 3850,
         category: MobCategory.Passive,
-        hitboxRadius: 6,
+        hitboxRadius: 8,
         speed: 3,
         lootTable: {
             "twin": 1,
@@ -910,7 +910,7 @@ export const Mobs = new Definitions<MobDefinition>([
         damage: 10,
         health: 1000,
         category: MobCategory.Unactive,
-        hitboxRadius: 3,
+        hitboxRadius: 6,
         speed: 3,
         images: {
             mouth: true,
@@ -965,7 +965,7 @@ export const Mobs = new Definitions<MobDefinition>([
         damage: 80,
         health: 1000,
         category: MobCategory.Passive,
-        hitboxRadius: 4,
+        hitboxRadius: 8,
         speed: 4,
         lootTable: {
             "fast": 0.96,
@@ -985,5 +985,57 @@ export const Mobs = new Definitions<MobDefinition>([
         rarity: RarityName.mythic,
         exp: 40,
         usingAssets: "bee"
+    },{
+        idString: "myt_evil_centipede",
+        displayName: "Centipede",
+        damage: 10,
+        health: 50,
+        category: MobCategory.Enemy,
+        aggroRadius: 25,
+        speed: 3,
+        hitboxRadius: 6,
+        images: {
+            width: 242.874,
+            height: 226
+        },
+        lootTable: {
+            "iris": 0.82,
+            "peas": 0.028,
+            "chip": 0.028,
+            "poison_peas": 0.01,
+            "leg_poison_peas": 0.0004,
+            "myt_poison_peas": 0.000005
+        },
+        rarity: RarityName.mythic,
+        exp: 40,
+        hasSegments: true,
+        segmentAmount: 10,
+        segmentDefinitionIdString: "myt_evil_centipede_body",
+        usingAssets: "evil_centipede"
+    }, {
+        idString: "myt_evil_centipede_body",
+        displayName: "Centipede",
+        damage: 10,
+        health: 50,
+        category: MobCategory.Enemy,
+        aggroRadius: 25,
+        speed: 3,
+        hitboxRadius: 6,
+        hideInformation: true,
+        images: {
+            width: 242.874,
+            height: 226
+        },
+        lootTable: {
+            "iris": 0.82,
+            "peas": 0.028,
+            "chip": 0.028,
+            "poison_peas": 0.01,
+            "leg_poison_peas": 0.0004,
+            "myt_poison_peas": 0.000005
+        },
+        rarity: RarityName.mythic,
+        exp: 40,
+        usingAssets: "evil_centipede_body"
     }
 ] satisfies MobDefinition[]);

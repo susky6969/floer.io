@@ -14,7 +14,7 @@ export const GameConstants = {
         speed: 1,
         selfPoison: 0
     }),
-    maxPosition: 2048,
+    maxPosition: 4096,
     player: {
         maxChatLength: 40,
         radius: 1.2,
@@ -48,7 +48,7 @@ export const GameConstants = {
         rotationRadius: 0.5
     },
     game: {
-        width: 2048,
+        width: 2566,
         height: 120
     },
     loot: {
@@ -125,7 +125,7 @@ export const Zones:
     },
     "Hard": {
         x: 1200,
-        width: 500,
+        width: 800,
         displayColor: "#923a28",
         backgroundColor: "#b36658",
         borderColor: "#742d2d",
@@ -153,8 +153,8 @@ export const Zones:
         }
     },
     "???": {
-        x: 1700,
-        width: 2048 - 1700,
+        x: 2000,
+        width: 2566 - 2000,
         displayColor: "#a4aaa6",
         backgroundColor: "#4d5e55",
         borderColor: "#484646",
@@ -164,13 +164,14 @@ export const Zones:
         spawning: {
             "dark_ladybug": 20,
             "massive_dark_ladybug": 0.1,
+            "massive_shiny_ladybug": 0.001,
             "hornet": 20,
             "leg_hornet": 10,
             "mega_hornet": 0.1,
             "spider": 15,
-            "mega_spider": 0.05,
+            "mega_spider": 0.1,
             "beetle": 15,
-            "mega_beetle": 0.05,
+            "mega_beetle": 0.1,
             "boulder": 20,
             "myt_worker_ant": 0.05,
             "myt_baby_ant": 0.05,
@@ -179,11 +180,12 @@ export const Zones:
             "baby_ant": 7,
             "soldier_ant": 15,
             "mantis": 7,
-            "mega_mantis": 0.05,
-            "passive_bee": 0.05,
+            "mega_mantis": 0.1,
+            "passive_bee": 0.1,
             "desert_centipede": 0.05,
             "evil_centipede": 2,
-            "ant_hole": 5,
+            "myt_evil_centipede": 0.02,
+            "ant_hole": 1,
             "myt_ant_hole": 0.05
         }
     }
