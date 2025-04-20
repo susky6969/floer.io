@@ -273,11 +273,9 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         // 优先消耗护盾
         if (this._shield > 0) {
             if (this._shield >= amount) {
-                // 护盾足够抵消所有伤害
                 this.shield = this._shield - amount;
                 amount = 0;
             } else {
-                // 护盾不足以抵消所有伤害，剩余伤害扣除生命值
                 amount -= this._shield;
                 this.shield = 0;
             }

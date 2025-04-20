@@ -56,7 +56,6 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
             on(AttributeEvents.CAN_USE,
                 () => {
                     if (data && petal.owner instanceof ServerPlayer) {
-                        // 添加护盾值，不超过最大生命值的20%
                         const maxShield = petal.owner.modifiers.maxHealth * 0.2;
                         const newShield = Math.min(
                             (petal.owner.shield || 0) + data, 
