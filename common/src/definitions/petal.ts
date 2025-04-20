@@ -535,7 +535,7 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Dandelion",
         description: "It's interesting properties prevent healing effects on affected units",
         damage: 5,
-        health: 5,
+        health: 15,
         extendable: true,
         images: {
             selfGameRotation: 0.02,
@@ -572,7 +572,7 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Missile",
         description: "You can actually shoot this one",
         damage: 30,
-        health: 10,
+        health: 20,
         extendable: true,
         images: {
             selfGameRotation: 0.02,
@@ -604,8 +604,8 @@ export const Petals = new Definitions<PetalDefinition>([
         idString: "big_missile",
         displayName: "Missile",
         description: "You can actually shoot this bigger one",
-        damage: 40,
-        health: 20,
+        damage: 20,
+        health: 50,
         extendable: true,
         images: {
             selfGameRotation: 0.02,
@@ -652,11 +652,11 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: true,
         attributes: {
             shoot: {
-                hitboxRadius: 1,
+                hitboxRadius: 0.6,
                 damage: 50,
                 health: 20,
                 despawnTime: 3,
-                speed: 8,
+                speed: 10,
                 definition: Projectile.fromString("missile")
             }
         },
@@ -677,12 +677,12 @@ export const Petals = new Definitions<PetalDefinition>([
         usable: false,
         attributes: {
             poison: {
-                damagePerSecond: 9,
+                damagePerSecond: 10,
                 duration: 6.5
             }
         },
         reloadTime: 6,
-        hitboxRadius: 0.4,
+        hitboxRadius: 0.35,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.unusual,
