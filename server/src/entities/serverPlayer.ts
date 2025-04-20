@@ -102,7 +102,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     set shield(shield: number) {
-        const maxShield = this.maxHealth * 0.2;
+        const maxShield = this.maxHealth * 0.2;//最大护盾值
         this._shield = MathNumeric.clamp(shield, 0, maxShield);
         this.dirty.shield = true;
     }
