@@ -157,7 +157,7 @@ export class ServerMob extends ServerEntity<EntityType.Mob> {
                     }
 
                     if (this.definition.shootable) {
-                        if (Vec2.distance(this.position, this.aggroTarget.position) < 15 * this.definition.hitboxRadius / 2 && this.definition.reachingAway) {
+                        if (Vec2.distance(this.position, this.aggroTarget.position) < 15 && this.definition.reachingAway) {
                             this.shootReload += this.game.dt;
                             if (this.shootReload >= this.definition.shootSpeed) {
                                 this.direction = MathGraphics.directionBetweenPoints(this.aggroTarget.position, this.position);
