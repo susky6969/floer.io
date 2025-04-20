@@ -415,11 +415,11 @@ export const Mobs = new Definitions<MobDefinition>([
             "wing": 0.016,
             "tri_wing": 0.000005,
             "triplet": 0.0012,
-            "faster": 0.4,
+            "faster": 0.04,
             "dual_faster": 0.00005,
             "penta": 0.000005,
             "tri_faster": 0.000005,
-            "egg": 0.06
+            "egg": 0.006
         },
         rarity: RarityName.unusual,
         exp: 4
@@ -730,7 +730,7 @@ export const Mobs = new Definitions<MobDefinition>([
         hitboxRadius: 5,
         images: {
             mouth: true,
-            mouthXPosition: 1.2
+            mouthXPosition: 1.2 / 2 / 1.5
         },
         speed: 3,
         lootTable: {

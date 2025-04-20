@@ -95,7 +95,7 @@ export const Zones:
             "bee": 10,
             "baby_ant": 5,
             "soldier_ant": 20,
-            "centipede": 1
+            "centipede": 1,
         }
     },
     "Medium": {
@@ -114,7 +114,7 @@ export const Zones:
             "beetle": 5,
             "cactus": 35,
             "mega_cactus": 5,
-            "ant_hole": 1,
+            "ant_hole": 0.1,
             "bee": 10,
             "worker_ant": 5,
             "baby_ant": 5,
@@ -166,25 +166,25 @@ export const Zones:
             "massive_dark_ladybug": 0.1,
             "hornet": 20,
             "leg_hornet": 10,
-            "mega_hornet": 0.5,
+            "mega_hornet": 0.1,
             "spider": 15,
-            "mega_spider": 0.5,
+            "mega_spider": 0.05,
             "beetle": 15,
-            "mega_beetle": 0.5,
+            "mega_beetle": 0.05,
             "boulder": 20,
-            "myt_worker_ant": 0.5,
-            "myt_baby_ant": 0.5,
-            "myt_soldier_ant": 0.5,
+            "myt_worker_ant": 0.05,
+            "myt_baby_ant": 0.05,
+            "myt_soldier_ant": 0.05,
             "worker_ant": 7,
             "baby_ant": 7,
             "soldier_ant": 15,
             "mantis": 7,
-            "mega_mantis": 0.5,
-            "passive_bee": 0.5,
-            "desert_centipede": 0.5,
+            "mega_mantis": 0.05,
+            "passive_bee": 0.05,
+            "desert_centipede": 0.05,
             "evil_centipede": 2,
             "ant_hole": 5,
-            "myt_ant_hole": 0.5
+            "myt_ant_hole": 0.05
         }
     }
 }
