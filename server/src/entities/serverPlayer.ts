@@ -542,6 +542,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         now.damageAvoidanceChance += extra.damageAvoidanceChance ?? 0;
 		now.damageAvoidanceByDamage = extra.damageAvoidanceByDamage ?? now.damageAvoidanceByDamage;
         now.selfPoison += extra.selfPoison ?? 0;
+        now.yinYangs += extra.yinYangs?? 0;
 
         return now;
     }
@@ -556,7 +557,9 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         for (const petal of this.petalEntities) {
             const modifier = petal.definition.modifiers;
-            if (modifier && !petal.isLoadingFirstTime) {
+            // has modifier AND (EITHER not first time reloading OR petal effects work on first reload)
+            // petal.def.effectivefirstreload being undefined does not affect the result
+            if (modifier && (!petal.isLoadingFirstTime || (petal.isLoadingFirstTime && petal.definition.effectiveFirstReload))) {
                 if (petal.definition.unstackable && effectedPetals.includes(petal.definition)) continue;
                 if (modifier.damageAvoidanceChance) {
                     avoidanceFailureChance *= (1 - modifier.damageAvoidanceChance);

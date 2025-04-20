@@ -42,7 +42,8 @@ export const GameConstants = {
             zoom: 45,
             damageAvoidanceChance: 0,
 			damageAvoidanceByDamage: false,
-            selfPoison: 0
+            selfPoison: 0,
+            yinYangs: 0,
         }),
     },
     petal: {
