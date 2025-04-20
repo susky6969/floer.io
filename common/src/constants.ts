@@ -174,9 +174,9 @@ export const Zones:
             "beetle": 15,
             "mega_beetle": 0.00015,
             "boulder": 20,
-            "myt_worker_ant": 0.0005,
-            "myt_baby_ant": 0.0005,
-            "myt_soldier_ant": 0.0005,
+            "myt_worker_ant": 0.0002,
+            "myt_baby_ant": 0.0002,
+            "myt_soldier_ant": 0.0002,
             "worker_ant": 7,
             "baby_ant": 7,
             "soldier_ant": 15,
@@ -185,7 +185,7 @@ export const Zones:
             "passive_bee": 0.00015,
             "desert_centipede": 0.05,
             "evil_centipede": 2,
-            "myt_evil_centipede": 0.0002,
+            "myt_evil_centipede": 0.000011,
             "ant_hole": 1,
             "myt_ant_hole": 0.000005
         }
