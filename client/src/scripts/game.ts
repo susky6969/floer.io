@@ -154,7 +154,7 @@ export class Game {
 
         this.pixi.stop();
 
-        this.ui.startTransition(true);
+        this.ui.startTransition(false);
 
         this.inventory.updatePetalRows();
         this.inventory.keyboardSelectingPetal = undefined;
