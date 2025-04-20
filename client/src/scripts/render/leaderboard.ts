@@ -91,17 +91,22 @@ export class Leaderboard {
                 let data = array[index];
 
                 let isActivePlayer = data.id === this.game.activePlayerID;
+                let color = 0x5ace55;
 
                 const width = MathNumeric.remap(
                     data.exp, 0, highestScore.exp,0, leaderboard.width
                 )
 
-                if (isActivePlayer) hasActivePlayer = true;
+                if (isActivePlayer) {
+                    hasActivePlayer = true;
+                    color = 0xd8f060;
+                }
 
                 if (index === this.leaderboardContents.length - 1 && !hasActivePlayer) {
                     const cache = this.game.playerData.get(this.game.activePlayerID);
                     if (cache) {
-                        isActivePlayer = true;
+                        hasActivePlayer = true;
+                        color = 0xd2d2d2;
                         data = cache;
                     }
                 }
@@ -110,9 +115,9 @@ export class Leaderboard {
                     .roundRect(8, 40 + height, leaderboard.width, leaderboard.height, 100)
                     .fill({ color: 0x000000, alpha: 0.5 })
                     .roundRect(8 + 2, 40 + height + 2, width - 4, leaderboard.height - 4, 100)
-                    .fill({ color: isActivePlayer ? 0xd8f060 : 0x5ace55, alpha: 1 })
+                    .fill({ color: color, alpha: 1 })
 
-                leaderboard.text.text = data.name + " - " + data.exp + (isActivePlayer ? " (YOU)" : "");
+                leaderboard.text.text = data.name + " - " + data.exp;
                 leaderboard.text.position.set(
                     8 + leaderboard.width / 2,
                     40 + height + leaderboard.height / 2 - 1
