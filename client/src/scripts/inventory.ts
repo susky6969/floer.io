@@ -486,6 +486,9 @@ export class Inventory{
 
             petalContainer.ui_slot = petal_slot;
 
+            petalContainer.informationBox?.remove();
+            petalContainer.showingInformation = false;
+
             petal_slot.on("mouseover",() => {
                 mouseSelectingPetal = petalContainer;
             })
@@ -574,7 +577,7 @@ export class Inventory{
         const definition = container.petalDefinition;
         if (!definition) return;
 
-        const box = this.ui.petalInformation.clone();   
+        const box = this.ui.petalInformation.clone();
         box.empty();
 
         const offset = slot.offset();
@@ -750,19 +753,20 @@ export class Inventory{
         box.append(occupy)
 
         $("body").append(box);
-        container.informatioBox = box;
+        container.informationBox = box;
         container.showingInformation = true;
         box.css("opacity", "0").animate({ opacity: 1 }, 100);
     }
+
     unShowInformation(container: PetalContainer) {
-        const boxToFade = container.informatioBox;
+        const boxToFade = container.informationBox;
         if (!boxToFade) return;
         boxToFade.animate({ opacity: 0 }, 100);
         setTimeout(() => {
             boxToFade.remove();
-        }, 100) 
+        }, 100)
         container.showingInformation = false;
-        container.informatioBox = null;
+        container.informationBox = undefined;
     }
 }
 
@@ -770,7 +774,7 @@ export class PetalContainer {
     ui_slot?: JQuery;
     petalDefinition: SavedPetalDefinitionData = null;
     showingInformation: boolean = false;
-    informatioBox: any = null;
+    informationBox?: JQuery;
 
     constructor() {}
 
