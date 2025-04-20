@@ -19,6 +19,11 @@ export class ClientPlayer extends ClientEntity {
     healthPercent = 1.0;
     healthBar = new Graphics();
 
+    // 添加护盾相关属性
+    shieldPercent = 0.0;
+    maxShieldPercent = 0.2;
+    shieldBar = new Graphics();
+
     lastGettingDamage: number = 0;
 
     constructor(game: Game, id: number) {
@@ -48,6 +53,7 @@ export class ClientPlayer extends ClientEntity {
         this.staticContainer.addChild(
             this.name,
             this.healthBar,
+            this.shieldBar
         )
     }
 
@@ -199,7 +205,8 @@ export class ClientPlayer extends ClientEntity {
         const healthbarWidth = 80;
         const fillWidth = this.healthPercent * healthbarWidth;
 
-        this.healthBar.visible = this.healthPercent < 1.0;
+        // 有护盾时总是显示血条
+        this.healthBar.visible = this.healthPercent < 1.0 || this.shieldPercent > 0;
         this.healthBar.clear()
             .roundRect((-healthbarWidth - 5) / 2, 0, healthbarWidth + 5, 10)
             .fill({
@@ -210,6 +217,26 @@ export class ClientPlayer extends ClientEntity {
             .fill({
                 color: 0x87e63e
             });
+            
+        // 绘制护盾条
+        if (this.shieldPercent > 0) {
+            const shieldWidth = this.shieldPercent * healthbarWidth;
+            this.shieldBar.visible = true;
+            this.shieldBar.position.set(0, 43);
+            this.shieldBar.clear()
+                .roundRect((-healthbarWidth - 5) / 2, 0, healthbarWidth + 5, 6)
+                .fill({
+                    color: 0x000000,
+                    alpha: 0.3
+                })
+                .roundRect(-healthbarWidth / 2, 1, shieldWidth, 4)
+                .fill({
+                    color: 0xffffff,
+                    alpha: 0.8
+                });
+        } else {
+            this.shieldBar.visible = false;
+        }
     }
 
     state: PlayerState = PlayerState.Normal;
@@ -233,6 +260,15 @@ export class ClientPlayer extends ClientEntity {
 
         if (data.full) {
             this.healthPercent = data.full.healthPercent;
+            
+            // 更新护盾数据
+            if (data.full.shield !== undefined && data.full.maxShield !== undefined) {
+                this.shieldPercent = data.full.shield / data.full.maxShield;
+                this.maxShieldPercent = data.full.maxShield;
+            } else {
+                this.shieldPercent = 0;
+            }
+            
             this.drawHealthBar();
         }
 

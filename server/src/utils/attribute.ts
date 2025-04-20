@@ -28,6 +28,7 @@ export enum PetalUsingAnimations {
     ABSORB = "ABSORB",
     NORMAL = "NORMAL",
     HATCH = "HATCH",
+    SHIELD = "SHIELD"
 }
 
 export interface AttributeRealize<T extends AttributeName = AttributeName> {
@@ -47,6 +48,25 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 }
             , PetalUsingAnimations.ABSORB);
 
+        }
+    },
+
+    absorbing_shield: {
+        callback: (on, petal, data) => {
+            on(AttributeEvents.CAN_USE,
+                () => {
+                    if (data && petal.owner instanceof ServerPlayer) {
+                        // 添加护盾值，不超过最大生命值的20%
+                        const maxShield = petal.owner.modifiers.maxHealth * 0.2;
+                        const newShield = Math.min(
+                            (petal.owner.shield || 0) + data, 
+                            maxShield
+                        );
+                        petal.owner.shield = newShield;
+                        petal.owner.dirty.shield = true;
+                    }
+                }
+            , PetalUsingAnimations.SHIELD);
         }
     },
 
@@ -276,12 +296,32 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 AttributeEvents.PETAL_DEAL_DAMAGE,
                 (entity) => {
                     if (!entity || !data) return;
+                    const existingEffects = Array.from(entity.effects.effects);
+                    const existingParalyze = existingEffects.find(e => 
+                        e.source === petal.owner && 
+                        e.modifier && 
+                        e.modifier.speed !== undefined);
                     
+                    let newSpeedMod = 1 - data.speedReduction;
+                    let revolutionReduction = data.revolutionReduction || 0;
+                    if (existingParalyze) {
+                        existingParalyze.destroy();
+                        if (existingParalyze.modifier?.speed !== undefined) {
+                            newSpeedMod *= existingParalyze.modifier.speed;
+                        }
+                        if (existingParalyze.modifier?.revolutionSpeed !== undefined) {
+                            let existingReductionPercent = Math.abs(existingParalyze.modifier.revolutionSpeed) / 2.4;
+                            let combinedReductionPercent = existingReductionPercent + revolutionReduction - (existingReductionPercent * revolutionReduction);
+                            combinedReductionPercent = Math.min(combinedReductionPercent, 0.99);
+                            revolutionReduction = combinedReductionPercent;
+                        }
+                    }
                     new Effect({
                         effectedTarget: entity,
                         source: petal.owner,
                         modifier: {
-                            speed: 1 - data.speedReduction
+                            speed: newSpeedMod,
+                            revolutionSpeed: -1 * revolutionReduction * 2.4
                         },
                         duration: data.duration,
                         workingType: [EntityType.Player, EntityType.Mob]
@@ -293,12 +333,32 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
                 AttributeEvents.PROJECTILE_DEAL_DAMAGE,
                 (entity) => {
                     if (!entity || !data) return;
+                    const existingEffects = Array.from(entity.effects.effects);
+                    const existingParalyze = existingEffects.find(e => 
+                        e.source === petal.owner && 
+                        e.modifier && 
+                        e.modifier.speed !== undefined);
                     
+                    let newSpeedMod = 1 - data.speedReduction;
+                    let revolutionReduction = data.revolutionReduction || 0;
+                    if (existingParalyze) {
+                        existingParalyze.destroy();
+                        if (existingParalyze.modifier?.speed !== undefined) {
+                            newSpeedMod *= existingParalyze.modifier.speed;
+                        }
+                        if (existingParalyze.modifier?.revolutionSpeed !== undefined) {
+                            let existingReductionPercent = Math.abs(existingParalyze.modifier.revolutionSpeed) / 2.4;
+                            let combinedReductionPercent = existingReductionPercent + revolutionReduction - (existingReductionPercent * revolutionReduction);
+                            combinedReductionPercent = Math.min(combinedReductionPercent, 0.99);
+                            revolutionReduction = combinedReductionPercent;
+                        }
+                    }
                     new Effect({
                         effectedTarget: entity,
                         source: petal.owner,
                         modifier: {
-                            speed: 1 - data.speedReduction
+                            speed: newSpeedMod,
+                            revolutionSpeed: -1 * revolutionReduction * 2.4
                         },
                         duration: data.duration,
                         workingType: [EntityType.Player, EntityType.Mob]

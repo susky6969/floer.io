@@ -117,6 +117,13 @@ const attributesShowingConfig: { [K in AttributeName] : AttributeShowingFunction
                 color: "#58fd48"
             }]
         },
+        absorbing_shield: (data) => {
+            return [{
+                displayName: "Shield",
+                value: data.toString(),
+                color: "#ffffff"
+            }]
+        },
         boost: () => [],
         body_poison: (data) => {
             return [{
@@ -193,6 +200,10 @@ const attributesShowingConfig: { [K in AttributeName] : AttributeShowingFunction
             }, {
                 displayName: "Speed Reduction",
                 value: `${data.speedReduction * 100}%`,
+                color: "#9966ff"
+            }, {
+                displayName: "Revolution Reduction",
+                value: `${data.revolutionReduction ? data.revolutionReduction * 100 : 0}%`,
                 color: "#9966ff"
             }]
         },

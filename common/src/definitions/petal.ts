@@ -58,6 +58,7 @@ export type AttributeParameters = {
     [K in AttributeName] ?: unknown
 } & ({
     absorbing_heal?: number
+    absorbing_shield?: number
     boost?: number,
     poison?: {
         damagePerSecond: number
@@ -89,6 +90,7 @@ export type AttributeParameters = {
     paralyze?: {
         duration: number
         speedReduction: number
+        revolutionReduction?: number
     }
     area_poison?: {
         radius: number
@@ -223,23 +225,26 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 1,
         rarity: RarityName.rare
     },{
-        idString: "dual_faster",
-        displayName: "Faster",
-        description: "Quickly.",
-        damage: 8,
-        health: 5,
+        idString: "faster_wing",
+        displayName: "Wing",
+        description: "It comes and goes quickly.",
+        damage: 20,
+        health: 15,
         extendable: true,
-        reloadTime: 0.5,
+        reloadTime: 1.25,
+        moreExtendDistance: 2.6,
+        images:{
+            slotDisplaySize: 45,
+            selfGameRotation: 2
+        },
         modifiers: {
-            revolutionSpeed: 0.8
+            revolutionSpeed: 1.2
         },
         usable: false,
-        hitboxRadius: 0.3,
-        isDuplicate: true,
-        pieceAmount: 2,
-        isShowedInOne: false,
+        hitboxRadius: 0.5,
+        isDuplicate: false,
+        pieceAmount: 1,
         rarity: RarityName.legendary,
-        usingAssets: "faster"
     },{
         idString: "tri_faster",
         displayName: "Faster",
@@ -1376,7 +1381,7 @@ export const Petals = new Definitions<PetalDefinition>([
         hitboxRadius: 0.45,
         isDuplicate: false,
         pieceAmount: 1,
-        rarity: RarityName.rare,
+        rarity: RarityName.epic,
     },
     {
         idString: "uranium",
@@ -1405,5 +1410,68 @@ export const Petals = new Definitions<PetalDefinition>([
         pieceAmount: 1,
         unstackable: true,
         rarity: RarityName.legendary
+    },
+    {
+        idString: "honey",
+        displayName: "Honey",
+        description: "Slows enemies and reduces their rotation speed.",
+        damage: 10,
+        health: 10,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 45,
+            selfGameRotation: 0.01
+        },
+        attributes: {
+            paralyze: {
+                duration: 5,
+                speedReduction: 0.25,
+                revolutionReduction: 0.25
+            }
+        },
+        reloadTime: 1.7,
+        hitboxRadius: 0.6,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.rare
+    },
+    {
+        idString: "shell",
+        displayName: "Shell",
+        description: "Provides a protective shield that absorbs damage.",
+        damage: 5,
+        health: 25,
+        extendable: false,
+        usable: true,
+        useTime: 1.5,
+        images: {
+            slotDisplaySize: 40,
+        },
+        attributes: {
+            absorbing_shield: 10
+        },
+        reloadTime: 3.5,
+        hitboxRadius: 0.5,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.epic
+    },
+    {   
+        idString: "heaviest",
+        displayName: "Heaviest",
+        description: "This thing is so heavy that nothing gets in the way.",
+        damage: 20,
+        health: 200,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 60,
+        },
+        reloadTime: 20,
+        hitboxRadius: 1.0,
+        isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.epic
     }
 ] satisfies PetalDefinition[]);

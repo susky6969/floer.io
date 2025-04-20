@@ -95,6 +95,19 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.setFullDirty();
     }
 
+    private _shield: number = 0;
+
+    get shield(): number {
+        return this._shield;
+    }
+
+    set shield(shield: number) {
+        // 限制护盾最大值为最大生命值的20%
+        const maxShield = this.maxHealth * 0.2;
+        this._shield = MathNumeric.clamp(shield, 0, maxShield);
+        this.dirty.shield = true;
+    }
+
     kills = 0;
 
     firstPacket = true;
@@ -111,7 +124,8 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         inventory: false,
         slot: false,
         exp: false,
-        overleveled: false
+        overleveled: false,
+        shield: false
     };
 
     private _zoom = 45;
@@ -214,6 +228,13 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             this.receiveDamage(this.modifiers.selfPoison * this.game.dt, this, true);
         }
 
+        // 护盾每秒自动消失5%
+        if (this._shield > 0) {
+            // 计算每帧应该减少的护盾量（5%/秒）
+            const shieldDecay = this._shield * 0.05 * this.game.dt;
+            this.shield = this._shield - shieldDecay;
+        }
+
         this.updateModifiers();
 
         if (this.level >= this.game.inWhichZone(this).levelAtHighest) {
@@ -251,7 +272,22 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             return;
         }
 
-        this.health -= amount;
+        // 优先消耗护盾
+        if (this._shield > 0) {
+            if (this._shield >= amount) {
+                // 护盾足够抵消所有伤害
+                this.shield = this._shield - amount;
+                amount = 0;
+            } else {
+                // 护盾不足以抵消所有伤害，剩余伤害扣除生命值
+                amount -= this._shield;
+                this.shield = 0;
+            }
+        }
+
+        if (amount > 0) {
+            this.health -= amount;
+        }
 
         if (!disableEvent) {
             this.sendEvent(
@@ -490,7 +526,9 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             gotDamage: this.gotDamage,
             isAdmin: this.isAdmin,
             full: {
-                healthPercent: this.health / this.maxHealth
+                healthPercent: this.health / this.maxHealth,
+                shield: this._shield,
+                maxShield: this.maxHealth * 0.2
             }
         };
 

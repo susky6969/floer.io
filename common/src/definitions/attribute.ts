@@ -62,6 +62,10 @@ const AttributeDefinitions = [
     {
         idString: "spawner",
         displayName: "Spawner"
+    },
+    {
+        idString: "absorbing_shield",
+        displayName: "Shield"
     }
 ] as const;
 
