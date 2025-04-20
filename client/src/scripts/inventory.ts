@@ -301,17 +301,22 @@ export class Inventory{
                 draggingData.item.remove();
                 draggingData.item = null;
 
-                if (mouseSelectingPetal) {
+                if (mouseSelectingPetal && mouseSelectingPetal != draggingData.container) {
                     const trans = mouseSelectingPetal.petalDefinition;
                     mouseSelectingPetal.petalDefinition = draggingData.container.petalDefinition;
                     draggingData.container.petalDefinition = trans;
                     this.switchedPetalIndex = this.inventory.indexOf(draggingData.container);
                     this.switchedToPetalIndex = this.inventory.indexOf(mouseSelectingPetal);
-                }
-
-                if (mouseDeletingPetal) {
+                } else if (mouseDeletingPetal) {
                     draggingData.container.petalDefinition = null;
                     this.deletedPetalIndex = this.inventory.indexOf(draggingData.container);
+                } else {
+                    const index = this.inventory.indexOf(draggingData.container);
+                    if (index >= this.equippedPetals.length) {
+                        this.switchSlot(index - this.equippedPetals.length);
+                    } else {
+                        this.switchSlot(index)
+                    }
                 }
 
                 this.keyboardSelectingPetal = undefined;
