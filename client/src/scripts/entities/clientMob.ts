@@ -227,14 +227,14 @@ export class ClientMob extends ClientEntity {
             time =
                 MathNumeric.remap(size, 0, 0.3, 500, 150);
             this.game.addTween(new Tween({angle: 0})
-                .to({angle: 10}, time)
+                .to({angle: 8}, time)
                 .onUpdate((d) => {
                     this.images.left_mouth.angle = d.angle;
                     this.images.right_mouth.angle = -d.angle;
                 })
             )
 
-            this.game.addTween(new Tween({angle: 10})
+            this.game.addTween(new Tween({angle: 8})
                 .delay(time)
                 .to({angle: 0}, time)
                 .onUpdate((d) => {

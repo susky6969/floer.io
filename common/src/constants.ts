@@ -88,13 +88,13 @@ export const Zones:
         levelAtHighest: 15,
         density: 0.8,
         spawning: {
-            "myt_ant_hole": 100,
+            "ladybug": 10,
             "rock": 20,
             "boulder": 1,
             "massive_ladybug": 0.1,
             "bee": 10,
-            "baby_ant": 50,
-            "soldier_ant": 200,
+            "baby_ant": 5,
+            "soldier_ant": 20,
             "centipede": 1
         }
     },
@@ -109,16 +109,16 @@ export const Zones:
         levelAtHighest: 30,
         spawning: {
             "ladybug": 10,
-            "shiny_ladybug": 0.1,
+            "shiny_ladybug": 1,
+            "massive_shiny_ladybug": 0.1,
             "beetle": 5,
             "cactus": 35,
             "mega_cactus": 5,
-            "mega_beetle": 0.1,
+            "ant_hole": 1,
             "bee": 10,
             "worker_ant": 5,
             "baby_ant": 5,
             "soldier_ant": 5,
-            "passive_bee": 1,
             "centipede": 6,
             "desert_centipede": 6
         }
@@ -135,25 +135,21 @@ export const Zones:
         spawning: {
             "ladybug": 10,
             "dark_ladybug": 20,
-            "massive_dark_ladybug": 0.01,
+            "ant_hole": 1,
+            "massive_shiny_ladybug": 0.01,
             "hornet": 5,
             "leg_hornet": 0.1,
-            "mega_hornet": 0.01,
             "spider": 10,
-            "mega_spider": 0.01,
             "beetle": 10,
-            "mega_beetle": 0.01,
             "mantis": 3,
-            "mega_mantis": 0.01,
             "rock": 5,
             "boulder": 20,
             "worker_ant": 7,
             "baby_ant": 7,
             "soldier_ant": 15,
-            "passive_bee": 5,
-            "centipede": 1,
-            "desert_centipede": 1,
-            "evil_centipede": 7
+            "centipede": 0.1,
+            "desert_centipede": 0.1,
+            "evil_centipede": 1
         }
     },
     "???": {
@@ -167,24 +163,28 @@ export const Zones:
         levelAtHighest: 999,
         spawning: {
             "dark_ladybug": 20,
-            "massive_dark_ladybug": 1,
+            "massive_dark_ladybug": 0.1,
             "hornet": 20,
             "leg_hornet": 10,
-            "mega_hornet": 1,
+            "mega_hornet": 0.5,
             "spider": 15,
-            "mega_spider": 1,
+            "mega_spider": 0.5,
             "beetle": 15,
-            "mega_beetle": 1,
+            "mega_beetle": 0.5,
             "boulder": 20,
+            "myt_worker_ant": 0.5,
+            "myt_baby_ant": 0.5,
+            "myt_soldier_ant": 0.5,
             "worker_ant": 7,
             "baby_ant": 7,
-            "soldier_ant": 20,
+            "soldier_ant": 15,
             "mantis": 7,
-            "mega_mantis": 1,
-            "passive_bee": 10,
-            "centipede": 1,
-            "desert_centipede": 1,
-            "evil_centipede": 2
+            "mega_mantis": 0.5,
+            "passive_bee": 0.5,
+            "desert_centipede": 0.5,
+            "evil_centipede": 2,
+            "ant_hole": 5,
+            "myt_ant_hole": 0.5
         }
     }
 }
