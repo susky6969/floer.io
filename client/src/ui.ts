@@ -14,6 +14,8 @@ export class UI {
 
     readonly inGameScreen =  $<HTMLDivElement>("#in-game-screen");
     readonly outGameScreen =  $<HTMLDivElement>("#out-game-screen");
+    
+    readonly transitionRing = $<HTMLDivElement>("#transition-ring");
 
     readonly main =  $<HTMLDivElement>("#main");
     readonly hud = $<HTMLDivElement>("#hud");
@@ -110,7 +112,7 @@ export class UI {
 
         this.initSettingsDialog();
 
-        this.loader.css("display", "none");
+        this.loader.animate({ opacity: 0 }, 100, ()=>{ this.loader.css("display", "none");});
     }
 
     initSettingsDialog() {
@@ -228,6 +230,90 @@ export class UI {
                 chatMessage.updateOpacity()
             }
         }
+    }
+    startTransition(expanding: boolean = true) {
+        if (!this.inGameScreen || !this.transitionRing) return;
+        this.transitionRing.css("opacity", "1"); // this need to show up nomatter what
+        
+        // Common animation setup
+        let radius = expanding ? 0 : window.innerWidth * 1; // Start from 0 or maxRadius
+        const maxRadius = window.innerWidth * 1;
+        const duration = expanding ? 1500 : 1200; // Slightly faster for collapsing
+        const startTime = performance.now();
+        
+        // both needs in game screen be displayed
+        this.inGameScreen.css("visibility", "visible");
+        this.inGameScreen.css("opacity", "1");
+        if (expanding) {
+            this.inGameScreen.addClass("display");
+            this.transitionRing.addClass("expand");
+            this.outGameScreen.css("z-index", "-999999");
+        } else {
+            this.inGameScreen.removeClass("display");
+            this.transitionRing.removeClass("expand");
+            // initialize out game screen with 0 opacity so that it can fade in after animation is finished.
+            this.outGameScreen.css({"display": "block"});
+            this.outGameScreen.css({"z-index": "-5"});
+            // it seems like you cant perfectly sort their zLayer so fade gameover screen out.
+            // opacity needs to be set back to 1 so that it shows up next death
+            this.gameOverScreen.animate({"opacity": 0}, 250, ()=>{
+                this.gameOverScreen.css({
+                    "display": "none",
+                    "opacity": "1"
+                });
+            });
+        }
+        
+        const animate = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Custom easing for collapsing to make it faster at the beginning
+            let eased;
+            if (expanding) {
+                // Standard easeInOutQuad for expanding
+                eased = progress < 0.5 
+                    ? 2 * progress * progress 
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+            } else {
+                // Modified easing for collapsing - starts faster
+                // Use a cubic curve that drops quickly at the start
+                eased = 1 - Math.pow(1 - progress, 3);
+            }
+            
+            if (expanding) {
+                radius = eased * maxRadius;
+            } else {
+                radius = maxRadius * (1 - eased);
+            }
+            
+            this.inGameScreen.css("clip-path", `circle(${radius}px at center)`);
+            
+            const diameter = radius * 2;
+            this.transitionRing.css({
+                "width": `${diameter}px`,
+                "height": `${diameter}px`
+            });
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else if (!expanding) {                
+                this.inGameScreen.css({
+                    "visibility": "hidden",
+                    "opacity": "0"
+                });
+                this.transitionRing.css({
+                    "opacity": "0"
+                });
+            } else {
+                // case: animation finished, expanding is true. Dont need to hide ring because it is out of screen.
+                // set outgamescreen to 0 opacity after animation is finished, reset zindex
+                this.outGameScreen.css("display", "none");
+                this.outGameScreen.css("z-index", "4");
+            }
+        };
+        
+        requestAnimationFrame(animate);
     }
 }
 

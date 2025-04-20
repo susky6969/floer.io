@@ -27,7 +27,6 @@ import { LoggedInPacket } from "@common/packets/loggedInPacket.ts";
 import { ParticleManager } from "@/scripts/render/particle.ts";
 import { Vec2, Vector } from "@common/utils/vector.ts";
 import { Petals, SavedPetalDefinitionData } from "@common/definitions/petal.ts";
-import { ChatChannel, ChatPacket } from "@common/packets/chatPacket.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -87,6 +86,8 @@ export class Game {
 
     serverDt: number = 0;
 
+    chatMessage: string = "";
+
     addTween(tween: Tween, doFunc?: Function): void {
         this.tweens.add(tween);
         tween.start();
@@ -129,8 +130,7 @@ export class Game {
 
         this.running = true;
 
-        this.ui.inGameScreen.css("display", "block");
-        this.ui.outGameScreen.css("display", "none");
+        this.ui.startTransition(true);
 
         this.pixi.start();
 
@@ -155,10 +155,7 @@ export class Game {
 
         this.pixi.stop();
 
-        this.ui.inGameScreen.css("display", "none");
-        this.ui.outGameScreen.css("display", "block");
-
-        this.ui.gameOverScreen.css("display", "none");
+        this.ui.startTransition(false);
 
         this.inventory.updatePetalRows();
         this.inventory.keyboardSelectingPetal = undefined;
@@ -440,7 +437,7 @@ export class Game {
     sendInput() {
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0")
-            || this.input.isInputDown("Space");
+            || this.input.isInputDown("Key ");
         inputPacket.isDefending = this.input.isInputDown("Mouse2")
             || this.input.isInputDown("ShiftLeft")
             || this.input.isInputDown("ShiftRight");
@@ -453,19 +450,14 @@ export class Game {
         inputPacket.switchedPetalIndex = this.inventory.switchedPetalIndex;
         inputPacket.switchedToPetalIndex = this.inventory.switchedToPetalIndex;
         inputPacket.deletedPetalIndex = this.inventory.deletedPetalIndex;
+        inputPacket.chat = this.chatMessage;
 
         this.sendPacket(inputPacket);
 
         this.inventory.switchedPetalIndex = -1;
         this.inventory.switchedToPetalIndex = -1;
         this.inventory.deletedPetalIndex = -1;
-    }
-
-    sendChat(message: string, channel: ChatChannel): void {
-        const packet = new ChatPacket();
-        packet.chat = message;
-        packet.channel = channel;
-        this.sendPacket(packet);
+        this.chatMessage = "";
     }
 
     resize() {
@@ -473,5 +465,9 @@ export class Game {
         this.miniMap.resize();
         this.exp.resize();
         this.leaderboard.resize();
+    }
+
+    sendChat(msg: string): void {
+        this.chatMessage = msg;
     }
 }
