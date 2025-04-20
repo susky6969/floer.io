@@ -442,7 +442,8 @@ export class Game {
         inputPacket.isAttacking = this.input.isInputDown("Mouse0")
             || this.input.isInputDown("Space");
         inputPacket.isDefending = this.input.isInputDown("Mouse2")
-            || this.input.isInputDown("ShiftLeft");
+            || this.input.isInputDown("ShiftLeft")
+            || this.input.isInputDown("ShiftRight");
 
         const direction = this.input.moveDirection;
         inputPacket.direction = direction ?? this.lastDirection;

@@ -23,7 +23,7 @@ import { damageableEntity, damageSource } from "../typings";
 import { LoggedInPacket } from "../../../common/src/packets/loggedInPacket";
 import { ServerFriendlyMob } from "./serverMob";
 import { Config } from "../config";
-import { ChatChannel } from "../../../common/src/packets/chatPacket";
+import { ChatChannel, ChatPacket } from "../../../common/src/packets/chatPacket";
 
 // 闪避
 enum curveType {
@@ -398,6 +398,11 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             }
             case packet instanceof InputPacket: {
                 this.processInput(packet);
+                break;
+            }
+            case packet instanceof ChatPacket: {
+                const content = packet.chat.trim();
+                if (content) this.sendChatMessage(content, packet.channel);
                 break;
             }
         }

@@ -125,8 +125,7 @@ export class Game {
                 break;
             }
             case packet instanceof ChatPacket: {
-                const content = packet.chat.trim();
-                if (content) player.sendChatMessage(content, packet.channel);
+                player.processMessage(data);
                 break;
             }
         }
