@@ -24,6 +24,7 @@ import { P2 } from "../../common/src/utils/math";
 import { spawnSegmentMobs } from "./utils/mob";
 import { Rarity, RarityName } from "../../common/src/definitions/rarity";
 import { ChatData } from "../../common/src/packets/updatePacket";
+import { ChatPacket } from "../../common/src/packets/chatPacket";
 
 export class Game {
     players = new EntityPool<ServerPlayer>();
@@ -121,6 +122,11 @@ export class Game {
             }
             case packet instanceof InputPacket: {
                 player.processMessage(data);
+                break;
+            }
+            case packet instanceof ChatPacket: {
+                const content = packet.chat.trim();
+                if (content) player.sendChatMessage(content, packet.channel);
                 break;
             }
         }

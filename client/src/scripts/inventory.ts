@@ -692,7 +692,7 @@ export class Inventory{
                 let original = (definition.modifiers
                     [modifiersDefinitionKey as keyof PlayerModifiers]);
                 if (!showing) continue;
-                if (!original) {
+                if (!original || typeof original != "number") {
                     addAttribute(showing,
                         ""
                     );

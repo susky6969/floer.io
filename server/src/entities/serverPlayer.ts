@@ -13,7 +13,7 @@ import { EntityType, GameConstants } from "../../../common/src/constants";
 import { GameOverPacket } from "../../../common/src/packets/gameOverPacket";
 import { Inventory } from "../inventory/inventory";
 import { ServerPetal } from "./serverPetal";
-import { PetalDefinition, Petals, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
+import { PetalDefinition, SavedPetalDefinitionData } from "../../../common/src/definitions/petal";
 import { spawnLoot } from "../utils/loot";
 import { AttributeEvents } from "../utils/attribute";
 import { PlayerModifiers } from "../../../common/src/typings";
@@ -23,8 +23,7 @@ import { damageableEntity, damageSource } from "../typings";
 import { LoggedInPacket } from "../../../common/src/packets/loggedInPacket";
 import { ServerFriendlyMob } from "./serverMob";
 import { Config } from "../config";
-import { Rarity } from "../../../common/src/definitions/rarity";
-import { ServerLoot } from "./serverLoot";
+import { ChatChannel } from "../../../common/src/packets/chatPacket";
 
 // 闪避
 enum curveType {
@@ -457,10 +456,6 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.isDefending = packet.isDefending;
         this.inventory.switchPetal(packet.switchedPetalIndex, packet.switchedToPetalIndex);
         this.inventory.delete(packet.deletedPetalIndex);
-
-        if (packet.chat) {
-            this.sendChatMessage(packet.chat)
-        }
     }
 
     sendEvent<T extends AttributeEvents>(
@@ -604,29 +599,28 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         this.game.activePlayers.delete(this);
     }
 
-    sendChatMessage(message: string): void {
+    sendChatMessage(message: string, channel: ChatChannel): void {
         const radius = 50;
-        const collided =
-            this.game.grid.intersectsHitbox(new CircleHitbox(radius, this.position));
+        const hitbox = new CircleHitbox(radius, this.position);
+        const players = this.game.players;
 
         let modifiedMessage: ChatData = {
             color: 0xffffff,
             content: `[Local] ${this.name}: ${message}`
         };
 
-        if (this.isAdmin && message.startsWith("!")) {
+        if (channel === ChatChannel.Local) {
+            for (const player of players) {
+                if (!player.hitbox.collidesWith(hitbox)) return;
+                player.chatMessagesToSend.push(modifiedMessage);
+            }
+        } else if (channel === ChatChannel.Global) {
+            const isAnno = this.isAdmin && message.startsWith("!");
             modifiedMessage = {
-                color: 0xff0000,
-                content: `[Global] ${this.name}: ${message.substring(1)}`
+                color: isAnno ? 0xff0000 : 0xffffff,
+                content: `[Global] ${this.name}: ${isAnno ? message.substring(1) : message}`
             }
             this.game.sendGlobalMessage(modifiedMessage);
-        } else {
-            for (const collidedElement of collided) {
-                if (!(collidedElement instanceof ServerPlayer)) continue;
-                collidedElement.chatMessagesToSend.push(modifiedMessage);
-            }
         }
-
-
     }
 }

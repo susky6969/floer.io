@@ -8,6 +8,7 @@ import { UpdatePacket } from "./packets/updatePacket";
 import { GameOverPacket } from "./packets/gameOverPacket";
 import { LogInPacket } from "./packets/logInPacket";
 import { LoggedInPacket } from "./packets/loggedInPacket";
+import { ChatPacket } from "./packets/chatPacket";
 
 export class GameBitStream extends BitStream {
     static create(size: number): GameBitStream {
@@ -252,7 +253,8 @@ const ClientToServerPackets = new PacketRegister();
 ClientToServerPackets.register(
     JoinPacket,
     InputPacket,
-    LogInPacket
+    LogInPacket,
+    ChatPacket
 );
 
 const ServerToClientPackets = new PacketRegister();

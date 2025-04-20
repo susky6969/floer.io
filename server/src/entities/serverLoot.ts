@@ -24,7 +24,7 @@ export class ServerLoot extends ServerEntity<EntityType.Loot> {
 
     constructor(game: Game, position: Vector, definition: PetalDefinition) {
         super(game, position);
-        this.hitbox = new CircleHitbox(GameConstants.loot.radius);
+        this.hitbox = new CircleHitbox(GameConstants.loot.radius * 2.5);
 
         this.position = position;
 

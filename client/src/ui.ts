@@ -1,11 +1,10 @@
 import $ from "jquery";
 import { ClientApplication } from "@/main.ts";
-import { Config } from "@/config.ts";
 import { GameOverPacket } from "@common/packets/gameOverPacket.ts";
-import { Tween } from "@tweenjs/tween.js"
 import { Game } from "@/scripts/game.ts";
-import { Settings, SettingsData } from "@/settings.ts";
+import { SettingsData } from "@/settings.ts";
 import { ChatData } from "@common/packets/updatePacket.ts";
+import { ChatChannel } from "@common/packets/chatPacket.ts";
 
 export class UI {
     readonly app: ClientApplication;
@@ -49,8 +48,9 @@ export class UI {
     readonly newControl = $<HTMLDivElement>("#new-control");
     readonly lowResolution = $<HTMLDivElement>("#low-resolution");
 
-    readonly chatInput = $<HTMLDivElement>("#chat-input");
+    readonly chatInput = $<HTMLInputElement>("#chat-input");
     readonly chatMessagesBox = $<HTMLDivElement>("#chat-messages");
+    readonly chatChannel = $<HTMLDivElement>("#chat-channel");
 
     openedDialog?: JQuery<HTMLDivElement>;
     get game(): Game {
@@ -188,10 +188,27 @@ export class UI {
     sendChat(): void {
         const content = this.chatInput.val();
         if (content && typeof content === "string") {
-            this.app.game.sendChat(content);
+            this.app.game.sendChat(content, this.chattingChannel);
         }
         this.chatInput.val("");
         this.chatInput.trigger("blur");
+    }
+
+    readonly changeableChannel = [
+        ChatChannel.Global,
+        ChatChannel.Local,
+    ]
+
+    chattingChannel: ChatChannel = ChatChannel.Global;
+
+    changeChatChannel() {
+        let index = this.changeableChannel.indexOf(this.chattingChannel) + 1;
+        if (index >= this.changeableChannel.length) {
+            index = 0
+        }
+        this.chattingChannel = this.changeableChannel[index];
+
+        this.chatChannel.text(`[${ChatChannel[this.changeableChannel[index]]}]`);
     }
 
     scrollToEnd(jq: JQuery<HTMLDivElement>) {

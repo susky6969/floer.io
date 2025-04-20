@@ -27,6 +27,7 @@ import { LoggedInPacket } from "@common/packets/loggedInPacket.ts";
 import { ParticleManager } from "@/scripts/render/particle.ts";
 import { Vec2, Vector } from "@common/utils/vector.ts";
 import { Petals, SavedPetalDefinitionData } from "@common/definitions/petal.ts";
+import { ChatChannel, ChatPacket } from "@common/packets/chatPacket.ts";
 
 const typeToEntity = {
     [EntityType.Player]: ClientPlayer,
@@ -85,8 +86,6 @@ export class Game {
     inventory: Inventory;
 
     serverDt: number = 0;
-
-    chatMessage: string = "";
 
     addTween(tween: Tween, doFunc?: Function): void {
         this.tweens.add(tween);
@@ -441,9 +440,9 @@ export class Game {
     sendInput() {
         const inputPacket = new InputPacket();
         inputPacket.isAttacking = this.input.isInputDown("Mouse0")
-            || this.input.isInputDown("Key ");
+            || this.input.isInputDown("Space");
         inputPacket.isDefending = this.input.isInputDown("Mouse2")
-            || this.input.isInputDown("KeySHIFT");
+            || this.input.isInputDown("ShiftLeft");
 
         const direction = this.input.moveDirection;
         inputPacket.direction = direction ?? this.lastDirection;
@@ -453,14 +452,19 @@ export class Game {
         inputPacket.switchedPetalIndex = this.inventory.switchedPetalIndex;
         inputPacket.switchedToPetalIndex = this.inventory.switchedToPetalIndex;
         inputPacket.deletedPetalIndex = this.inventory.deletedPetalIndex;
-        inputPacket.chat = this.chatMessage;
 
         this.sendPacket(inputPacket);
 
         this.inventory.switchedPetalIndex = -1;
         this.inventory.switchedToPetalIndex = -1;
         this.inventory.deletedPetalIndex = -1;
-        this.chatMessage = "";
+    }
+
+    sendChat(message: string, channel: ChatChannel): void {
+        const packet = new ChatPacket();
+        packet.chat = message;
+        packet.channel = channel;
+        this.sendPacket(packet);
     }
 
     resize() {
@@ -468,9 +472,5 @@ export class Game {
         this.miniMap.resize();
         this.exp.resize();
         this.leaderboard.resize();
-    }
-
-    sendChat(msg: string): void {
-        this.chatMessage = msg;
     }
 }

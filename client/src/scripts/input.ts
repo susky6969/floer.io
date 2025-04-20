@@ -113,17 +113,24 @@ export class Input {
 
         const key = this.getKeyFromInputEvent(event);
 
-        const upperCaseKey = event.key.toUpperCase();
+        const upperCaseKey = event.code;
 
         const input = document.querySelector("input.focused");
 
-        if (upperCaseKey === "ENTER" && down) {
+        if (upperCaseKey === "Enter" && down) {
             if (this.game.ui.chatInput.hasClass("focused")) {
                 this.game.ui.sendChat();
             } else {
                 this.game.ui.openChat();
             }
             return;
+        }
+
+        if (upperCaseKey === "Tab" && down) {
+            if (this.game.ui.chatInput.hasClass("focused")) {
+                this.game.ui.changeChatChannel();
+            }
+            return event.preventDefault();
         }
 
         if (input) return;
@@ -145,29 +152,31 @@ export class Input {
             }
 
             if (!this.game.app.settings.data.newControl) {
-                if (upperCaseKey === "Q") {
+                if (upperCaseKey === "KeyQ") {
                     this.game.inventory.moveSelectSlot(-1);
                 }
 
-                if (upperCaseKey === "E") {
+                if (upperCaseKey === "KeyE") {
                     this.game.inventory.moveSelectSlot(1);
                 }
 
-                if (upperCaseKey === "T") {
+                if (upperCaseKey === "KeyT") {
                     this.game.inventory.deleteSelectingSlot();
                 }
             }
 
-            if (upperCaseKey === "K") {
+            if (upperCaseKey === "KeyK") {
                 this.game.ui.keyboardMovement.trigger("click");
             }
 
-            if (upperCaseKey === "X" || upperCaseKey === "R") {
+            if (upperCaseKey === "KeyX" || upperCaseKey === "KeyR") {
                 this.game.inventory.transformAllSlot();
             }
         }
 
         this._inputsDown[key] = down;
+
+        event.preventDefault();
     }
 
     getKeyFromInputEvent(event: MouseEvent | KeyboardEvent): string {
@@ -177,7 +186,8 @@ export class Input {
         }
 
         if (event instanceof KeyboardEvent) {
-            key = `Key${event.key.toUpperCase()}`;
+            key = event.code;
+            console.log(key)
         }
 
         return key;
