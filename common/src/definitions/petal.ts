@@ -407,7 +407,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 35
         },
         attributes: {
-            absorbing_heal: 3
+            absorbing_heal: 4
         },
         reloadTime: 0.4,
         hitboxRadius: 0.5,
@@ -556,7 +556,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 5,
                 health: 20,
                 despawnTime: 3,
-                speed: 7,
+                speed: 8,
                 definition: Projectile.fromString("dandelion")
             }
         },
@@ -589,7 +589,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 40,
                 health: 10,
                 despawnTime: 3,
-                speed: 6.5,
+                speed: 7.5,
                 definition: Projectile.fromString("missile")
             }
         },
@@ -622,7 +622,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 40,
                 health: 20,
                 despawnTime: 3,
-                speed: 6.5,
+                speed: 7,
                 definition: Projectile.fromString("missile")
             }
         },
@@ -639,7 +639,7 @@ export const Petals = new Definitions<PetalDefinition>([
         displayName: "Missile",
         description: "You can actually shoot this quickly bigger one",
         damage: 50,
-        health: 20,
+        health: 25,
         extendable: true,
         images: {
             selfGameRotation: 0.02,
@@ -656,7 +656,7 @@ export const Petals = new Definitions<PetalDefinition>([
                 damage: 50,
                 health: 20,
                 despawnTime: 3,
-                speed: 10,
+                speed: 11,
                 definition: Projectile.fromString("missile")
             }
         },
