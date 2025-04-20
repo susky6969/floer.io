@@ -129,8 +129,7 @@ export class Game {
 
         this.running = true;
 
-        this.ui.inGameScreen.css("display", "block");
-        this.ui.outGameScreen.css("display", "none");
+        this.ui.startTransition(true);
 
         this.pixi.start();
 
@@ -155,10 +154,7 @@ export class Game {
 
         this.pixi.stop();
 
-        this.ui.inGameScreen.css("display", "none");
-        this.ui.outGameScreen.css("display", "block");
-
-        this.ui.gameOverScreen.css("display", "none");
+        this.ui.startTransition(false);
 
         this.inventory.updatePetalRows();
         this.inventory.keyboardSelectingPetal = undefined;
