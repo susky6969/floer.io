@@ -29,11 +29,56 @@ $none_bd: #ccc;
   
 
 body {
-  background-color: #29ca77;
+  background-color: #1ea761;
   background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.15) 2%, rgba(0, 0, 0, 0) 5%), linear-gradient(0deg, rgba(0, 0, 0, 0.15) 2%, rgba(0, 0, 0, 0) 5%);
   background-size: 20px 20px;
   overflow: hidden;
+  background-position: 0 0;
+  animation: bodyAnimate 0.5s linear infinite;
 }
+@keyframes bodyAnimate {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 20px 20px;
+    }
+  }
+
+  
+#animation-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -6;
+    overflow: hidden;
+  }
+  
+  .floating-entity {
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
+  }
+  .floating-entity.mob {
+    animation: spin var(--spin-duration, 15s) linear infinite;
+  }
+  .floating-entity.petal {
+    animation: spin var(--spin-duration, 15s) linear infinite;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 
 #game-over-title {
     font-size: 20px;
@@ -326,6 +371,7 @@ img {
     width: max-content;
     border-radius: 5px;
     color: white;
+    z-index: 10;
 }
 
 .petal-information > div {

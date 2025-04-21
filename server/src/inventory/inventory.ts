@@ -249,7 +249,20 @@ export class Inventory {
 
         const radius = this.range;
 
-        this.revolutionRadians += this.player.modifiers.revolutionSpeed * this.game.dt;
+        let finalRevSpeed = this.player.modifiers.revolutionSpeed;
+
+        const yyEffects = this.getYinYangEffects(this.player.modifiers.yinYangs);
+
+        if (yyEffects==='rev') {
+            finalRevSpeed = -finalRevSpeed;
+        } else if (yyEffects==='stop') {
+            finalRevSpeed = 0;
+        } else if (typeof yyEffects === 'number') {
+            // this will be either 8 or 9 or 10
+            finalRevSpeed *= (yyEffects/4)**2
+        } // no else: default return def = normal rotation, no actions taken
+
+        this.revolutionRadians += finalRevSpeed * this.game.dt;
 
         let revolutionRadians = this.revolutionRadians;
         const singleOccupiedRadians = P2 / this.totalDisplayedPetals;
@@ -258,5 +271,16 @@ export class Inventory {
             petalBunch.tick(radius, revolutionRadians, singleOccupiedRadians);
             revolutionRadians += singleOccupiedRadians * petalBunch.displayedPieces;
         });
+    }
+
+    getYinYangEffects(n: number) {        
+        if ([1,4,7].includes(n)) {
+            return "rev";
+        } else if ([2,5].includes(n)) {
+            return "stop";
+        } else if (n>=8) {
+            return n;
+        }
+        return 'def';
     }
 }

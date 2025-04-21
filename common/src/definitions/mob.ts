@@ -129,6 +129,7 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "tri_rose": 0.36,
             "epic_rose": 0.051,
+            "yinyang": 0.1,
             "bubble": 0.08,
             "wing": 0.08,
             "leg_bubble": 0.00012,
@@ -750,6 +751,7 @@ export const Mobs = new Definitions<MobDefinition>([
             "epic_rose": 0.1,
             "bubble": 0.16,
             "wing": 0.16,
+            "yinyang": 0.4,
             "leg_bubble": 0.0002,
             "triplet": 0.0048,
             "penta": 0.05,

@@ -7,6 +7,7 @@ export type PlayerModifiers = Modifiers & {
     zoom: number;
     damageAvoidanceChance: number;
 	damageAvoidanceByDamage: boolean;
+    yinYangs: number;
 }
 
 export interface Modifiers {

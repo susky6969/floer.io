@@ -15,6 +15,7 @@ export type PetalDefinition = ObjectDefinition & {
     readonly undroppable?: boolean
     readonly unstackable?: boolean
     readonly hitboxRadius: number
+    readonly effectiveFirstReload?: boolean;
     readonly images?: {
         readonly slotDisplaySize?: number
         readonly slotRotation?: number
@@ -324,6 +325,27 @@ export const Petals = new Definitions<PetalDefinition>([
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.unusual
+    },
+    {
+        idString: "dev_stinger",
+        displayName: "Stinger",
+        description: "I think it hurts?",
+        damage: 60,
+        health: 8,
+        extendable: true,
+        reloadTime: 0.2,
+        images: {
+            slotRotation: 3.14,
+            slotRevolution: 6.28 / 5
+        },
+        usable: false,
+        hitboxRadius: 0.3,
+        isDuplicate: true,
+        isShowedInOne: true,
+        pieceAmount: 5,
+        rarity: RarityName.super,
+        undroppable: true,
+        usingAssets: "stinger"
     },
     {
         idString: "sand",
@@ -1361,6 +1383,31 @@ export const Petals = new Definitions<PetalDefinition>([
         usingAssets: "egg"
     },
     {
+        idString: "segg",
+        displayName: "Egg",
+        // 真有大爆炸 可以用来压测 不信你试试
+        description: "Causes ant explosion. Handle with care.",
+        damage: 1,
+        health: 500,
+        extendable: false,
+        usable: true,
+        images: {
+            slotDisplaySize: 45
+        },
+        useTime: 1,
+        attributes: {
+            spawner: Mobs.fromString("myt_ant_hole")
+        },
+        reloadTime: 1,
+        hitboxRadius: 1.375,
+        isDuplicate: true,
+        pieceAmount: 5,
+        isShowedInOne: false,
+        rarity: RarityName.super,
+        usingAssets: "egg",
+        undroppable: true
+    },
+    {
         idString: "talisman",
         displayName: "Talisman",
         description: "A necklace that allows the wearer to anticipate enemy attacks",
@@ -1380,6 +1427,29 @@ export const Petals = new Definitions<PetalDefinition>([
         reloadTime: 2.5,
         hitboxRadius: 0.45,
         isDuplicate: false,
+        pieceAmount: 1,
+        rarity: RarityName.epic,
+    },
+    {
+        idString: "yinyang",
+        // TODO: TEMPORARY: should be Yin Yang but petalContainer will show it in 2 lines
+        displayName: "YinYang",
+        description: "A mysterious petal with mighty power coming from the East.\nReverses your petal rotation direction.",
+        damage: 10,
+        health: 10,
+        extendable: true,
+        usable: false,
+        images: {
+            slotDisplaySize: 40,
+            selfGameRotation: 0.01,
+        },
+        modifiers: {
+            yinYangs: 1
+        },
+        reloadTime: 1,
+        hitboxRadius: 0.55,
+        isDuplicate: false,
+        effectiveFirstReload: true,
         pieceAmount: 1,
         rarity: RarityName.epic,
     },

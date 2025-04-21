@@ -20,6 +20,8 @@ export class UI {
     readonly main =  $<HTMLDivElement>("#main");
     readonly hud = $<HTMLDivElement>("#hud");
 
+    readonly animationContainer = $<HTMLDivElement>('#animation-container');
+
     readonly petalColumn= $<HTMLDivElement>(".petal-column");
     readonly equippedPetalRow= $<HTMLDivElement>(".equipped-petals-row");
     readonly preparationPetalRow= $<HTMLDivElement>(".preparation-petals-row");
@@ -61,9 +63,29 @@ export class UI {
         return this.app.game;
     }
 
+    private animationInterval: number | null = null;
+
+    //TODO: TEMPORARY: these needs to be automatically obtained through some method.
+    // them being put in a default array ia just a temp solution
+    private availableMobs: string[] = [
+        'ant_hole', 'bee', 'cactus', 'centipede', 'dark_ladybug', 
+        'dandelion', 'hornet', 'ladybug', '21', 
+        'shiny_ladybug', 'rock', 'mantis'
+    ];
+    private availablePetals: string[] = [
+        'basic', 'faster', 'stinger', 'bubble', 'yinyang', 'rose', 
+        'wing', 'heavy', 'iris', 'web', 'antennae', 'pollen', 
+        'leaf', 'cactus', 'rock', 'honey', 'dandelion', 'egg', 'chip', 'dice',
+        'rice', 'salt', 'sand', 'talisman', 'uranium', 'shell'
+    ];
+    
     constructor(app: ClientApplication) {
         this.app = app;
-
+        
+        // Create container for animations
+        this.animationContainer = $("<div id='animation-container'></div>");
+        $("body").append(this.animationContainer);
+        
         this.readyButton.on("click", (e: Event) => {
             this.app.game.sendJoin();
         });
@@ -111,6 +133,8 @@ export class UI {
         this.gameOverScreen.css("display", "none");
 
         this.initSettingsDialog();
+        
+        this.startRandomEntityAnimation();
 
         this.loader.animate({ opacity: 0 }, 100, ()=>{ this.loader.css("display", "none");});
     }
@@ -129,6 +153,84 @@ export class UI {
                 key, jq.prop("checked")
             );
         })
+    }
+
+
+    startRandomEntityAnimation(): void {
+        // Clear any existing interval
+        if (this.animationInterval) {
+            window.clearInterval(this.animationInterval);
+        }
+        
+        this.animationInterval = window.setInterval(() => {
+            this.spawnRandomEntity();
+        }, 750);
+    }
+
+    stopRandomEntityAnimation(): void {
+        if (this.animationInterval) {
+            window.clearInterval(this.animationInterval);
+            this.animationInterval = null;
+        }
+    }
+    
+    spawnRandomEntity(): void {
+        // Decide whether to spawn a mob or petal (30% petal 70% mob)
+        const isMob = Math.random() > 0.3;
+        
+        // Select a random entity from the appropriate array
+        const entityType = isMob ? 
+            this.availableMobs[Math.floor(Math.random() * this.availableMobs.length)] : 
+            this.availablePetals[Math.floor(Math.random() * this.availablePetals.length)];
+        
+        const entity = $(`<div class="floating-entity ${isMob ? 'mob' : 'petal'}" data-type="${entityType}"></div>`);
+        
+        // Set random vertical position (between 5% and 95% of screen height)
+        const topPosition = Math.random() * 90 + 5;
+        
+        // Set random size (between 50px and 70px) mob is 1.5x
+        const size = isMob ? Math.random() * 30 + 75 : Math.random() * 20 + 50;
+    
+        // Set random speed in seconds (between 8 and 12 seconds to cross the screen)
+        const speed = Math.random() * 4 + 8;
+    
+        // Set random rotation
+        const rotation = Math.random() * 360;
+
+        // Set random spin duration (between 8s and 20s for mobs, 5s and 15s for petals)
+        const spinDuration = isMob ? 
+            Math.random() * 12 + 8 : 
+            Math.random() * 10 + 5;
+        
+        // Apply styles
+        entity.css({
+            'position': 'fixed',
+            'top': `${topPosition}vh`,
+            'left': '-100px',
+            'width': `${size}px`,
+            'height': `${size}px`,
+            'background-image': `url('./img/game/${isMob ? 'mob' : 'petal'}/${entityType}.svg')`,
+            'background-size': 'contain',
+            'background-repeat': 'no-repeat',
+            'background-position': 'center',
+            'z-index': '-6',
+            'opacity': 1,
+            'transform': `rotate(${rotation}deg)`,
+            'pointer-events': 'none',
+            'border': 'none', // petals have border by default?
+            '--spin-duration': `${spinDuration}s`
+        });
+        
+        // Add to container
+        this.animationContainer.append(entity);
+        
+        // Animate movement
+        entity.animate({
+            left: `${window.innerWidth + 100}px`
+        }, speed * 1000, 'linear', function() {
+            // Remove element when animation completes
+            entity.animate({opacity: 0}, 200, ()=>{$(this).remove()});
+        });
     }
 
     toggleSettingsDialog(): void {
