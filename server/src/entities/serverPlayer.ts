@@ -647,7 +647,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         if (channel === ChatChannel.Local) {
             for (const player of players) {
-                if (!player.hitbox.collidesWith(hitbox)) return;
+                if (!player.hitbox.collidesWith(hitbox)) continue
                 player.chatMessagesToSend.push(modifiedMessage);
             }
         } else if (channel === ChatChannel.Global) {
