@@ -174,7 +174,7 @@ export const Zones:
             "mega_spider": 0.048,
             "beetle": 15,
             "mega_beetle": 0.06,
-            "boulder": 20,
+            "boulder": 12.5,
             "myt_worker_ant": 0.04,
             "myt_baby_ant": 0.04,
             "myt_soldier_ant": 0.04,
