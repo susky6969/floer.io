@@ -185,7 +185,6 @@ export class Input {
 
         if (event instanceof KeyboardEvent) {
             key = event.code;
-            console.log(key)
         }
 
         return key;

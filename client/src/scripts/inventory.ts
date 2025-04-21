@@ -297,18 +297,188 @@ export class Inventory{
     switchedPetalIndex: number = -1;
     switchedToPetalIndex: number = -1;
 
+    swingAngle: number = 0;
+    swingAnimationId: number | null = null;
+    swingProgress: number = 0; // Track animation progress from 0 to 1
+
     constructor(private readonly game: Game) {
         this.ui = game.ui;
+
+        let targetX = 0;
+        let targetY = 0;
+        let currentX = 0;
+        let currentY = 0;
+        const followSpeed = 0.125;
+        let followAnimationId: number | null = null;
+        
+        const updateFollowAnimation = () => {
+            if (draggingData.item) {
+                // Smoothly interpolate between current position and target position
+                currentX += (targetX - currentX) * followSpeed;
+                currentY += (targetY - currentY) * followSpeed;
+                
+                draggingData.item.css("transform", `translate(${currentX}px, ${currentY}px)`);
+                
+                followAnimationId = window.requestAnimationFrame(updateFollowAnimation);
+            }
+        };
 
         $(document).on("mousemove", (ev) => {
             if (draggingData.item) {
                 const { clientX, clientY } = ev;
-                draggingData.item.css("transform",`translateX(${clientX}px) translateY(${clientY}px)`);
+                
+                targetX = clientX;
+                targetY = clientY;
+                
+                // If this is the first movement, initialize current position and start animation
+                if (currentX === 0 && currentY === 0) {
+                    currentX = clientX;
+                    currentY = clientY;
+                    
+                    if (!followAnimationId) {
+                        followAnimationId = window.requestAnimationFrame(updateFollowAnimation);
+                    }
+                }
             }
         })
+        
+        $(document).on("mousedown", (ev) => {
+            this.swingAngle = 0;
+            this.swingProgress = 0;
+            
+            // Reset position tracking when starting a new drag
+            if (draggingData.item) {
+                const { clientX, clientY } = ev;
+                currentX = clientX;
+                currentY = clientY;
+                targetX = clientX;
+                targetY = clientY;
+                
+                // Start the follow animation
+                if (!followAnimationId) {
+                    followAnimationId = window.requestAnimationFrame(updateFollowAnimation);
+                }
+                
+                if (this.swingAnimationId) window.cancelAnimationFrame(this.swingAnimationId);
+                
+                const petalElement = draggingData.item.find('.petal');
+                if (petalElement.length) {
+                
+                    let originalSize = 50; 
+                    // find the width of original slot... should be 50 anyways
+                    if (draggingData.container?.ui_slot) {
+                        originalSize = draggingData.container?.ui_slot.width() || 50;
+                    }
+                    
+                    // Target size for the dragging petal
+                    let targetSize = 70;
+                    if (draggingData.item.width()) {
+                        targetSize = draggingData.item.width() || 70;
+                    }
+                    
+                    // Start with original size and no rotation
+                    petalElement.css('transform', 'translate(-50%, -50%) rotate(0deg)');
+                    draggingData.item.css('width', `${originalSize}px`);
+                    draggingData.item.css('height', `${originalSize}px`);
+                    
+                    // Animation start time
+                    let startTime = performance.now();
+                    const growthDuration = 250; // ms
+                    let initialSwingSpeed = 0.005; // Start slower
+                    
+                    const animateCombined = (currentTime: number) => {
+                        const elapsed = currentTime - startTime;
+                        const growthProgress = Math.min(elapsed / growthDuration, 1);
+                        
+                        // ease-out-cubic
+                        const easeOutCubic = 1 - Math.pow(1 - growthProgress, 3);
+                        const currentSize = originalSize + ((targetSize - originalSize) * easeOutCubic);
+                        
+                        // Scale font size proportionally by updating the CSS variable
+                        const fontScale = currentSize / originalSize;
+                        const baseFontSize = 0.8; // Default font size in em
+                        const newFontSize = baseFontSize * fontScale;
+                        petalElement.css('--x', `${newFontSize}em`);
+                        
+                        // Gradually increase swing speed as growth progresses
+                        const targetSwingSpeed = 0.015;
+                        const currentSwingSpeed = initialSwingSpeed + (targetSwingSpeed - initialSwingSpeed) * easeOutCubic;
+
+                        // gradually increase swing speed
+                        this.swingProgress = (this.swingProgress + currentSwingSpeed) % 1;
+                        
+                        // Calculate swing angle with eased amplitude
+                        const t = Math.sin(this.swingProgress * Math.PI * 2);
+                        const easedT = Math.sign(t) * Math.pow(Math.abs(t), 0.8);
+                        
+                        // Scale the swing angle based on growth progress
+                        const swingFactor = Math.min(growthProgress * 1.5, 1);
+                        const currentSwingAngle = 10 * easedT * swingFactor;
+                        
+                        // Apply size to the container and rotation to the petal
+                        draggingData.item?.css('width', `${currentSize}px`);
+                        draggingData.item?.css('height', `${currentSize}px`);
+                        petalElement.css('transform', `translate(-50%, -50%) rotate(${currentSwingAngle}deg)`);
+                        
+                        if (growthProgress < 1) {
+                            window.requestAnimationFrame(animateCombined);
+                        } else {
+                            // growth complete, run infinity reg animation
+                            this.swingAngle = currentSwingAngle; // connect with current angle
+                            
+                            const updateSwingAnimationSynchronized = () => {
+                                if (draggingData.item) {
+                                    this.swingProgress = (this.swingProgress + 0.015) % 1;
+                                    
+                                    // Use sine function for smooth pendulum motion
+                                    const t = Math.sin(this.swingProgress * Math.PI * 2);
+                                    // Apply cubic easing to the sine wave
+                                    const easedT = Math.sign(t) * Math.pow(Math.abs(t), 0.8);
+                                    this.swingAngle = 10 * easedT;
+                                    
+                                    // Apply rotation to the petal inside the dragging container
+                                    const petalElement = draggingData.item.find('.petal');
+                                    if (petalElement.length) {
+                                        petalElement.css('transform', `translate(-50%, -50%) rotate(${this.swingAngle}deg)`);
+                                    }
+                                    
+                                    this.swingAnimationId = window.requestAnimationFrame(updateSwingAnimationSynchronized);
+                                }
+                            };
+                            
+                            this.swingAnimationId = window.requestAnimationFrame(updateSwingAnimationSynchronized);
+                        }
+                    };
+                    
+                    // Start the combined animation
+                    window.requestAnimationFrame(animateCombined);
+                } else {
+                    // Fallback to regular swing if no petal element found
+                    this.swingAnimationId = window.requestAnimationFrame(this.updateSwingAnimation);
+                }
+            }
+        });
 
         $(document).on("mouseup", (ev) => {
             if (draggingData.item && draggingData.container) {
+                // Stop the swing animation
+                if (this.swingAnimationId) {
+                    window.cancelAnimationFrame(this.swingAnimationId);
+                    this.swingAnimationId = null;
+                }
+                
+                // Stop the follow animation
+                if (followAnimationId) {
+                    window.cancelAnimationFrame(followAnimationId);
+                    followAnimationId = null;
+                }
+                
+                // Reset position tracking
+                currentX = 0;
+                currentY = 0;
+                targetX = 0;
+                targetY = 0;
+                
                 draggingData.item.remove();
                 draggingData.item = null;
 
@@ -336,6 +506,57 @@ export class Inventory{
             }
         })
     }
+    updateSwingAnimation = () => {
+        if (draggingData.item) {
+            // Update swing progress
+            let swingProgress = this.swingProgress;
+            let swingAngle = this.swingAngle;
+            swingProgress = (swingProgress + 0.015) % 1;
+            
+            // Use sine function for smooth pendulum motion
+            const t = Math.sin(swingProgress * Math.PI * 2);
+            // Apply cubic easing to the sine wave
+            const easedT = Math.sign(t) * Math.pow(Math.abs(t), 0.8);
+            swingAngle = 10 * easedT;
+            
+            // Apply rotation to the petal inside the dragging container
+            const petalElement = draggingData.item.find('.petal');
+            if (petalElement.length) {
+                petalElement.css('transform', `translate(-50%, -50%) rotate(${swingAngle}deg)`);
+            }
+            
+            this.swingAnimationId = window.requestAnimationFrame(this.updateSwingAnimation);
+        }
+    };
+
+    // TODO: make it process swap petal before animation is finished
+    // and a fter animation is finished, update petal deck to show the changes
+    processInventoryChanges = (animationFinished: boolean = false) => {
+        // Swapping to diff slots
+        if (mouseSelectingPetal && mouseSelectingPetal != draggingData.container && draggingData.container) {
+            const trans = mouseSelectingPetal.petalDefinition;
+            mouseSelectingPetal.petalDefinition = draggingData.container.petalDefinition;
+            draggingData.container.petalDefinition = trans;
+            this.switchedPetalIndex = this.inventory.indexOf(draggingData.container);
+            this.switchedToPetalIndex = this.inventory.indexOf(mouseSelectingPetal);
+        // delete petal
+        } else if (mouseDeletingPetal && draggingData.container) {
+            draggingData.container.petalDefinition = null;
+            this.deletedPetalIndex = this.inventory.indexOf(draggingData.container);
+        // dropping the petal
+        // logic here needs to be changed
+        } else if (draggingData.container) {
+            const index = this.inventory.indexOf(draggingData.container);
+            if (index >= this.equippedPetals.length) {
+                this.switchSlot(index - this.equippedPetals.length);
+            } else {
+                this.switchSlot(index);
+            }
+        }
+
+        this.keyboardSelectingPetal = undefined;
+        this.updatePetalRows();
+    };
 
     moveSelectSlot(offset: number) {
         const allActiveSlot = this.preparationPetals.filter((v) => v.petalDefinition);

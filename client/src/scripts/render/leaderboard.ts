@@ -5,16 +5,16 @@ import { Petals } from "@common/definitions/petal.ts";
 
 class LeaderboardContent {
     width: number = 182;
-    height: number = 16;
+    height: number = 19;
 
     graphics: Graphics = new Graphics();
     text: Text = new Text({
         text: "",
         style: {
             fontFamily: 'Ubuntu',
-            fontSize: 12,
+            fontSize: 13.5,
             fill: "#fff",
-            stroke: {color: "#000", width: 2}
+            stroke: {color: "#000", width: 1.5}
         }
     });
 
@@ -33,7 +33,7 @@ export class Leaderboard {
         text: "",
         style: {
             fontFamily: 'Ubuntu',
-            fontSize: 16,
+            fontSize: 18,
             fill: "#fff",
             stroke: {color: "#000", width: 2}
         }
@@ -42,7 +42,7 @@ export class Leaderboard {
     container = new Container();
 
     width: number = 200;
-    height: number = 300;
+    height: number = 280;
 
     constructor(private game: Game) {}
 
@@ -79,27 +79,36 @@ export class Leaderboard {
             )
 
         let index = 0;
-        let height = 8;
+
+        // first item is 9px away from green thing
+        let height = 9;
 
         let highestScore = array[0];
 
         let hasActivePlayer = false;
 
         this.leaderboardContents.forEach(leaderboard => {
+            // 'leaderboard' here stands for leaderboard content this iteration
             leaderboard.graphics.clear();
             if (index < array.length && index < this.leaderboardContents.length) {
                 let data = array[index];
 
                 let isActivePlayer = data.id === this.game.activePlayerID;
-                let color = 0x5ace55;
+                let color = 0x55be55;
 
-                const width = MathNumeric.remap(
-                    data.exp, 0, highestScore.exp,0, leaderboard.width
-                )
+                let width;
+                if (!highestScore || highestScore.exp === 0) {
+                    // If all scores are 0, give everyone a small default width
+                    width = 20;
+                } else {
+                    width = MathNumeric.remap(
+                        data.exp, 0, highestScore.exp, 0, leaderboard.width
+                    );
+                }
 
                 if (isActivePlayer) {
                     hasActivePlayer = true;
-                    color = 0xd8f060;
+                    color = 0xfffc61;
                 }
 
                 if (index === this.leaderboardContents.length - 1 && !hasActivePlayer) {
@@ -111,10 +120,16 @@ export class Leaderboard {
                     }
                 }
 
+                // gray bar containing score bar
                 leaderboard.graphics
-                    .roundRect(8, 40 + height, leaderboard.width, leaderboard.height, 100)
-                    .fill({ color: 0x000000, alpha: 0.5 })
-                    .roundRect(8 + 2, 40 + height + 2, width - 4, leaderboard.height - 4, 100)
+                    .roundRect(8, 40 + height, leaderboard.width, leaderboard.height, 16)
+                    .fill({ color: 0x343434, alpha: 0.5 })
+                    
+                // score bar
+                // minimum width so that border radius works
+                width = Math.max(width, 20);
+                leaderboard.graphics
+                    .roundRect(8 + 1.5, 40 + height + 1.5, width - 3, leaderboard.height - 3, 16)
                     .fill({ color: color, alpha: 1 })
 
                 leaderboard.text.text = data.name + " - " + data.exp;
@@ -126,7 +141,8 @@ export class Leaderboard {
                 leaderboard.text.text = ""
             }
 
-            height += leaderboard.height + 9;
+            // every item later on is 4px away from the last one
+            height += leaderboard.height + 3.6;
             index ++;
         })
     }
@@ -135,8 +151,8 @@ export class Leaderboard {
         const screenWidth = this.game.pixi.screen.width;
         const screenHeight = this.game.pixi.screen.height;
 
-        const positionX = screenWidth - this.width - 8;
-        const positionY = 8;
+        const positionX = screenWidth - this.width - 15;
+        const positionY = 15;
 
         this.container.position.set(positionX, positionY);
 
@@ -144,11 +160,14 @@ export class Leaderboard {
 
     redraw(): void {
         this.leaderboardBackground.clear()
+        // gray block, lb background
             .roundRect(0, 0, this.width, this.height, 5)
-            .fill({ color: 0x53555b, alpha: 0.9 })
-            .rect(8 / 2, 8 / 2, this.width - 8, 40 - 8)
-            .fill({ color: 0x60cd5b, alpha: 0.9 })
-            .stroke({ color: 0x4fa650, width: 8 });
+            .fill({ color: 0x555555, alpha: 0.9 })
+            .stroke({ color: 0x454545, width: 6 })
+            // green block
+            .roundRect(0, 0, this.width, 40, 0.5)
+            .fill({ color: 0x55bb55, alpha: 0.9 })
+            .stroke({ color: 0x459745, width: 6 });
         this.flowerNumber.position.set(this.width / 2, 20);
     }
 }

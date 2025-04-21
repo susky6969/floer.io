@@ -55,7 +55,8 @@ export class Minimap {
                     remappedX,
                     remappedY,
                     5
-                ).fill(0xfee763);
+                ).fill(0xfee763)
+                 .stroke({ color: 0x988a3b, width: 1.5 });
         }
     }
 

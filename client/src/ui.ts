@@ -65,6 +65,8 @@ export class UI {
         return this.app.game;
     }
 
+    private transitionRunning: boolean = false;
+
     private animationInterval: number | null = null;
 
     //TODO: TEMPORARY: these needs to be automatically obtained through some method.
@@ -89,7 +91,7 @@ export class UI {
         $("body").append(this.animationContainer);
 
         this.readyButton.on("click", (e: Event) => {
-            this.app.game.sendJoin();
+            if (!this.transitionRunning) this.app.game.sendJoin();
         });
 
         this.continueButton.on("click", (e: Event) => {
@@ -342,15 +344,23 @@ export class UI {
         }
     }
     startTransition(expanding: boolean = true) {
+        if (this.transitionRunning) {
+            return;
+        }
+        
         if (!this.inGameScreen || !this.transitionRing) return;
+        console.log('THIS IS THE POINT OF NO RETURN')
         this.transitionRing.css("opacity", "1"); // this need to show up nomatter what
-
+    
+        this.transitionRunning = true;
+    
         // Common animation setup
         let radius = expanding ? 0 : window.innerWidth * 1; // Start from 0 or maxRadius
+    
         const maxRadius = window.innerWidth * 1;
         const duration = expanding ? 1500 : 1200; // Slightly faster for collapsing
         const startTime = performance.now();
-
+    
         // both needs in game screen be displayed
         this.inGameScreen.css("visibility", "visible");
         this.inGameScreen.css("opacity", "1");
@@ -373,11 +383,11 @@ export class UI {
                 });
             });
         }
-
+    
         const animate = (currentTime: number) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-
+    
             // Custom easing for collapsing to make it faster at the beginning
             let eased;
             if (expanding) {
@@ -390,24 +400,25 @@ export class UI {
                 // Use a cubic curve that drops quickly at the start
                 eased = 1 - Math.pow(1 - progress, 3);
             }
-
+    
             if (expanding) {
                 radius = eased * maxRadius;
             } else {
                 radius = maxRadius * (1 - eased);
             }
-
+    
             this.inGameScreen.css("clip-path", `circle(${radius}px at center)`);
-
+    
             const diameter = radius * 2;
             this.transitionRing.css({
                 "width": `${diameter}px`,
                 "height": `${diameter}px`
             });
-
+    
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else if (!expanding) {
+                // case: animation finished, expanding is false.
                 this.inGameScreen.css({
                     "visibility": "hidden",
                     "opacity": "0"
@@ -415,14 +426,24 @@ export class UI {
                 this.transitionRing.css({
                     "opacity": "0"
                 });
+                this.transitionRunning = false;
             } else {
                 // case: animation finished, expanding is true. Dont need to hide ring because it is out of screen.
                 // set outgamescreen to 0 opacity after animation is finished, reset zindex
                 this.outGameScreen.css("display", "none");
                 this.outGameScreen.css("z-index", "4");
+                // set transition ring and clip path circle to very big so that user wont see even if they zoom out a lot
+                this.inGameScreen.css("clip-path", `circle(${window.innerWidth * 10}px at center)`);
+                const diameter = window.innerWidth * 10 * 2;
+                this.transitionRing.css({
+                    "width": `${diameter}px`,
+                    "height": `${diameter}px`
+                });
+                this.transitionRunning = false;
             }
         };
-
+    
+    
         requestAnimationFrame(animate);
     }
 }
