@@ -273,7 +273,7 @@ export class UI {
     receiveChatMessage(msg: ChatData) {
         if (
             this.app.settings.data.blockMytAnn &&
-            msg.content.startsWith("The Mythic") || msg.content.startsWith("A Mythic")
+            (msg.content.startsWith("The Mythic") || msg.content.startsWith("A Mythic"))
         ) return;
 
         const jq = $(
