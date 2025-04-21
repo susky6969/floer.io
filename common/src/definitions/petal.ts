@@ -1538,7 +1538,7 @@ export const Petals = new Definitions<PetalDefinition>([
         images: {
             slotDisplaySize: 60,
         },
-        reloadTime: 10,
+        reloadTime: 5,
         hitboxRadius: 1.0,
         isDuplicate: false,
         pieceAmount: 1,
