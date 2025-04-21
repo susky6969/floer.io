@@ -56,7 +56,7 @@ export const PetalAttributeRealizes: {[K in AttributeName]: AttributeRealize<K>}
             on(AttributeEvents.CAN_USE,
                 () => {
                     if (data && petal.owner instanceof ServerPlayer) {
-                        const maxShield = petal.owner.modifiers.maxHealth * 0.2;
+                        const maxShield = petal.owner.modifiers.maxHealth * 0.75;
                         const newShield = Math.min(
                             (petal.owner.shield || 0) + Number(data), 
                             maxShield

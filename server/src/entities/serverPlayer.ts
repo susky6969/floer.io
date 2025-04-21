@@ -103,7 +103,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
     }
 
     set shield(shield: number) {
-        const maxShield = this.maxHealth * 0.75;//最大护盾值
+        const maxShield = this.maxHealth * 0.75; // 最大护盾值为最大生命值的75%
         this._shield = MathNumeric.clamp(shield, 0, maxShield);
         this.dirty.shield = true;
     }
@@ -536,7 +536,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             full: {
                 healthPercent: this.health / this.maxHealth,
                 shield: this._shield,
-                maxShield: this.maxHealth * 0.75//最大护盾
+                maxShield: this.maxHealth * 0.75 // 最大护盾为最大生命值的75%
             }
         };
 
