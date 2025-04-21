@@ -24,6 +24,7 @@ import { LoggedInPacket } from "../../../common/src/packets/loggedInPacket";
 import { ServerFriendlyMob } from "./serverMob";
 import { Config } from "../config";
 import { ChatChannel, ChatPacket } from "../../../common/src/packets/chatPacket";
+import { PoisonEffect } from "../utils/effects";
 
 // 闪避
 enum curveType {
@@ -270,19 +271,36 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             return;
         }
 
-        // 优先消耗护盾
-        if (this._shield > 0) {
-            if (this._shield >= amount) {
-                this.shield = this._shield - amount;
-                amount = 0;
-            } else {
-                amount -= this._shield;
-                this.shield = 0;
-            }
-        }
+        // 检查是否为毒素伤害
+        const isPoisonDamage = 
+            // 玩家自身处于中毒状态
+            this.state.poison || 
+            // 来源是PoisonEffect实例
+            (source && source instanceof PoisonEffect) ||
+            // 来源是中毒的玩家
+            (source && source instanceof ServerPlayer && source.state.poison) ||
+            // 自毒伤害(uranium辐射)
+            (disableEvent && this.modifiers.selfPoison > 0);
 
-        if (amount > 0) {
+        // 如果是毒素伤害，直接扣减血量，绕过护盾
+        if (isPoisonDamage) {
             this.health -= amount;
+        } else {
+            // 不是毒素伤害，正常的护盾逻辑
+            // 优先消耗护盾
+            if (this._shield > 0) {
+                if (this._shield >= amount) {
+                    this.shield = this._shield - amount;
+                    amount = 0;
+                } else {
+                    amount -= this._shield;
+                    this.shield = 0;
+                }
+            }
+
+            if (amount > 0) {
+                this.health -= amount;
+            }
         }
 
         if (!disableEvent) {
@@ -518,7 +536,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
             full: {
                 healthPercent: this.health / this.maxHealth,
                 shield: this._shield,
-                maxShield: this.maxHealth * 0.2
+                maxShield: this.maxHealth * 0.75//最大护盾
             }
         };
 

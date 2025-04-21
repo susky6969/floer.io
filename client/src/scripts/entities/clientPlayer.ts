@@ -21,7 +21,8 @@ export class ClientPlayer extends ClientEntity {
 
     // 添加护盾相关属性
     shieldPercent = 0.0;
-    maxShieldPercent = 0.2;
+    shieldValue = 0;
+    maxShieldValue = 0;
     shieldBar = new Graphics();
 
     lastGettingDamage: number = 0;
@@ -219,7 +220,7 @@ export class ClientPlayer extends ClientEntity {
             });
             
         // 绘制护盾条
-        if (this.shieldPercent > 0) {
+        if (this.shieldValue > 0) {
             const shieldWidth = this.shieldPercent * healthbarWidth;
             this.shieldBar.visible = true;
             this.shieldBar.position.set(0, 43);
@@ -261,11 +262,12 @@ export class ClientPlayer extends ClientEntity {
         if (data.full) {
             this.healthPercent = data.full.healthPercent;
             
-            // 更新护盾数据
             if (data.full.shield !== undefined && data.full.maxShield !== undefined) {
-                this.shieldPercent = data.full.shield / data.full.maxShield;
-                this.maxShieldPercent = data.full.maxShield;
+                this.shieldValue = data.full.shield;
+                this.maxShieldValue = data.full.maxShield;
+                this.shieldPercent = this.shieldValue / this.maxShieldValue;
             } else {
+                this.shieldValue = 0;
                 this.shieldPercent = 0;
             }
             
