@@ -416,13 +416,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
         }
     }
 
-    processMessage(message: ArrayBuffer): void {
-        const packetStream = new PacketStream(message);
-
-        const packet = packetStream.deserializeClientPacket();
-
-        if (packet === undefined) return;
-
+    processMessage(packet: Packet): void {
         switch (true) {
             case packet instanceof JoinPacket: {
                 this.join(packet);
@@ -449,7 +443,7 @@ export class ServerPlayer extends ServerEntity<EntityType.Player> {
 
         this.petalEntities.map(e => e.join());
 
-        console.log(`"${this.name}" joined the game`);
+        console.log(`Game | "${this.name}" joined the game`);
 
         if (packet.secret && packet.secret === Config.adminSecret) {
             this.isAdmin = true;

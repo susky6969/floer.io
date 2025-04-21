@@ -5,6 +5,7 @@ export interface SettingsData {
     keyboardMovement: boolean
     newControl: boolean
     lowResolution: boolean
+    blockMytAnn: boolean
     playerName: string
 }
 
@@ -13,6 +14,7 @@ export class Settings {
         keyboardMovement : false,
         newControl : false,
         lowResolution : false,
+        blockMytAnn: false,
         playerName : ""
     };
 

@@ -26,7 +26,7 @@ $none_bd: #ccc;
     place-content: center;
     display: grid;
   }
-  
+
 
 body {
   background-color: #1ea761;
@@ -45,7 +45,7 @@ body {
     }
   }
 
-  
+
 #animation-container {
     position: fixed;
     top: 0;
@@ -56,7 +56,7 @@ body {
     z-index: -6;
     overflow: hidden;
   }
-  
+
   .floating-entity {
     position: absolute;
     background-size: contain;
@@ -70,7 +70,7 @@ body {
   .floating-entity.petal {
     animation: spin var(--spin-duration, 15s) linear infinite;
   }
-  
+
   @keyframes spin {
     from {
       transform: rotate(0deg);
@@ -286,6 +286,7 @@ body {
     position: absolute;
     width: 70px;
     height: 70px;
+    z-index: 9;
 }
 
 .dragging-petal>.petal {
@@ -547,3 +548,4 @@ input::placeholder {
     background: rgba(0, 0, 0, 0.6);
     background-clip: padding-box;
 }
+

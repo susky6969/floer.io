@@ -335,6 +335,15 @@ export class Inventory{
 
             }
         })
+
+        this.ui.deletePetal.on("mouseover",() => {
+            mouseDeletingPetal = true;
+        });
+
+        this.ui.deletePetal.on("mouseout",() => {
+            mouseDeletingPetal = false;
+        });
+        this.moveSelectSlot(0);
     }
 
     moveSelectSlot(offset: number) {
@@ -479,15 +488,6 @@ export class Inventory{
         if (this.game.running) {
             this.ui.hud.append(this.ui.petalColumn);
             this.ui.preparationPetalRow.append(this.ui.deletePetal);
-
-            this.ui.deletePetal.on("mouseover",() => {
-                mouseDeletingPetal = true;
-            });
-
-            this.ui.deletePetal.on("mouseout",() => {
-                mouseDeletingPetal = false;
-            });
-            this.moveSelectSlot(0);
 
         } else {
             this.ui.main.append(this.ui.petalColumn);

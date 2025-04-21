@@ -129,7 +129,7 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "tri_rose": 0.36,
             "epic_rose": 0.051,
-            "yinyang": 0.1,
+            "yinyang": 0.01,
             "bubble": 0.08,
             "wing": 0.08,
             "leg_bubble": 0.00012,
@@ -152,7 +152,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "triangle": 0.002,
             "bubble": 0.012,
             "leg_bubble": 0.00012,
-            "wing": 0.006
+            "wing": 0.006,
+            "honey": 0.06
         },
         rarity: RarityName.common,
         exp: 2
@@ -205,12 +206,12 @@ export const Mobs = new Definitions<MobDefinition>([
         lootTable: {
             "fast": 0.05,
             "twin": 0.024,
-            "triplet": 0.002
+            "triplet": 0.002,
+            "heaviest": 0.001
         },
         rarity: RarityName.common,
         exp: 2
-    }
-    ,{
+    },{
         idString: "boulder",
         displayName: "Boulder",
         damage: 20,
@@ -221,7 +222,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "fast": 1,
             "twin": 0.048,
             "triplet": 0.004,
-            "uranium": 0.00012
+            "uranium": 0.00012,
+            "heaviest": 0.02
         },
         rarity: RarityName.rare,
         exp: 20,
@@ -948,7 +950,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "pinger": 0.32,
             "penta": 0.15,
             "pollen": 0.5,
-            "myt_pollen": 0.22
+            "myt_pollen": 0.22,
+            "honey": 1
         },
         rarity: RarityName.mythic,
         exp: 40,
@@ -1005,5 +1008,22 @@ export const Mobs = new Definitions<MobDefinition>([
         rarity: RarityName.mythic,
         exp: 40,
         usingAssets: "evil_centipede_body"
+    },{
+        idString: "myt_boulder",
+        displayName: "Boulder",
+        damage: 40,
+        health: 1600,
+        category: MobCategory.Fixed,
+        hitboxRadius: 8,
+        lootTable: {
+            "fast": 1,
+            "twin": 1,
+            "triplet": 0.4,
+            "uranium": 0.5,
+            "heaviest": 1
+        },
+        rarity: RarityName.mythic,
+        exp: 20,
+        usingAssets: "rock"
     }
 ] satisfies MobDefinition[]);

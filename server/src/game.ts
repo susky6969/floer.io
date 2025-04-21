@@ -73,64 +73,64 @@ export class Game {
         );
     }
 
-    addPlayer(socket: WebSocket): ServerPlayer {
+    wsPlayerMap = new Map<WebSocket, ServerPlayer>();
+
+    newPlayer(socket: WebSocket): ServerPlayer {
         const player = new ServerPlayer(this, socket);
         this.players.add(player);
+
+        this.removePlayer(socket);
+
+        this.wsPlayerMap.set(socket, player);
 
         return player;
     }
 
-    removePlayer(player: ServerPlayer): void {
-        this.players.delete(player);
-        player.destroy();
-        console.log(`"${player.name}" left the game.`);
+    removePlayer(socket: WebSocket): void {
+        const player = this.wsPlayerMap.get(socket);
+        if (player) {
+            this.players.delete(player);
+            player.destroy();
+
+            console.log(`Game | "${player.name}" left the game.`);
+        }
     }
 
-    handleMessage(data: ArrayBuffer, player: ServerPlayer, wssocket: WebSocket): ServerPlayer {
+    handleMessage(data: ArrayBuffer, wssocket: WebSocket): void {
         const packetStream = new PacketStream(data);
 
         const packet = packetStream.deserializeClientPacket();
 
-        if (packet === undefined) return player;
+        if (packet === undefined) return;
 
-        switch (true) {
-            case packet instanceof JoinPacket: {
-                const inventory = player.inventory.inventory;
-                const exp = player.exp;
+        const oldPlayer = this.wsPlayerMap.get(wssocket);
+        if (packet instanceof JoinPacket) {
+            const newPlayer = this.newPlayer(wssocket);
+            if (oldPlayer) {
+                const inventory = oldPlayer.inventory.inventory;
+                const exp = oldPlayer.exp;
 
-                this.removePlayer(player);
-
-                player = this.addPlayer(wssocket);
-
-                player.inventory.inventory = inventory;
-                player.addExp(exp);
+                newPlayer.inventory.inventory = inventory;
+                newPlayer.addExp(exp);
 
                 const spawnZones =
-                    Object.values(Zones).filter(e => player.level >= e.levelAtLowest)
+                    Object.values(Zones).filter(e => newPlayer.level >= e.levelAtLowest)
 
                 const spawnZone = spawnZones[spawnZones.length - 1];
 
                 if (spawnZones.length) {
-                    player.position = Random.vector(
+                    newPlayer.position = Random.vector(
                         spawnZone.x, spawnZone.x + spawnZone.width,
                         0, this.height
                     )
                 }
+            }
 
-                player.processMessage(data);
-                break;
-            }
-            case packet instanceof InputPacket: {
-                player.processMessage(data);
-                break;
-            }
-            case packet instanceof ChatPacket: {
-                player.processMessage(data);
-                break;
-            }
+            return newPlayer.processMessage(packet);
+        } else if (oldPlayer) {
+            return oldPlayer.processMessage(packet);
         }
-
-        return player;
+        return;
     }
 
     tick(): void {

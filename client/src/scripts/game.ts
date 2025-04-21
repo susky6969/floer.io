@@ -255,7 +255,7 @@ export class Game {
 
         if (packet.chatDirty) {
             packet.chatMessages.forEach((msg) => {
-                this.ui.addChatMessage(msg)
+                this.ui.receiveChatMessage(msg)
             })
         }
 

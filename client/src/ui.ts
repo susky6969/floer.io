@@ -5,6 +5,7 @@ import { Game } from "@/scripts/game.ts";
 import { SettingsData } from "@/settings.ts";
 import { ChatData } from "@common/packets/updatePacket.ts";
 import { ChatChannel } from "@common/packets/chatPacket.ts";
+import { Rarity, RarityName } from "@common/definitions/rarity.ts";
 
 export class UI {
     readonly app: ClientApplication;
@@ -14,7 +15,7 @@ export class UI {
 
     readonly inGameScreen =  $<HTMLDivElement>("#in-game-screen");
     readonly outGameScreen =  $<HTMLDivElement>("#out-game-screen");
-    
+
     readonly transitionRing = $<HTMLDivElement>("#transition-ring");
 
     readonly main =  $<HTMLDivElement>("#main");
@@ -51,6 +52,7 @@ export class UI {
     readonly keyboardMovement = $<HTMLDivElement>("#keyboard-movement");
     readonly newControl = $<HTMLDivElement>("#new-control");
     readonly lowResolution = $<HTMLDivElement>("#low-resolution");
+    readonly blockMytAnn = $<HTMLDivElement>("#block-myt-ann");
 
     readonly chatInput = $<HTMLInputElement>("#chat-input");
     readonly chatMessagesBox = $<HTMLDivElement>("#chat-messages");
@@ -68,24 +70,24 @@ export class UI {
     //TODO: TEMPORARY: these needs to be automatically obtained through some method.
     // them being put in a default array ia just a temp solution
     private availableMobs: string[] = [
-        'ant_hole', 'bee', 'cactus', 'centipede', 'dark_ladybug', 
-        'dandelion', 'hornet', 'ladybug', '21', 
+        'ant_hole', 'bee', 'cactus', 'centipede', 'dark_ladybug',
+        'dandelion', 'hornet', 'ladybug', '21',
         'shiny_ladybug', 'rock', 'mantis'
     ];
     private availablePetals: string[] = [
-        'basic', 'faster', 'stinger', 'bubble', 'yinyang', 'rose', 
-        'wing', 'heavy', 'iris', 'web', 'antennae', 'pollen', 
+        'basic', 'faster', 'stinger', 'bubble', 'yinyang', 'rose',
+        'wing', 'heavy', 'iris', 'web', 'antennae', 'pollen',
         'leaf', 'cactus', 'rock', 'honey', 'dandelion', 'egg', 'chip', 'dice',
         'rice', 'salt', 'sand', 'talisman', 'uranium', 'shell'
     ];
-    
+
     constructor(app: ClientApplication) {
         this.app = app;
-        
+
         // Create container for animations
         this.animationContainer = $("<div id='animation-container'></div>");
         $("body").append(this.animationContainer);
-        
+
         this.readyButton.on("click", (e: Event) => {
             this.app.game.sendJoin();
         });
@@ -133,7 +135,7 @@ export class UI {
         this.gameOverScreen.css("display", "none");
 
         this.initSettingsDialog();
-        
+
         this.startRandomEntityAnimation();
 
         this.loader.animate({ opacity: 0 }, 100, ()=>{ this.loader.css("display", "none");});
@@ -143,6 +145,7 @@ export class UI {
         this.initCheckbox(this.keyboardMovement, "keyboardMovement");
         this.initCheckbox(this.newControl, "newControl");
         this.initCheckbox(this.lowResolution, "lowResolution");
+        this.initCheckbox(this.blockMytAnn, "blockMytAnn");
     }
 
     initCheckbox(jq: JQuery, key: keyof SettingsData) {
@@ -161,7 +164,7 @@ export class UI {
         if (this.animationInterval) {
             window.clearInterval(this.animationInterval);
         }
-        
+
         this.animationInterval = window.setInterval(() => {
             this.spawnRandomEntity();
         }, 750);
@@ -173,35 +176,35 @@ export class UI {
             this.animationInterval = null;
         }
     }
-    
+
     spawnRandomEntity(): void {
         // Decide whether to spawn a mob or petal (30% petal 70% mob)
         const isMob = Math.random() > 0.3;
-        
+
         // Select a random entity from the appropriate array
-        const entityType = isMob ? 
-            this.availableMobs[Math.floor(Math.random() * this.availableMobs.length)] : 
+        const entityType = isMob ?
+            this.availableMobs[Math.floor(Math.random() * this.availableMobs.length)] :
             this.availablePetals[Math.floor(Math.random() * this.availablePetals.length)];
-        
+
         const entity = $(`<div class="floating-entity ${isMob ? 'mob' : 'petal'}" data-type="${entityType}"></div>`);
-        
+
         // Set random vertical position (between 5% and 95% of screen height)
         const topPosition = Math.random() * 90 + 5;
-        
+
         // Set random size (between 50px and 70px) mob is 1.5x
         const size = isMob ? Math.random() * 30 + 75 : Math.random() * 20 + 50;
-    
+
         // Set random speed in seconds (between 8 and 12 seconds to cross the screen)
         const speed = Math.random() * 4 + 8;
-    
+
         // Set random rotation
         const rotation = Math.random() * 360;
 
         // Set random spin duration (between 8s and 20s for mobs, 5s and 15s for petals)
-        const spinDuration = isMob ? 
-            Math.random() * 12 + 8 : 
+        const spinDuration = isMob ?
+            Math.random() * 12 + 8 :
             Math.random() * 10 + 5;
-        
+
         // Apply styles
         entity.css({
             'position': 'fixed',
@@ -220,10 +223,10 @@ export class UI {
             'border': 'none', // petals have border by default?
             '--spin-duration': `${spinDuration}s`
         });
-        
+
         // Add to container
         this.animationContainer.append(entity);
-        
+
         // Animate movement
         entity.animate({
             left: `${window.innerWidth + 100}px`
@@ -267,7 +270,12 @@ export class UI {
 
     chatMessages: ChatMessage[] = [];
 
-    addChatMessage(msg: ChatData) {
+    receiveChatMessage(msg: ChatData) {
+        if (
+            this.app.settings.data.blockMytAnn &&
+            msg.content.startsWith("The Mythic") || msg.content.startsWith("A Mythic")
+        ) return;
+
         const jq = $(
             `<div
                 class="chat-message"
@@ -336,13 +344,13 @@ export class UI {
     startTransition(expanding: boolean = true) {
         if (!this.inGameScreen || !this.transitionRing) return;
         this.transitionRing.css("opacity", "1"); // this need to show up nomatter what
-        
+
         // Common animation setup
         let radius = expanding ? 0 : window.innerWidth * 1; // Start from 0 or maxRadius
         const maxRadius = window.innerWidth * 1;
         const duration = expanding ? 1500 : 1200; // Slightly faster for collapsing
         const startTime = performance.now();
-        
+
         // both needs in game screen be displayed
         this.inGameScreen.css("visibility", "visible");
         this.inGameScreen.css("opacity", "1");
@@ -365,41 +373,41 @@ export class UI {
                 });
             });
         }
-        
+
         const animate = (currentTime: number) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             // Custom easing for collapsing to make it faster at the beginning
             let eased;
             if (expanding) {
                 // Standard easeInOutQuad for expanding
-                eased = progress < 0.5 
-                    ? 2 * progress * progress 
+                eased = progress < 0.5
+                    ? 2 * progress * progress
                     : 1 - Math.pow(-2 * progress + 2, 2) / 2;
             } else {
                 // Modified easing for collapsing - starts faster
                 // Use a cubic curve that drops quickly at the start
                 eased = 1 - Math.pow(1 - progress, 3);
             }
-            
+
             if (expanding) {
                 radius = eased * maxRadius;
             } else {
                 radius = maxRadius * (1 - eased);
             }
-            
+
             this.inGameScreen.css("clip-path", `circle(${radius}px at center)`);
-            
+
             const diameter = radius * 2;
             this.transitionRing.css({
                 "width": `${diameter}px`,
                 "height": `${diameter}px`
             });
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animate);
-            } else if (!expanding) {                
+            } else if (!expanding) {
                 this.inGameScreen.css({
                     "visibility": "hidden",
                     "opacity": "0"
@@ -414,7 +422,7 @@ export class UI {
                 this.outGameScreen.css("z-index", "4");
             }
         };
-        
+
         requestAnimationFrame(animate);
     }
 }
