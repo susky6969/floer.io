@@ -302,63 +302,21 @@ export class Inventory{
     swingProgress: number = 0; // Track animation progress from 0 to 1
 
     constructor(private readonly game: Game) {
-        this.ui = game.ui;
-
-        let targetX = 0;
-        let targetY = 0;
-        let currentX = 0;
-        let currentY = 0;
-        const followSpeed = 0.125;
-        let followAnimationId: number | null = null;
+        this.ui = game.ui;        
         
-        const updateFollowAnimation = () => {
-            if (draggingData.item) {
-                // Smoothly interpolate between current position and target position
-                currentX += (targetX - currentX) * followSpeed;
-                currentY += (targetY - currentY) * followSpeed;
-                
-                draggingData.item.css("transform", `translate(${currentX}px, ${currentY}px)`);
-                
-                followAnimationId = window.requestAnimationFrame(updateFollowAnimation);
-            }
-        };
-
         $(document).on("mousemove", (ev) => {
             if (draggingData.item) {
                 const { clientX, clientY } = ev;
-                
-                targetX = clientX;
-                targetY = clientY;
-                
-                // If this is the first movement, initialize current position and start animation
-                if (currentX === 0 && currentY === 0) {
-                    currentX = clientX;
-                    currentY = clientY;
-                    
-                    if (!followAnimationId) {
-                        followAnimationId = window.requestAnimationFrame(updateFollowAnimation);
-                    }
-                }
+                // Apply position directly without smooth following
+                draggingData.item.css("transform", `translate(${clientX}px, ${clientY}px)`);
             }
-        })
-        
+        });
+
         $(document).on("mousedown", (ev) => {
             this.swingAngle = 0;
             this.swingProgress = 0;
             
-            // Reset position tracking when starting a new drag
             if (draggingData.item) {
-                const { clientX, clientY } = ev;
-                currentX = clientX;
-                currentY = clientY;
-                targetX = clientX;
-                targetY = clientY;
-                
-                // Start the follow animation
-                if (!followAnimationId) {
-                    followAnimationId = window.requestAnimationFrame(updateFollowAnimation);
-                }
-                
                 if (this.swingAnimationId) window.cancelAnimationFrame(this.swingAnimationId);
                 
                 const petalElement = draggingData.item.find('.petal');
@@ -467,44 +425,111 @@ export class Inventory{
                     this.swingAnimationId = null;
                 }
                 
-                // Stop the follow animation
-                if (followAnimationId) {
-                    window.cancelAnimationFrame(followAnimationId);
-                    followAnimationId = null;
-                }
+                let destinationElement: JQuery<HTMLElement> | null = null;
                 
-                // Reset position tracking
-                currentX = 0;
-                currentY = 0;
-                targetX = 0;
-                targetY = 0;
-                
-                draggingData.item.remove();
-                draggingData.item = null;
-
                 if (mouseSelectingPetal && mouseSelectingPetal != draggingData.container) {
-                    const trans = mouseSelectingPetal.petalDefinition;
-                    mouseSelectingPetal.petalDefinition = draggingData.container.petalDefinition;
-                    draggingData.container.petalDefinition = trans;
-                    this.switchedPetalIndex = this.inventory.indexOf(draggingData.container);
-                    this.switchedToPetalIndex = this.inventory.indexOf(mouseSelectingPetal);
-                } else if (mouseDeletingPetal) {
-                    draggingData.container.petalDefinition = null;
-                    this.deletedPetalIndex = this.inventory.indexOf(draggingData.container);
-                } else {
+                    destinationElement = mouseSelectingPetal.ui_slot || null;
+                } else if (!mouseDeletingPetal) {
                     const index = this.inventory.indexOf(draggingData.container);
                     if (index >= this.equippedPetals.length) {
-                        this.switchSlot(index - this.equippedPetals.length);
-                    } else {
-                        this.switchSlot(index)
+                        const prepIndex = index - this.equippedPetals.length;
+                        if (prepIndex >= 0 && prepIndex < this.preparationPetals.length) {
+                            destinationElement = this.preparationPetals[prepIndex].ui_slot || null;
+                        }
+                    } else if (index >= 0) {
+                        destinationElement = this.equippedPetals[index].ui_slot || null;
                     }
                 }
+                
+                if (destinationElement && destinationElement.length) {
+                    const { clientX, clientY } = ev;
+                    const destOffset = destinationElement.offset();
+                    
+                    if (destOffset) {
+                        const destX = destOffset.left + (destinationElement.width() || 0) / 2;
+                        const destY = destOffset.top + (destinationElement.height() || 0) / 2;
+                        this.processInventoryChanges();
+                        
+                        const duration = 300; // ms
+                        const startTime = performance.now();
+                        const startX = clientX;
+                        const startY = clientY;
+                        const startAngle = this.swingAngle;
+                        
+                        // if nothing goes wrong, default values (both size and opac) should be correct always
+                        const startSize = draggingData.item.width() || 70;
+                        const targetSize = destinationElement.width() || 50;
 
-                this.keyboardSelectingPetal = undefined;
-                this.updatePetalRows();
-
+                        const startOpac = parseFloat(draggingData.item.css("opacity")) || 1;
+                        const targetOpac = 0.85;
+                        
+                        // stop swing
+                        if (this.swingAnimationId) {
+                            window.cancelAnimationFrame(this.swingAnimationId);
+                            this.swingAnimationId = null;
+                        }
+                        
+                        const animate = (currentTime: number) => {
+                            if (!draggingData.item) return;
+                            
+                            const elapsed = currentTime - startTime;
+                            const progress = Math.min(elapsed / duration, 1);
+                            
+                            // ease-out-quint
+                            const easeOutQuint = 1 - Math.pow(1 - progress, 5);
+                            const currentX = startX + (destX - startX) * easeOutQuint;
+                            const currentY = startY + (destY - startY) * easeOutQuint;
+                            
+                            // ease-out-cubic
+                            const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                            const currentAngle = startAngle * (1 - easeOutCubic);
+                            const currentSize = startSize - ((startSize - targetSize) * easeOutCubic);
+                            const currentOpacity = startOpac - ((startOpac - targetOpac) * easeOutCubic);
+                            
+                            // Scale font size proportionally by updating the CSS variable
+                            const fontScale = currentSize / targetSize;
+                            const baseFontSize = 0.8; // Default font size in em
+                            const newFontSize = baseFontSize * fontScale;
+                            const petalElement = draggingData.item.find('.petal');
+                            if (petalElement.length) {
+                                petalElement.css('--x', `${newFontSize}em`);
+                            }
+                            
+                            draggingData.item.css("opacity", currentOpacity);
+                            draggingData.item.css("transform", `translate(${currentX}px, ${currentY}px)`);
+                            
+                            draggingData.item.css("width", `${currentSize}px`);
+                            draggingData.item.css("height", `${currentSize}px`);
+                            
+                            if (petalElement.length) {
+                                petalElement.css('transform', `translate(-50%, -50%) rotate(${currentAngle}deg)`);
+                            }
+                            
+                            if (progress < 1) {
+                                window.requestAnimationFrame(animate);
+                            } else {
+                                // animation complete
+                                // remove dragging petal element
+                                draggingData.item.remove();
+                                draggingData.item = null;
+                            }
+                        };
+                        
+                        window.requestAnimationFrame(animate);
+                    } else {
+                        // Fallback if we can't get the destination position
+                        draggingData.item.remove();
+                        draggingData.item = null;
+                        this.processInventoryChanges();
+                    }
+                } else {
+                    // No valid destination, just remove the dragging item
+                    draggingData.item.remove();
+                    draggingData.item = null;
+                    this.processInventoryChanges();
+                }
             }
-        })
+        });
     }
     updateSwingAnimation = () => {
         if (draggingData.item) {
@@ -531,6 +556,7 @@ export class Inventory{
 
     // TODO: make it process swap petal before animation is finished
     // and a fter animation is finished, update petal deck to show the changes
+    // TODO Fix: when its dragged to secondary,,, size scaling is actually incorrect
     processInventoryChanges = (animationFinished: boolean = false) => {
         // Swapping to diff slots
         if (mouseSelectingPetal && mouseSelectingPetal != draggingData.container && draggingData.container) {
