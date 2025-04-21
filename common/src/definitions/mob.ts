@@ -133,7 +133,8 @@ export const Mobs = new Definitions<MobDefinition>([
             "bubble": 0.08,
             "wing": 0.08,
             "leg_bubble": 0.00012,
-            "triplet": 0.0024
+            "triplet": 0.0024,
+            "shell": 0.02
         },
         rarity: RarityName.epic,
         exp: 5
@@ -756,8 +757,9 @@ export const Mobs = new Definitions<MobDefinition>([
             "yinyang": 0.4,
             "leg_bubble": 0.0002,
             "triplet": 0.0048,
-            "penta": 0.05,
-            "myt_tri_rose": 0.25
+            "penta": 0.25,
+            "myt_tri_rose": 0.25,
+            "shell": 0.5
         },
         rarity: RarityName.mythic,
         exp: 20
