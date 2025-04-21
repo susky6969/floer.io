@@ -1519,7 +1519,7 @@ export const Petals = new Definitions<PetalDefinition>([
             slotDisplaySize: 40,
         },
         attributes: {
-            absorbing_shield: 10
+            absorbing_shield: 15.5
         },
         reloadTime: 3.5,
         hitboxRadius: 0.5,
