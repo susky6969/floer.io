@@ -1332,7 +1332,7 @@ export const Petals = new Definitions<PetalDefinition>([
             spawner: Mobs.fromString("soldier_ant")
         },
         reloadTime: 1,
-        hitboxRadius: 0.88,
+        hitboxRadius: 0.75,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.epic
@@ -1353,7 +1353,7 @@ export const Petals = new Definitions<PetalDefinition>([
             spawner: Mobs.fromString("beetle")
         },
         reloadTime: 1,
-        hitboxRadius: 1,
+        hitboxRadius: 0.88,
         isDuplicate: false,
         pieceAmount: 1,
         rarity: RarityName.legendary,
@@ -1375,7 +1375,7 @@ export const Petals = new Definitions<PetalDefinition>([
             spawner: Mobs.fromString("leg_hornet")
         },
         reloadTime: 3.1,
-        hitboxRadius: 1.375,
+        hitboxRadius: 1,
         isDuplicate: true,
         pieceAmount: 2,
         isShowedInOne: false,
